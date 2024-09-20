@@ -443,6 +443,60 @@ if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'updatePro
     } else {
         echo json_encode(["message" => "No se ha seleccionado una imagen."]);
     }
+    // REGISTRAR MÉDICO
+if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'registerMedico') {
+    $cedula = $_POST['cedula'];
+    $nombre = $_POST['nom_medico'];
+    $apellido = $_POST['ape_medico'];
+    $telefono = $_POST['telefono_medico'];
+    $email = $_POST['email_medico'];
+    $clave = $_POST['clave_medico'];
+    $especialidad = $_POST['espe_medico'];
+
+    // Verificar si se subió una imagen
+    if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
+        $fileTmpPath = $_FILES['imagen']['tmp_name'];
+        $fileName = $_FILES['imagen']['name'];
+        $uploadFileDir = './uploads/';
+        $dest_path = $uploadFileDir . $fileName;
+
+        // Mover la imagen al directorio de uploads
+        if (!is_dir($uploadFileDir)) {
+            mkdir($uploadFileDir, 0777, true);  // Crear el directorio si no existe
+        }
+
+        if (move_uploaded_file($fileTmpPath, $dest_path)) {
+            $relativePath = '/uploads/' . $fileName; // Ruta relativa para guardar en la BD
+
+            // Insertar los datos del médico
+            $stmt = $mysqli->prepare("INSERT INTO medico (cedula, nom_medico, ape_medico, telefono_medico, email_medico, clave_medico, espe_medico, imagen_medico) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("ssssssss", $cedula, $nombre, $apellido, $telefono, $email, $clave, $especialidad, $relativePath);
+
+            if ($stmt->execute()) {
+                echo json_encode(["success" => true, "message" => "Médico registrado exitosamente."]);
+            } else {
+                echo json_encode(["success" => false, "message" => "Error al registrar el médico."]);
+            }
+
+            $stmt->close();
+        } else {
+            echo json_encode(["success" => false, "message" => "Error al subir la imagen."]);
+        }
+    } else {
+        // Registrar médico sin imagen
+        $stmt = $mysqli->prepare("INSERT INTO medico (cedula, nom_medico, ape_medico, telefono_medico, email_medico, clave_medico, espe_medico) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssssss", $cedula, $nombre, $apellido, $telefono, $email, $clave, $especialidad);
+
+        if ($stmt->execute()) {
+            echo json_encode(["success" => true, "message" => "Médico registrado exitosamente."]);
+        } else {
+            echo json_encode(["success" => false, "message" => "Error al registrar el médico."]);
+        }
+
+        $stmt->close();
+    }
+}
+
 }
 
 

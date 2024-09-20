@@ -1,0 +1,90 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Registrar Médico</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-grid>
+    <!-- Título de la sección -->
+    <ion-row class="ion-justify-content-center">
+      <ion-col size="12" size-md="6">
+        <ion-item>
+          <ion-label position="stacked">Cédula</ion-label>
+          <ion-input [(ngModel)]="medico.cedula" type="text" placeholder="Ingrese su cédula"></ion-input>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+
+    <ion-row class="ion-justify-content-center">
+      <ion-col size="12" size-md="6">
+        <ion-item>
+          <ion-label position="stacked">Nombre</ion-label>
+          <ion-input [(ngModel)]="medico.nom_medico" type="text" placeholder="Ingrese su nombre"></ion-input>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+
+    <ion-row class="ion-justify-content-center">
+      <ion-col size="12" size-md="6">
+        <ion-item>
+          <ion-label position="stacked">Apellido</ion-label>
+          <ion-input [(ngModel)]="medico.ape_medico" type="text" placeholder="Ingrese su apellido"></ion-input>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+
+    <ion-row class="ion-justify-content-center">
+      <ion-col size="12" size-md="6">
+        <ion-item>
+          <ion-label position="stacked">Teléfono</ion-label>
+          <ion-input [(ngModel)]="medico.telefono_medico" type="text" placeholder="Ingrese su teléfono"></ion-input>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+
+    <ion-row class="ion-justify-content-center">
+      <ion-col size="12" size-md="6">
+        <ion-item>
+          <ion-label position="stacked">Correo Electrónico</ion-label>
+          <ion-input [(ngModel)]="medico.email_medico" type="email" placeholder="Ingrese su correo electrónico"></ion-input>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+
+    <ion-row class="ion-justify-content-center">
+      <ion-col size="12" size-md="6">
+        <ion-item>
+          <ion-label position="stacked">Contraseña</ion-label>
+          <ion-input [(ngModel)]="medico.clave_medico" type="password" placeholder="Ingrese su contraseña"></ion-input>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+
+    <ion-row class="ion-justify-content-center">
+      <ion-col size="12" size-md="6">
+        <ion-item>
+          <ion-label position="stacked">Especialidad</ion-label>
+          <ion-input [(ngModel)]="medico.espe_medico" type="text" placeholder="Ingrese su especialidad"></ion-input>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+
+    <!-- Subir imagen de perfil -->
+    <ion-row class="ion-justify-content-center">
+      <ion-col size="12" size-md="6">
+        <ion-item>
+          <ion-label position="stacked">Imagen de Perfil</ion-label>
+          <input type="file" (change)="onFileSelected($event)" accept="image/*">
+        </ion-item>
+      </ion-col>
+    </ion-row>
+
+    <!-- Botón para registrar -->
+    <ion-row class="ion-justify-content-center">
+      <ion-col size="12" size-md="6">
+        <ion-button expand="block" color="primary" (click)="registerMedico()">Registrar Médico</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

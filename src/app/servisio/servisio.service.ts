@@ -153,5 +153,8 @@ listMensajes(userId: number, role: string): Observable<any> {
 updateProfileWithImage(formData: FormData): Observable<any> {
   return this.http.post(`${this.API_URL}?action=updateProfileWithImage`, formData);
 }
+registerMedico(formData: FormData) {
+  return this.http.post('http://localhost/proyectointegrador/mpaciente/mpacientes.php?action=registerMedico', formData);
+}
 }
 

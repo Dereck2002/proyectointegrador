@@ -20,6 +20,12 @@
         <ion-label>Pacientes</ion-label>
       </ion-item>
 
+      <!-- Enlace a la lista de pacientes (solo visible para médicos) -->
+      <ion-item routerLink="/registrar-medico" routerDirection="root" *ngIf="rol === 'medico'">
+        <ion-icon name="people" slot="start"></ion-icon>
+        <ion-label>Medicos</ion-label>
+      </ion-item>
+
       <!-- Enlace para agregar signos vitales (visible para todos) -->
       <ion-item (click)="signos()">
         <ion-icon name="pulse" slot="start"></ion-icon>

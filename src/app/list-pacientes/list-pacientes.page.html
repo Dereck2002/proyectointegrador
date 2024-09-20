@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Lista de Pacientes</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <!-- Itera sobre la lista de pacientes y muestra sus datos -->
+    <ion-item *ngFor="let patient of patients">
+      <ion-label>
+        <h2>{{ patient.nom_usuario }} {{ patient.ape_usuario }}</h2>
+        <p>Teléfono: {{ patient.telefono_usuario }}</p>
+        <p>Email: {{ patient.email_usuario }}</p>
+      </ion-label>
+
+      <!-- Botón para editar el paciente -->
+      <ion-button color="primary" (click)="editPatient(patient)">Editar</ion-button>
+
+      <!-- Botón para eliminar el paciente -->
+      <ion-button color="danger" (click)="deletePatient(patient.cod_usuario)">Eliminar</ion-button>
+    </ion-item>
+  </ion-list>
+</ion-content>

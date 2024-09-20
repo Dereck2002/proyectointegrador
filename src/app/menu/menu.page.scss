@@ -1,0 +1,18 @@
+ion-menu {
+    ion-header {
+      background-color: #3880ff; /* Cambiar el color de fondo del menú */
+    }
+  
+    ion-toolbar {
+      color: white;
+    }
+  
+    ion-content {
+      --background: #f4f5f8; /* Fondo gris claro para el contenido */
+    }
+  
+    ion-item {
+      --color-selected: #3880ff; /* Color de los ítems seleccionados */
+    }
+  }
+  

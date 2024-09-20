@@ -11,6 +11,18 @@ const routes: Routes = [
     redirectTo: 'home',
     pathMatch: 'full'
   },
+  {
+    path: 'list-pacientes',
+    loadChildren: () => import('./list-pacientes/list-pacientes.module').then( m => m.ListPacientesPageModule)
+  },
+  {
+    path: 'add-signos',
+    loadChildren: () => import('./add-signos/add-signos.module').then( m => m.AddSignosPageModule)
+  },
+  {
+    path: 'menu',
+    loadChildren: () => import('./menu/menu.module').then( m => m.MenuPageModule)
+  },
 ];
 
 @NgModule({

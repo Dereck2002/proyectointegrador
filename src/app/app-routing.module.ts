@@ -23,6 +23,18 @@ const routes: Routes = [
     path: 'menu',
     loadChildren: () => import('./menu/menu.module').then( m => m.MenuPageModule)
   },
+  {
+    path: 'add-medicamento',
+    loadChildren: () => import('./add-medicamento/add-medicamento.module').then( m => m.AddMedicamentoPageModule)
+  },
+  {
+    path: 'mensajes',
+    loadChildren: () => import('./mensajes/mensajes.module').then( m => m.MensajesPageModule)
+  },
+  {
+    path: 'historial',
+    loadChildren: () => import('./historial/historial.module').then( m => m.HistorialPageModule)
+  },
 ];
 
 @NgModule({

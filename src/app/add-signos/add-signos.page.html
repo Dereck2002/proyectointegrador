@@ -1,41 +1,41 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Agregar Signos Vitales</ion-title>
+    <ion-title>Añadir Signos Vitales</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <form (submit)="submitSignos()">
+  <form (ngSubmit)="submitSignos()">
     <ion-item>
       <ion-label position="floating">Presión</ion-label>
-      <ion-input [(ngModel)]="signos.precion" type="number" required></ion-input>
+      <ion-input [(ngModel)]="signos.precion" type="number" name="precion" required></ion-input>
     </ion-item>
-
+    
     <ion-item>
       <ion-label position="floating">Glucosa</ion-label>
-      <ion-input [(ngModel)]="signos.glucosa" type="number" required></ion-input>
+      <ion-input [(ngModel)]="signos.glucosa" type="number" name="glucosa" required></ion-input>
     </ion-item>
-
+    
     <ion-item>
       <ion-label position="floating">Peso</ion-label>
-      <ion-input [(ngModel)]="signos.peso" type="number" required></ion-input>
+      <ion-input [(ngModel)]="signos.peso" type="number" name="peso" required></ion-input>
     </ion-item>
-
+    
     <ion-item>
       <ion-label position="floating">Glicemia</ion-label>
-      <ion-input [(ngModel)]="signos.glicemia" type="number" required></ion-input>
+      <ion-input [(ngModel)]="signos.glicemia" type="number" name="glicemia" required></ion-input>
     </ion-item>
-
+    
     <ion-item>
       <ion-label position="floating">Pulso</ion-label>
-      <ion-input [(ngModel)]="signos.pulso" type="number" required></ion-input>
+      <ion-input [(ngModel)]="signos.pulso" type="number" name="pulso" required></ion-input>
     </ion-item>
-
+    
     <ion-item>
       <ion-label position="floating">Temperatura</ion-label>
-      <ion-input [(ngModel)]="signos.temperatura" type="number" required></ion-input>
+      <ion-input [(ngModel)]="signos.temperatura" type="number" name="temperatura" required></ion-input>
     </ion-item>
 
-    <ion-button expand="full" type="submit">Agregar Signos</ion-button>
+    <ion-button expand="full" type="submit">Guardar Signos</ion-button>
   </form>
 </ion-content>

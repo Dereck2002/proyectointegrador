@@ -1,0 +1,17 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Historial de Mensajes</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Mostrar lista de mensajes -->
+  <ion-list>
+    <ion-item *ngFor="let mensaje of mensajes">
+      <ion-label>
+        <h2>{{ mensaje.nom_medico || mensaje.nom_usuario }} {{ mensaje.ape_medico || mensaje.ape_usuario }}</h2>
+        <p>{{ mensaje.mensaje }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

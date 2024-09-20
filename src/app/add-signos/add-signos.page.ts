@@ -15,15 +15,26 @@ export class AddSignosPage {
     glicemia: '',
     pulso: '',
     temperatura: '',
-    cod_usuario: 1 // O el ID del paciente que estés manejando
+    cod_usuario: 1 // Asegúrate de manejar correctamente el ID del usuario logueado.
   };
 
   constructor(private servisioService: ServisioService, private router: Router) {}
 
   submitSignos() {
-    this.servisioService.addSignos(this.signos).subscribe(response => {
+    // Convertir los valores a números antes de enviarlos
+    const signosData = {
+      precion: parseInt(this.signos.precion, 10),
+      glucosa: parseInt(this.signos.glucosa, 10),
+      peso: parseInt(this.signos.peso, 10),
+      glicemia: parseInt(this.signos.glicemia, 10),
+      pulso: parseInt(this.signos.pulso, 10),
+      temperatura: parseFloat(this.signos.temperatura), // Temperatura puede ser decimal
+      cod_usuario: this.signos.cod_usuario
+    };
+
+    this.servisioService.addSignos(signosData).subscribe(response => {
       console.log('Signos vitales añadidos', response);
-      this.router.navigate(['/list-pacientes']);
+      this.router.navigate(['/menu']);
     });
   }
 }

@@ -1,0 +1,37 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Enviar Mensaje</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="openHistorial()">Ver Historial</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content>
+  <!-- Seleccionar destinatario -->
+  <ion-item>
+    <ion-label>Destinatario</ion-label>
+    <ion-select [(ngModel)]="selectedRecipient" interface="action-sheet">
+      <ion-select-option *ngFor="let recipient of recipients" [value]="recipient">
+        {{ recipient.nom }} {{ recipient.ape }}
+      </ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <!-- Mostrar destinatario seleccionado -->
+  <ion-item *ngIf="selectedRecipient">
+    <ion-label>
+      <strong>Mensaje a: </strong>{{ selectedRecipient.nom }} {{ selectedRecipient.ape }}
+    </ion-label>
+  </ion-item>
+
+  <!-- Campo para escribir el mensaje -->
+  <ion-item>
+    <ion-label position="floating">Escribe tu mensaje</ion-label>
+    <ion-textarea [(ngModel)]="mensaje.contenido" required></ion-textarea>
+  </ion-item>
+
+  <!-- Botón para enviar el mensaje -->
+  <ion-button expand="full" (click)="enviarMensaje()">Enviar Mensaje</ion-button>
+</ion-content>

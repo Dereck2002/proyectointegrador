@@ -57,6 +57,7 @@ export class ServisioService {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' })
     });
   }
+  
 
   // Eliminar paciente
   deletePatient(id: number): Observable<any> {
@@ -65,4 +66,38 @@ export class ServisioService {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' })
     });
   }
+
+ // Método para agregar un medicamento
+addMedicamento(medicamento: any): Observable<any> {
+  return this.http.post(`${this.API_URL}?action=addMedicamento`, medicamento, {
+    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+  });
 }
+
+// Obtener lista de pacientes
+listPacientes(): Observable<any> {
+  return this.http.get(`${this.API_URL}?action=listPacientes`);
+}
+
+// Obtener lista de médicos
+listMedicos(): Observable<any> {
+  return this.http.get(`${this.API_URL}?action=listMedicos`);
+}
+
+// Enviar mensaje
+enviarMensaje(mensaje: any): Observable<any> {
+  return this.http.post(`${this.API_URL}?action=sendMessage`, mensaje, {
+    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+  });
+}
+
+listMensajes(userId: number, role: string): Observable<any> {
+  return this.http.get(`${this.API_URL}?action=listMessages&user_id=${userId}&role=${role}`);
+}
+
+  // Obtener los mensajes para un usuario específico
+  getMensajes(userId: number): Observable<any> {
+    return this.http.get(`${this.API_URL}?action=listMessages&user_id=${userId}`);
+  }
+}
+

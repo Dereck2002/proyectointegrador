@@ -1,0 +1,36 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Añadir Medicamento</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form (ngSubmit)="submitMedicamento()">
+    <ion-item>
+      <ion-label position="floating">Medicamento</ion-label>
+      <ion-input [(ngModel)]="medicamento.medicamento" type="text" name="medicamento" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Dosis</ion-label>
+      <ion-input [(ngModel)]="medicamento.dosis" type="text" name="dosis" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Tiempo</ion-label>
+      <ion-input [(ngModel)]="medicamento.tiempo" type="text" name="tiempo" required></ion-input>
+    </ion-item>
+
+    <!-- Seleccionar paciente -->
+    <ion-item>
+      <ion-label>Selecciona el Paciente</ion-label>
+      <ion-select [(ngModel)]="medicamento.cod_usuario" name="cod_usuario" interface="action-sheet" required>
+        <ion-select-option *ngFor="let paciente of pacientes" [value]="paciente.cod_usuario">
+          {{ paciente.nom_usuario }} {{ paciente.ape_usuario }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-button expand="full" type="submit">Guardar Medicamento</ion-button>
+  </form>
+</ion-content>

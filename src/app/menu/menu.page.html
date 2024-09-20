@@ -1,38 +1,44 @@
-<ion-app>
-  <ion-split-pane contentId="main-content">
-    <!-- Menú lateral -->
-    <ion-menu contentId="main-content">
-      <ion-header>
-        <ion-toolbar>
-          <ion-title>Menú</ion-title>
-        </ion-toolbar>
-      </ion-header>
-      
-      <ion-content>
-        <ion-list>
-          <ion-menu-toggle auto-hide="false">
-            <ion-item routerLink="/list-pacientes" routerDirection="root">
-              <ion-icon name="people" slot="start"></ion-icon>
-              <ion-label>Pacientes</ion-label>
-            </ion-item>
-            <ion-item routerLink="/add-signos" routerDirection="root">
-              <ion-icon name="pulse" slot="start"></ion-icon>
-              <ion-label>Agregar Signos Vitales</ion-label>
-            </ion-item>
-            <ion-item routerLink="/add-medicamento" routerDirection="root">
-              <ion-icon name="medkit" slot="start"></ion-icon>
-              <ion-label>Agregar Medicamento</ion-label>
-            </ion-item>
-            <ion-item routerLink="/mensajes" routerDirection="root">
-              <ion-icon name="mail" slot="start"></ion-icon>
-              <ion-label>Mensajes</ion-label>
-            </ion-item>
-          </ion-menu-toggle>
-        </ion-list>
-      </ion-content>
-    </ion-menu>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Menú</ion-title>
+  </ion-toolbar>
+</ion-header>
 
-    <!-- Contenido principal de la aplicación -->
-    <ion-router-outlet id="main-content"></ion-router-outlet>
-  </ion-split-pane>
-</ion-app>
+<ion-content>
+  <!-- Listado de opciones del menú -->
+  <ion-list>
+    <ion-menu-toggle auto-hide="false">
+
+      <!-- Enlace a la lista de pacientes -->
+      <ion-item routerLink="/list-pacientes" routerDirection="root">
+        <ion-icon name="people" slot="start"></ion-icon>
+        <ion-label>Pacientes</ion-label>
+      </ion-item>
+
+      <!-- Enlace para agregar signos vitales -->
+      <ion-item (click)="signos()">
+        <ion-icon name="pulse" slot="start"></ion-icon>
+        <ion-label>Agregar Signos Vitales</ion-label>
+      </ion-item>
+
+      <!-- Enlace para agregar medicamento -->
+      <ion-item (click)="medicamento()">
+        <ion-icon name="medkit" slot="start"></ion-icon>
+        <ion-label>Agregar Medicamento</ion-label>
+      </ion-item>
+
+      <!-- Enlace a la página de mensajes -->
+      <ion-item (click)="mensaje()">
+        <ion-icon name="mail" slot="start"></ion-icon>
+        <ion-label>Mensajes</ion-label>
+      </ion-item>
+
+      <!-- Enlace para ver el historial -->
+      <ion-item (click)="openHistorial()">
+        <ion-icon name="time-outline" slot="start"></ion-icon>
+        <ion-label>Historial</ion-label>
+      </ion-item>
+
+    </ion-menu-toggle>
+  </ion-list>
+</ion-content>

@@ -1,27 +1,74 @@
-#container {
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  background: linear-gradient(135deg, #6dd5ed, #2193b0);
+  padding: 20px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 350px;
+  padding: 16px;
+  border-radius: 16px;
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+  background-color: #fff;
+  transition: transform 0.3s ease;
+}
+
+.login-card:hover {
+  transform: scale(1.05);
+}
+
+.card-title {
   text-align: center;
-
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  font-size: 1.8em;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
 }
 
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
+.custom-input {
+  --background: #f7f7f7;
+  --placeholder-color: #999;
+  border-radius: 8px;
+  margin-bottom: 20px;
 }
 
-#container p {
-  font-size: 16px;
-  line-height: 22px;
-
-  color: #8c8c8c;
-
-  margin: 0;
+.custom-input ion-label {
+  color: #555;
 }
 
-#container a {
-  text-decoration: none;
+.login-button {
+  margin-top: 20px;
+  border-radius: 12px;
+  background-color: #2193b0;
+  --background-hover: #176180;
+  --background-activated: #13546a;
+  color: #fff;
+  transition: background-color 0.3s ease;
+}
+
+.login-button:hover {
+  background-color: #176180;
+}
+
+.forgot-password-button {
+  margin-top: 10px;
+  --color: #2193b0;
+  text-decoration: underline;
+  font-weight: bold;
+  text-align: center;
+}
+
+.forgot-password-button:hover {
+  --color: #176180;
+}
+
+.error-message {
+  color: red;
+  text-align: center;
+  font-size: 0.9em;
+  margin-top: 15px;
 }

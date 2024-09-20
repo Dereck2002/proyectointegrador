@@ -96,7 +96,7 @@ export class MensajesPage implements OnInit {
     });
     toast.present();
   }
-  openHistorial(){
+  verHistorial() {
     this.navCtrl.navigateForward('/historial');
   }
 }

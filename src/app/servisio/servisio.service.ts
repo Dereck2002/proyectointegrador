@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ServisioService {
+ 
 
   private API_URL = 'http://localhost/proyectointegrador/mpaciente/mpacientes.php';
   private currentRole: string | null = null;
@@ -34,28 +35,46 @@ export class ServisioService {
     }
   }
 
-  // Listar pacientes
-  listPatients(): Observable<any> {
-    return this.http.get(`${this.API_URL}?action=listPatients`);
+  // Obtener lista de pacientes
+  listPacientes(): Observable<any> {
+    return this.http.get(`${this.API_URL}?action=listPacientes`);
   }
 
-  // Agregar paciente
-  addPatient(patient: any): Observable<any> {
-    return this.http.post(`${this.API_URL}?action=addPatient`, patient, {
+  // Agregar un nuevo paciente
+  addPaciente(paciente: any): Observable<any> {
+    return this.http.post(`${this.API_URL}?action=addPatient`, paciente, {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' })
     });
   }
 
-  // Editar paciente
-  editPatient(patient: any): Observable<any> {
-    return this.http.put(`${this.API_URL}?action=editPatient`, patient, {
+  // Actualizar un paciente existente
+  updatePaciente(paciente: any): Observable<any> {
+    return this.http.put(`${this.API_URL}?action=editPatient`, paciente, {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' })
     });
   }
+
   addSignos(signos: any): Observable<any> {
     return this.http.post(`${this.API_URL}?action=addSignos`, signos, {
       headers: new HttpHeaders({ 'Content-Type': 'application/json' })
     });
+  }
+
+   // Obtener signos vitales para un paciente específico
+   listSignosByPaciente(cod_usuario: number): Observable<any> {
+    return this.http.get(`${this.API_URL}?action=listSignos&cod_usuario=${cod_usuario}`);
+  }
+
+  // Actualizar un signo vital
+  updateSigno(signo: any): Observable<any> {
+    return this.http.put(`${this.API_URL}?action=updateSigno`, signo, {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+    });
+  }
+
+  // Eliminar un signo vital
+  deleteSigno(cod_signos: number): Observable<any> {
+    return this.http.delete(`${this.API_URL}?action=deleteSigno&cod_signos=${cod_signos}`);
   }
   
 
@@ -72,11 +91,6 @@ addMedicamento(medicamento: any): Observable<any> {
   return this.http.post(`${this.API_URL}?action=addMedicamento`, medicamento, {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
   });
-}
-
-// Obtener lista de pacientes
-listPacientes(): Observable<any> {
-  return this.http.get(`${this.API_URL}?action=listPacientes`);
 }
 
 // Obtener lista de médicos
@@ -99,5 +113,45 @@ listMensajes(userId: number, role: string): Observable<any> {
   getMensajes(userId: number): Observable<any> {
     return this.http.get(`${this.API_URL}?action=listMessages&user_id=${userId}`);
   }
+
+  //medicamento
+  // Obtener medicamentos para un paciente específico
+  listMedicamentosByPaciente(cod_usuario: number): Observable<any> {
+    return this.http.get(`${this.API_URL}?action=listMedicamentos&cod_usuario=${cod_usuario}`);
+  }
+
+  // Actualizar un medicamento
+  updateMedicamento(medicamento: any): Observable<any> {
+    return this.http.put(`${this.API_URL}?action=updateMedicamento`, medicamento, {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+    });
+  }
+
+  // Eliminar un medicamento
+  deleteMedicamento(cod_medicina: number): Observable<any> {
+    return this.http.delete(`${this.API_URL}?action=deleteMedicamento&cod_medicina=${cod_medicina}`);
+  }
+
+  // Obtener el perfil del paciente
+  getPerfil(cod_usuario: number): Observable<any> {
+    return this.http.get(`${this.API_URL}?action=getPerfil&cod_usuario=${cod_usuario}`);
+  }
+
+  // Obtener el perfil del doctor
+  getPerfilMedico(cod_medico: number): Observable<any> {
+    return this.http.get(`${this.API_URL}?action=getPerfilMedico&cod_medico=${cod_medico}`);
+  }
+
+  // Actualizar el perfil
+  updatePerfil(usuario: any): Observable<any> {
+    return this.http.put(`${this.API_URL}?action=updatePerfil`, usuario, {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+    });
+  }
+
+  // Método para actualizar el perfil con imagen
+updateProfileWithImage(formData: FormData): Observable<any> {
+  return this.http.post(`${this.API_URL}?action=updateProfileWithImage`, formData);
+}
 }
 

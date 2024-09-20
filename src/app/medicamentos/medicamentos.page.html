@@ -1,0 +1,67 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/menu"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Medicamentos por Paciente</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab-button routerLink="/add-medicamento">
+    <ion-icon name="add"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
+
+<ion-content>
+  <!-- Seleccionar el paciente -->
+  <ion-item>
+    <ion-label>Selecciona el Paciente</ion-label>
+    <ion-select [(ngModel)]="selectedPaciente" name="selectedPaciente" (ionChange)="loadMedicamentos()" interface="action-sheet">
+      <ion-select-option *ngFor="let paciente of pacientes" [value]="paciente.cod_usuario">
+        {{ paciente.nom_usuario }} {{ paciente.ape_usuario }}
+      </ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <!-- Mostrar los medicamentos del paciente seleccionado -->
+  <ion-list *ngIf="medicamentos.length > 0">
+    <ion-item *ngFor="let medicamento of medicamentos">
+      <ion-label>
+        <h2>{{ medicamento.medicamento }}</h2>
+        <p>Dosis: {{ medicamento.dosis }}</p>
+        <p>Tiempo: {{ medicamento.tiempo }}</p>
+      </ion-label>
+
+      <!-- Botón para editar -->
+      <ion-button fill="outline" (click)="editMedicamento(medicamento)">Editar</ion-button>
+      
+      <!-- Botón para eliminar -->
+      <ion-button fill="outline" color="danger" (click)="deleteMedicamento(medicamento.cod_medicina)">Eliminar</ion-button>
+    </ion-item>
+  </ion-list>
+
+  <!-- Mostrar mensaje si no hay medicamentos -->
+  <ion-item *ngIf="medicamentos.length === 0 && selectedPaciente">
+    <ion-label>No hay medicamentos registrados para este paciente.</ion-label>
+  </ion-item>
+
+  <!-- Formulario para editar el medicamento seleccionado -->
+  <ion-item *ngIf="editingMedicamento">
+    <ion-label position="floating">Medicamento</ion-label>
+    <ion-input [(ngModel)]="editingMedicamento.medicamento" type="text" required></ion-input>
+  </ion-item>
+
+  <ion-item *ngIf="editingMedicamento">
+    <ion-label position="floating">Dosis</ion-label>
+    <ion-input [(ngModel)]="editingMedicamento.dosis" type="text" required></ion-input>
+  </ion-item>
+
+  <ion-item *ngIf="editingMedicamento">
+    <ion-label position="floating">Tiempo</ion-label>
+    <ion-input [(ngModel)]="editingMedicamento.tiempo" type="text" required></ion-input>
+  </ion-item>
+
+  <!-- Botón para guardar cambios -->
+  <ion-button expand="full" *ngIf="editingMedicamento" (click)="updateMedicamento()">Guardar Cambios</ion-button>
+</ion-content>

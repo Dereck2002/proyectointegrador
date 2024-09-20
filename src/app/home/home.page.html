@@ -6,23 +6,28 @@
 
 <ion-content>
   <div class="login-container">
-    <ion-card>
+    <ion-card class="login-card">
       <ion-card-header>
-        <ion-card-title>Iniciar Sesión</ion-card-title>
+        <ion-card-title class="card-title">Iniciar Sesión</ion-card-title>
       </ion-card-header>
 
       <ion-card-content>
-        <ion-item>
+        <ion-item class="custom-input">
           <ion-label position="floating">Usuario</ion-label>
           <ion-input [(ngModel)]="username" type="text" required></ion-input>
         </ion-item>
 
-        <ion-item>
+        <ion-item class="custom-input">
           <ion-label position="floating">Contraseña</ion-label>
           <ion-input [(ngModel)]="password" type="password" required></ion-input>
         </ion-item>
 
-        <ion-button expand="full" (click)="login()">Iniciar Sesión</ion-button>
+        <ion-button expand="full" color="primary" (click)="login()" class="login-button">Iniciar Sesión</ion-button>
+
+        <!-- Botón de Recuperar Contraseña -->
+        <ion-button expand="full" fill="clear" color="secondary" class="forgot-password-button" (click)="recoverPassword()">
+          Recuperar Contraseña
+        </ion-button>
 
         <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
       </ion-card-content>

@@ -1,0 +1,47 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/list-pacientes"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ editingPaciente ? 'Editar Paciente' : 'Agregar Paciente' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Formulario para agregar/editar pacientes -->
+  <form (ngSubmit)="submitPaciente()">
+    <ion-item>
+      <ion-label position="floating">Cédula</ion-label>
+      <ion-input [(ngModel)]="paciente.cedula" name="cedula" type="number" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Nombre</ion-label>
+      <ion-input [(ngModel)]="paciente.nom_usuario" name="nombre" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Apellido</ion-label>
+      <ion-input [(ngModel)]="paciente.ape_usuario" name="apellido" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Teléfono</ion-label>
+      <ion-input [(ngModel)]="paciente.telefono_usuario" name="telefono" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Email</ion-label>
+      <ion-input [(ngModel)]="paciente.email_usuario" name="email" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Clave</ion-label>
+      <ion-input [(ngModel)]="paciente.clave_usuario" type="password" name="clave" required></ion-input>
+    </ion-item>
+
+    <ion-button expand="full" type="submit">
+      {{ editingPaciente ? 'Actualizar Paciente' : 'Agregar Paciente' }}
+    </ion-button>
+  </form>
+</ion-content>

@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/menu"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Mis Medicamentos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Mensaje si no hay medicamentos -->
+  <ion-card *ngIf="medicamentos.length === 0">
+    <ion-card-header>
+      <ion-card-title>No tienes medicamentos recetados</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      El médico no te ha recetado medicamentos por ahora.
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Lista de medicamentos -->
+  <ion-list *ngIf="medicamentos.length > 0">
+    <ion-card *ngFor="let medicamento of medicamentos">
+      <ion-card-header>
+        <ion-card-title>{{ medicamento.medicamento }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p><strong>Dosis:</strong> {{ medicamento.dosis }}</p>
+        <p><strong>Tiempo:</strong> {{ medicamento.tiempo }}</p>
+      </ion-card-content>
+    </ion-card>
+  </ion-list>
+</ion-content>

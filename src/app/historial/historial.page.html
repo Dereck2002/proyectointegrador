@@ -1,8 +1,17 @@
 <ion-header>
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/menu"></ion-back-button>
+    </ion-buttons>
     <ion-title>Historial de Mensajes</ion-title>
   </ion-toolbar>
 </ion-header>
+
+<ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab-button routerLink="/mensajes">
+    <ion-icon name="add"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
 
 <ion-content>
   <!-- Mostrar lista de mensajes -->

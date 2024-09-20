@@ -60,4 +60,7 @@ export class HomePage {
     });
     toast.present();
   }
+  recoverPassword(){
+    this.router.navigate(['/recover']);
+  }
 }

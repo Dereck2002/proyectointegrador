@@ -1,0 +1,86 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/menu"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Signos Vitales</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab-button routerLink="/add-signos">
+    <ion-icon name="add"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
+
+<ion-content>
+  <!-- Seleccionar el paciente -->
+  <ion-item>
+    <ion-label>Selecciona el Paciente</ion-label>
+    <ion-select [(ngModel)]="selectedPaciente" name="selectedPaciente" (ionChange)="loadSignos()" interface="action-sheet">
+      <ion-select-option *ngFor="let paciente of pacientes" [value]="paciente.cod_usuario">
+        {{ paciente.nom_usuario }} {{ paciente.ape_usuario }}
+      </ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <!-- Mostrar los signos del paciente seleccionado -->
+  <ion-list *ngIf="signos.length > 0">
+    <ion-item *ngFor="let signo of signos">
+      <ion-label>
+        <h2>Fecha: {{ signo.fecha }}</h2>
+        <p>Presión: {{ signo.precion }}</p>
+        <p>Glucosa: {{ signo.glucosa }}</p>
+        <p>Peso: {{ signo.peso }}</p>
+        <p>Glicemia: {{ signo.glicemia }}</p>
+        <p>Pulso: {{ signo.pulso }}</p>
+        <p>Temperatura: {{ signo.temperatura }}</p>
+      </ion-label>
+
+      <!-- Botón para editar -->
+      <ion-button fill="outline" (click)="editSigno(signo)">Editar</ion-button>
+      
+      <!-- Botón para eliminar -->
+      <ion-button fill="outline" color="danger" (click)="deleteSigno(signo.cod_signos)">Eliminar</ion-button>
+    </ion-item>
+  </ion-list>
+
+  <!-- Mostrar mensaje si no hay signos vitales -->
+  <ion-item *ngIf="signos.length === 0 && selectedPaciente">
+    <ion-label>No hay signos vitales registrados para este paciente.</ion-label>
+  </ion-item>
+
+  <!-- Formulario para editar signos -->
+  <ion-item *ngIf="editingSigno">
+    <ion-label position="floating">Presión</ion-label>
+    <ion-input [(ngModel)]="editingSigno.precion" type="number" required></ion-input>
+  </ion-item>
+
+  <ion-item *ngIf="editingSigno">
+    <ion-label position="floating">Glucosa</ion-label>
+    <ion-input [(ngModel)]="editingSigno.glucosa" type="number" required></ion-input>
+  </ion-item>
+
+  <ion-item *ngIf="editingSigno">
+    <ion-label position="floating">Peso</ion-label>
+    <ion-input [(ngModel)]="editingSigno.peso" type="number" required></ion-input>
+  </ion-item>
+
+  <ion-item *ngIf="editingSigno">
+    <ion-label position="floating">Glicemia</ion-label>
+    <ion-input [(ngModel)]="editingSigno.glicemia" type="number" required></ion-input>
+  </ion-item>
+
+  <ion-item *ngIf="editingSigno">
+    <ion-label position="floating">Pulso</ion-label>
+    <ion-input [(ngModel)]="editingSigno.pulso" type="number" required></ion-input>
+  </ion-item>
+
+  <ion-item *ngIf="editingSigno">
+    <ion-label position="floating">Temperatura</ion-label>
+    <ion-input [(ngModel)]="editingSigno.temperatura" type="number" required></ion-input>
+  </ion-item>
+
+  <!-- Botón para guardar cambios -->
+  <ion-button expand="full" *ngIf="editingSigno" (click)="updateSigno()">Guardar Cambios</ion-button>
+</ion-content>

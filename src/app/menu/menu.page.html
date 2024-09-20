@@ -1,6 +1,11 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>Menú</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="mensaje()">
+        <ion-icon slot="icon-only" name="mail"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -9,34 +14,34 @@
   <ion-list>
     <ion-menu-toggle auto-hide="false">
 
-      <!-- Enlace a la lista de pacientes -->
-      <ion-item routerLink="/list-pacientes" routerDirection="root">
+      <!-- Enlace a la lista de pacientes (solo visible para médicos) -->
+      <ion-item routerLink="/list-pacientes" routerDirection="root" *ngIf="rol === 'medico'">
         <ion-icon name="people" slot="start"></ion-icon>
         <ion-label>Pacientes</ion-label>
       </ion-item>
 
-      <!-- Enlace para agregar signos vitales -->
+      <!-- Enlace para agregar signos vitales (visible para todos) -->
       <ion-item (click)="signos()">
         <ion-icon name="pulse" slot="start"></ion-icon>
         <ion-label>Agregar Signos Vitales</ion-label>
       </ion-item>
 
-      <!-- Enlace para agregar medicamento -->
-      <ion-item (click)="medicamento()">
+      <!-- Enlace para agregar medicamento (solo visible para médicos) -->
+      <ion-item (click)="medicamento()" *ngIf="rol === 'medico'">
         <ion-icon name="medkit" slot="start"></ion-icon>
-        <ion-label>Agregar Medicamento</ion-label>
+        <ion-label>Medicamentos</ion-label>
       </ion-item>
 
-      <!-- Enlace a la página de mensajes -->
-      <ion-item (click)="mensaje()">
-        <ion-icon name="mail" slot="start"></ion-icon>
-        <ion-label>Mensajes</ion-label>
+      <!-- Enlace para agregar medicamento (solo visible para pacientes) -->
+      <ion-item (click)="medicamentop()" *ngIf="rol === 'paciente'">
+        <ion-icon name="medkit" slot="start"></ion-icon>
+        <ion-label>Medicamentos</ion-label>
       </ion-item>
 
-      <!-- Enlace para ver el historial -->
+      <!-- Enlace para ver el perfil (visible para todos) -->
       <ion-item (click)="openHistorial()">
         <ion-icon name="time-outline" slot="start"></ion-icon>
-        <ion-label>Historial</ion-label>
+        <ion-label>Perfil</ion-label>
       </ion-item>
 
     </ion-menu-toggle>

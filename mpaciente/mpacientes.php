@@ -62,9 +62,9 @@ if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'login') {
     $stmt->close();
 }
 
-// LISTAR PACIENTES: Listar todos los pacientes
-if ($method == 'GET' && isset($_GET['action']) && $_GET['action'] == 'listPatients') {
-    $query = "SELECT * FROM usuario";
+// LISTAR PACIENTES
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] == 'listPacientes') {
+    $query = "SELECT cod_usuario, cedula, nom_usuario, ape_usuario, telefono_usuario, email_usuario FROM usuario";
     $result = $mysqli->query($query);
     $patients = [];
 
@@ -75,16 +75,18 @@ if ($method == 'GET' && isset($_GET['action']) && $_GET['action'] == 'listPatien
     echo json_encode($patients);
 }
 
-// AGREGAR PACIENTE: Insertar un nuevo paciente
+
+// AGREGAR PACIENTE
 if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'addPatient') {
+    $cedula = $input['cedula'];
     $nombre = $input['nom_usuario'];
     $apellido = $input['ape_usuario'];
     $telefono = $input['telefono_usuario'];
     $email = $input['email_usuario'];
     $clave = $input['clave_usuario'];
 
-    $stmt = $mysqli->prepare("INSERT INTO usuario (nom_usuario, ape_usuario, telefono_usuario, email_usuario, clave_usuario) VALUES (?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssss", $nombre, $apellido, $telefono, $email, $clave);
+    $stmt = $mysqli->prepare("INSERT INTO usuario (cedula, nom_usuario, ape_usuario, telefono_usuario, email_usuario, clave_usuario) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("ssssss", $cedula, $nombre, $apellido, $telefono, $email, $clave);
     
     if ($stmt->execute()) {
         echo json_encode(["message" => "Paciente agregado exitosamente."]);
@@ -95,17 +97,18 @@ if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'addPatien
     $stmt->close();
 }
 
-// EDITAR PACIENTE: Actualizar un paciente existente
+// ACTUALIZAR PACIENTE
 if ($method == 'PUT' && isset($_GET['action']) && $_GET['action'] == 'editPatient') {
     $id = $input['cod_usuario'];
+    $cedula = $input['cedula'];
     $nombre = $input['nom_usuario'];
     $apellido = $input['ape_usuario'];
     $telefono = $input['telefono_usuario'];
     $email = $input['email_usuario'];
     $clave = $input['clave_usuario'];
 
-    $stmt = $mysqli->prepare("UPDATE usuario SET nom_usuario = ?, ape_usuario = ?, telefono_usuario = ?, email_usuario = ?, clave_usuario = ? WHERE cod_usuario = ?");
-    $stmt->bind_param("sssssi", $nombre, $apellido, $telefono, $email, $clave, $id);
+    $stmt = $mysqli->prepare("UPDATE usuario SET cedula = ?, nom_usuario = ?, ape_usuario = ?, telefono_usuario = ?, email_usuario = ?, clave_usuario = ? WHERE cod_usuario = ?");
+    $stmt->bind_param("ssssssi", $cedula, $nombre, $apellido, $telefono, $email, $clave, $id);
     
     if ($stmt->execute()) {
         echo json_encode(["message" => "Paciente actualizado exitosamente."]);
@@ -154,6 +157,68 @@ if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'addSignos
 
     $stmt->close();
 }
+
+// LISTAR SIGNOS VITALES POR PACIENTE
+if ($method == 'GET' && isset($_GET['action']) && $_GET['action'] == 'listSignos' && isset($_GET['cod_usuario'])) {
+    $cod_usuario = $_GET['cod_usuario'];
+    
+    $stmt = $mysqli->prepare("SELECT * FROM signos WHERE cod_usuario = ?");
+    $stmt->bind_param("i", $cod_usuario);
+    $stmt->execute();
+    
+    $result = $stmt->get_result();
+    $signos = [];
+
+    while ($row = $result->fetch_assoc()) {
+        $signos[] = $row;
+    }
+
+    echo json_encode($signos);
+    $stmt->close();
+}
+
+// ACTUALIZAR SIGNO VITAL
+if ($method == 'PUT' && isset($_GET['action']) && $_GET['action'] == 'updateSigno') {
+    $input = json_decode(file_get_contents('php://input'), true);
+
+    $precion = $input['precion'];
+    $glucosa = $input['glucosa'];
+    $peso = $input['peso'];
+    $glicemia = $input['glicemia'];
+    $pulso = $input['pulso'];
+    $temperatura = $input['temperatura'];
+    $cod_signos = $input['cod_signos'];
+
+    $stmt = $mysqli->prepare("UPDATE signos SET precion = ?, glucosa = ?, peso = ?, glicemia = ?, pulso = ?, temperatura = ? WHERE cod_signos = ?");
+    $stmt->bind_param("iiiiiii", $precion, $glucosa, $peso, $glicemia, $pulso, $temperatura, $cod_signos);
+
+    if ($stmt->execute()) {
+        echo json_encode(["message" => "Signo vital actualizado exitosamente."]);
+    } else {
+        echo json_encode(["message" => "Error al actualizar el signo vital."]);
+    }
+
+    $stmt->close();
+}
+
+// ELIMINAR SIGNO VITAL
+if ($method == 'DELETE' && isset($_GET['action']) && $_GET['action'] == 'deleteSigno' && isset($_GET['cod_signos'])) {
+    $cod_signos = $_GET['cod_signos'];
+
+    $stmt = $mysqli->prepare("DELETE FROM signos WHERE cod_signos = ?");
+    $stmt->bind_param("i", $cod_signos);
+
+    if ($stmt->execute()) {
+        echo json_encode(["message" => "Signo vital eliminado exitosamente."]);
+    } else {
+        echo json_encode(["message" => "Error al eliminar el signo vital."]);
+    }
+
+    $stmt->close();
+}
+
+
+
 // AGREGAR MEDICAMENTO
 if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'addMedicamento') {
     $medicamento = $input['medicamento'];
@@ -177,6 +242,63 @@ if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'addMedica
     } else {
         echo json_encode(["message" => "Error: Faltan campos requeridos."]);
     }
+}
+
+// LISTAR MEDICAMENTOS POR PACIENTE
+if ($method == 'GET' && isset($_GET['action']) && $_GET['action'] == 'listMedicamentos' && isset($_GET['cod_usuario'])) {
+    $cod_usuario = $_GET['cod_usuario'];
+    
+    $stmt = $mysqli->prepare("SELECT * FROM medicina WHERE cod_usuario = ?");
+    $stmt->bind_param("i", $cod_usuario);
+    $stmt->execute();
+    
+    $result = $stmt->get_result();
+    $medicamentos = [];
+
+    while ($row = $result->fetch_assoc()) {
+        $medicamentos[] = $row;
+    }
+
+    echo json_encode($medicamentos);
+    $stmt->close();
+}
+
+
+// ACTUALIZAR MEDICAMENTO
+if ($method == 'PUT' && isset($_GET['action']) && $_GET['action'] == 'updateMedicamento') {
+    $input = json_decode(file_get_contents('php://input'), true);
+
+    $medicamento = $input['medicamento'];
+    $dosis = $input['dosis'];
+    $tiempo = $input['tiempo'];
+    $cod_medicina = $input['cod_medicina'];
+
+    $stmt = $mysqli->prepare("UPDATE medicina SET medicamento = ?, dosis = ?, tiempo = ? WHERE cod_medicina = ?");
+    $stmt->bind_param("sssi", $medicamento, $dosis, $tiempo, $cod_medicina);
+
+    if ($stmt->execute()) {
+        echo json_encode(["message" => "Medicamento actualizado exitosamente."]);
+    } else {
+        echo json_encode(["message" => "Error al actualizar el medicamento."]);
+    }
+
+    $stmt->close();
+}
+
+// ELIMINAR MEDICAMENTO
+if ($method == 'DELETE' && isset($_GET['action']) && $_GET['action'] == 'deleteMedicamento' && isset($_GET['cod_medicina'])) {
+    $cod_medicina = $_GET['cod_medicina'];
+
+    $stmt = $mysqli->prepare("DELETE FROM medicina WHERE cod_medicina = ?");
+    $stmt->bind_param("i", $cod_medicina);
+
+    if ($stmt->execute()) {
+        echo json_encode(["message" => "Medicamento eliminado exitosamente."]);
+    } else {
+        echo json_encode(["message" => "Error al eliminar el medicamento."]);
+    }
+
+    $stmt->close();
 }
 
 
@@ -242,18 +364,89 @@ if ($method == 'GET' && isset($_GET['action']) && $_GET['action'] == 'listMedico
     echo json_encode($medicos);
 }
 
-// LISTAR PACIENTES
-if ($method == 'GET' && isset($_GET['action']) && $_GET['action'] == 'listPacientes') {
-    $query = "SELECT cod_usuario, nom_usuario, ape_usuario FROM usuario";
-    $result = $mysqli->query($query);
-    $pacientes = [];
+// OBTENER PERFIL DEL USUARIO
+if ($method == 'GET' && isset($_GET['action']) && $_GET['action'] == 'getPerfil' && isset($_GET['cod_usuario'])) {
+    $id = $_GET['cod_usuario'];
 
-    while ($row = $result->fetch_assoc()) {
-        $pacientes[] = $row;
-    }
+    $stmt = $mysqli->prepare("SELECT cod_usuario, cedula, nom_usuario, ape_usuario, telefono_usuario, email_usuario, clave_usuario FROM usuario WHERE cod_usuario = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $user = $result->fetch_assoc();
 
-    echo json_encode($pacientes);
+    echo json_encode($user);
+
+    $stmt->close();
 }
+
+// OBTENER PERFIL DEL DOCTOR
+if ($method == 'GET' && isset($_GET['action']) && $_GET['action'] == 'getPerfilMedico' && isset($_GET['cod_medico'])) {
+    $id = $_GET['cod_medico'];
+
+    $stmt = $mysqli->prepare("SELECT cod_medico, cedula, nom_medico AS nom_usuario, ape_medico AS ape_usuario, telefono_medico AS telefono_usuario, email_medico AS email_usuario, clave_medico AS clave_usuario FROM medico WHERE cod_medico = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $doctor = $result->fetch_assoc();
+
+    echo json_encode($doctor);
+
+    $stmt->close();
+}
+
+// ACTUALIZAR PERFIL CON IMAGEN
+if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'updateProfileWithImage') {
+    $rol = $_POST['rol']; // 'medico' o 'paciente'
+    $id = $_POST['id'];
+
+    // Verificar si se subió una imagen
+    if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
+        $fileTmpPath = $_FILES['imagen']['tmp_name'];
+        $fileName = $_FILES['imagen']['name'];
+        
+        // Ruta absoluta del directorio de subida en el servidor
+        $uploadFileDir = './uploads/';
+        
+        // Verificar si el directorio 'uploads' existe, si no, crear uno
+        if (!is_dir($uploadFileDir)) {
+            mkdir($uploadFileDir, 0777, true);  // Crear la carpeta con permisos de escritura
+        }
+
+        // Ruta completa en el servidor para guardar la imagen
+        $dest_path = $uploadFileDir . $fileName;
+
+        // Mover la imagen subida al directorio de destino
+        if (move_uploaded_file($fileTmpPath, $dest_path)) {
+            // Ruta relativa para acceder a la imagen desde el navegador
+            $relativePath = '/uploads/' . $fileName;
+
+            if ($rol === 'medico') {
+                // Actualizar imagen del médico en la base de datos con la ruta relativa
+                $stmt = $mysqli->prepare("UPDATE medico SET imagen_medico = ? WHERE cod_medico = ?");
+                $stmt->bind_param('si', $relativePath, $id);
+            } else {
+                // Actualizar imagen del paciente en la base de datos con la ruta relativa
+                $stmt = $mysqli->prepare("UPDATE usuario SET imagen_usuario = ? WHERE cod_usuario = ?");
+                $stmt->bind_param('si', $relativePath, $id);
+            }
+
+            if ($stmt->execute()) {
+                echo json_encode(["message" => "Perfil actualizado exitosamente."]);
+            } else {
+                echo json_encode(["message" => "Error al actualizar el perfil."]);
+            }
+
+            $stmt->close();
+        } else {
+            echo json_encode(["message" => "Error al mover la imagen al directorio de destino."]);
+        }
+    } else {
+        echo json_encode(["message" => "No se ha seleccionado una imagen."]);
+    }
+}
+
+
+
 
 // Cerrar la conexión a la base de datos
 $mysqli->close();

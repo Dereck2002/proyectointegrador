@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ServisioService } from '../servisio/servisio.service';
+import { AlertController, ToastController } from '@ionic/angular';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-list-pacientes',
@@ -9,25 +11,74 @@ import { ServisioService } from '../servisio/servisio.service';
 export class ListPacientesPage implements OnInit {
   patients: any[] = [];
 
-  constructor(private servisioService: ServisioService) { }
+  constructor(
+    private servisioService: ServisioService,
+    private alertController: AlertController,
+    private toastController: ToastController,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.loadPatients();
   }
 
+  // Cargar la lista de pacientes
   loadPatients() {
-    this.servisioService.listPatients().subscribe(data => {
+    this.servisioService.listPacientes().subscribe(data => {
       this.patients = data;
+    }, error => {
+      console.error('Error al cargar la lista de pacientes:', error);
     });
   }
 
+  // Función para editar un paciente
   editPatient(patient: any) {
-    // Lógica para redirigir a la edición del paciente
+    this.router.navigate(['/pacientes'], { state: { patient } });  // Redirige con los datos del paciente
   }
 
-  deletePatient(id: number) {
-    this.servisioService.deletePatient(id).subscribe(() => {
-      this.loadPatients();
+  // Función para eliminar un paciente con confirmación
+  async confirmDelete(id: number) {
+    const alert = await this.alertController.create({
+      header: 'Confirmar eliminación',
+      message: '¿Estás seguro de que deseas eliminar este paciente?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          handler: () => {
+            console.log('Eliminación cancelada.');
+          }
+        },
+        {
+          text: 'Eliminar',
+          handler: () => {
+            this.deletePatient(id);
+          }
+        }
+      ]
     });
+
+    await alert.present();
+  }
+
+  // Función para eliminar un paciente
+  deletePatient(id: number) {
+    this.servisioService.deletePatient(id).subscribe(async () => {
+      this.loadPatients();  // Recargar la lista de pacientes
+      await this.showToast('Paciente eliminado exitosamente.');
+    }, async error => {
+      await this.showToast('Error al eliminar el paciente.', 'danger');
+    });
+  }
+
+  // Función para mostrar notificación (toast)
+  async showToast(message: string, color: string = 'success') {
+    const toast = await this.toastController.create({
+      message: message,
+      duration: 2000,  // Mostrar por 2 segundos
+      position: 'bottom',
+      color: color
+    });
+    toast.present();
   }
 }

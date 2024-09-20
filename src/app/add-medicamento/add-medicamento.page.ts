@@ -17,6 +17,7 @@ export class AddMedicamentoPage implements OnInit {
   };
 
   pacientes: any[] = [];  // Lista de pacientes
+  navCtrl: any;
 
   constructor(private servisioService: ServisioService, private router: Router) {}
 
@@ -35,7 +36,7 @@ export class AddMedicamentoPage implements OnInit {
 
   // Función para cargar la lista de pacientes
   loadPacientes() {
-    this.servisioService.listPatients().subscribe(response => {
+    this.servisioService.listPacientes().subscribe(response => {
       this.pacientes = response;
     }, error => {
       console.error('Error al cargar la lista de pacientes:', error);
@@ -53,9 +54,10 @@ export class AddMedicamentoPage implements OnInit {
     // Enviar los datos al backend
     this.servisioService.addMedicamento(this.medicamento).subscribe(response => {
       console.log('Medicamento añadido:', response);
-      this.router.navigate(['/menu']);  // Navegar al menú después de guardar
+      this.router.navigate(['/medicamentos']);  // Navegar al menú después de guardar
     }, error => {
       console.error('Error al enviar el medicamento:', error);
     });
   }
+  
 }

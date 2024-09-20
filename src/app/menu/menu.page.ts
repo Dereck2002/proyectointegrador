@@ -6,23 +6,37 @@ import { NavController } from '@ionic/angular';
   templateUrl: './menu.page.html',
   styleUrls: ['./menu.page.scss'],
 })
-export class MenuPage implements OnInit  {
+export class MenuPage implements OnInit {
+  rol: string | null = null; // Variable para almacenar el rol del usuario
 
   constructor(private navCtrl: NavController) { }
 
   ngOnInit() {
+    this.rol = localStorage.getItem('rol');  // Obtener el rol del localStorage
   }
   
-signos(){
-  this.navCtrl.navigateForward('/add-signos');
-}
-medicamento(){
-  this.navCtrl.navigateForward('/add-medicamento');
-}
-mensaje(){
-  this.navCtrl.navigateForward('/mensajes');
-}
-openHistorial(){
-  this.navCtrl.navigateForward('/historial');
-}
+  // Navegar a la página de signos
+  signos() {
+    this.navCtrl.navigateForward('/signos');
+  }
+
+  // Navegar a la página de medicamentos
+  medicamento() {
+    this.navCtrl.navigateForward('/medicamentos');
+  }
+
+  // Navegar a la página de medicamentos pacientes
+  medicamentop() {
+    this.navCtrl.navigateForward('/medicamentosp');
+  }
+
+  // Navegar a la página de mensajes
+  mensaje() {
+    this.navCtrl.navigateForward('/historial');
+  }
+
+  // Navegar al perfil
+  openHistorial() {
+    this.navCtrl.navigateForward('/perfil');
+  }
 }

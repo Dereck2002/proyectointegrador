@@ -1,24 +1,39 @@
 <ion-header>
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/menu"></ion-back-button>
+    </ion-buttons>
     <ion-title>Lista de Pacientes</ion-title>
   </ion-toolbar>
 </ion-header>
 
+<ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab-button routerLink="/pacientes">
+    <ion-icon name="add"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
+
 <ion-content>
-  <ion-list>
-    <!-- Itera sobre la lista de pacientes y muestra sus datos -->
+  <!-- Lista de pacientes -->
+  <ion-list *ngIf="patients.length > 0">
     <ion-item *ngFor="let patient of patients">
       <ion-label>
         <h2>{{ patient.nom_usuario }} {{ patient.ape_usuario }}</h2>
+        <p>Cédula: {{ patient.cedula }}</p>
         <p>Teléfono: {{ patient.telefono_usuario }}</p>
         <p>Email: {{ patient.email_usuario }}</p>
       </ion-label>
 
-      <!-- Botón para editar el paciente -->
-      <ion-button color="primary" (click)="editPatient(patient)">Editar</ion-button>
+      <!-- Botón para editar -->
+      <ion-button fill="outline" (click)="editPatient(patient)">Editar</ion-button>
 
-      <!-- Botón para eliminar el paciente -->
-      <ion-button color="danger" (click)="deletePatient(patient.cod_usuario)">Eliminar</ion-button>
+      <!-- Botón para eliminar -->
+      <ion-button fill="outline" color="danger" (click)="confirmDelete(patient.cod_usuario)">Eliminar</ion-button>
     </ion-item>
   </ion-list>
+
+  <!-- Mensaje si no hay pacientes -->
+  <ion-item *ngIf="patients.length === 0">
+    <ion-label>No hay pacientes registrados.</ion-label>
+  </ion-item>
 </ion-content>

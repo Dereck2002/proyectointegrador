@@ -35,6 +35,26 @@ const routes: Routes = [
     path: 'historial',
     loadChildren: () => import('./historial/historial.module').then( m => m.HistorialPageModule)
   },
+  {
+    path: 'medicamentos',
+    loadChildren: () => import('./medicamentos/medicamentos.module').then( m => m.MedicamentosPageModule)
+  },
+  {
+    path: 'signos',
+    loadChildren: () => import('./signos/signos.module').then( m => m.SignosPageModule)
+  },
+  {
+    path: 'pacientes',
+    loadChildren: () => import('./pacientes/pacientes.module').then( m => m.PacientesPageModule)
+  },
+  {
+    path: 'perfil',
+    loadChildren: () => import('./perfil/perfil.module').then( m => m.PerfilPageModule)
+  },
+  {
+    path: 'medicamentosp',
+    loadChildren: () => import('./medicamentosp/medicamentosp.module').then( m => m.MedicamentospPageModule)
+  },
 ];
 
 @NgModule({

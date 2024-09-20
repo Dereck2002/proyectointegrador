@@ -1,0 +1,86 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/menu"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Perfil</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-grid>
+    <ion-row class="ion-justify-content-center">
+      <!-- Imagen de perfil -->
+      <ion-col size="auto">
+        <ion-avatar class="ion-margin">
+          <img *ngIf="usuario.imagen_usuario || usuario.imagen_medico; else defaultImage"
+               [src]="'http://localhost/proyectointegrador/mpaciente' + (usuario.imagen_usuario || usuario.imagen_medico)" 
+               alt="Imagen de perfil" 
+               style="width: 9000px; height: 70px; border-radius: 50%;">
+          
+          <!-- Imagen por defecto -->
+          <ng-template #defaultImage>
+            <img src="assets/img/clinud.jpg" 
+                 alt="Imagen de perfil por defecto" 
+                 style="width: 9000px; height: 70px; border-radius: 50%;">
+          </ng-template>
+        </ion-avatar>
+      </ion-col>
+    </ion-row>
+
+    <!-- Botón para seleccionar una nueva imagen -->
+    <ion-row class="ion-justify-content-center">
+      <ion-col size="12" size-md="6">
+        <ion-item>
+          <ion-label position="stacked">Seleccionar nueva imagen</ion-label>
+          <input type="file" (change)="onFileSelected($event)" accept="image/*">
+        </ion-item>
+      </ion-col>
+    </ion-row>
+
+    <!-- Botón para actualizar la imagen -->
+    <ion-row class="ion-justify-content-center">
+      <ion-col size="12" size-md="6">
+        <ion-button expand="block" color="secondary" (click)="updateProfile()">Actualizar Imagen</ion-button>
+      </ion-col>
+    </ion-row>
+
+    <!-- Campos de información del usuario o médico -->
+    <ion-row class="ion-justify-content-center">
+      <ion-col size="12" size-md="6">
+        <ion-item>
+          <ion-label position="stacked">Nombre</ion-label>
+          <ion-input [(ngModel)]="usuario.nom_usuario"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Apellido</ion-label>
+          <ion-input [(ngModel)]="usuario.ape_usuario"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Teléfono</ion-label>
+          <ion-input [(ngModel)]="usuario.telefono_usuario"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Email</ion-label>
+          <ion-input [(ngModel)]="usuario.email_usuario"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Contraseña</ion-label>
+          <ion-input [(ngModel)]="usuario.clave_usuario" type="password"></ion-input>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+
+    <!-- Botón para actualizar todos los datos -->
+    <ion-row class="ion-justify-content-center">
+      <ion-col size="12" size-md="6">
+        <ion-button expand="block" color="primary" (click)="updateProfile()">Actualizar Perfil</ion-button>
+        <ion-button expand="block" color="primary" (click)="csesion()">Cerrar Sesion</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

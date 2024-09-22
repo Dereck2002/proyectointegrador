@@ -661,6 +661,22 @@ if ($method == 'GET' && isset($_GET['action']) && $_GET['action'] == 'listAdmins
     echo json_encode($administradores);
 }
 
+// OBTENER PERFIL DEL ADMINISTRADOR
+if ($method == 'GET' && isset($_GET['action']) && $_GET['action'] == 'getPerfilAdmin' && isset($_GET['cod_admin'])) {
+    $cod_admin = $_GET['cod_admin'];
+    
+    $stmt = $mysqli->prepare("SELECT cod_medico_admin AS cod_admin, nom_medico AS nom_usuario, ape_medico AS ape_usuario, telefono_medico AS telefono_usuario, email_medico AS email_usuario, clave_medico AS clave_usuario FROM administrador WHERE cod_medico_admin = ?");
+    $stmt->bind_param("i", $cod_admin);
+    $stmt->execute();
+    
+    $result = $stmt->get_result();
+    $admin = $result->fetch_assoc();
+    
+    echo json_encode($admin);
+    $stmt->close();
+}
+
+
 }
 
 

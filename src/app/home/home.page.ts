@@ -31,12 +31,20 @@ export class HomePage {
             } else if (response.role === 'paciente') {
               userData = { cod_usuario: response.cod_usuario };
             } else if (response.role === 'administrador') {
-              userData = { cod_admin: response.cod_admin };
+              // Asegurarse de que el ID del administrador no sea null
+              if (response.cod_admin) {
+                userData = { cod_admin: response.cod_admin };
+              } else {
+                console.error('No se recibió el ID de administrador');
+              }
             }
   
-            this.servisioService.storeUserRoleAndData(response.role, userData);
-            await this.showToast('Inicio de sesión exitoso.');
-            this.router.navigate(['/menu']);
+            // Guardar los datos del rol y el ID en localStorage
+            if (userData) {
+              this.servisioService.storeUserRoleAndData(response.role, userData);
+              await this.showToast('Inicio de sesión exitoso.');
+              this.router.navigate(['/menu']);
+            }
           } else {
             this.errorMessage = 'Credenciales incorrectas. Inténtalo de nuevo.';
           }
@@ -48,8 +56,7 @@ export class HomePage {
     } else {
       this.errorMessage = 'Por favor, ingrese su usuario y contraseña.';
     }
-  }
-  
+  }  
   
   // Función para mostrar un mensaje toast
   async showToast(message: string) {

@@ -9,8 +9,7 @@ import { NavController } from '@ionic/angular';
   styleUrls: ['./perfil.page.scss'],
 })
 export class PerfilPage implements OnInit {
-  usuario: any = {};  // Aquí se almacenan los datos del usuario, médico o administrador
-  selectedFile: File | null = null;  // Imagen seleccionada
+  usuario: any = null;  // Iniciar como null para evitar errores al acceder antes de cargar
   rol: string | null = ''; // Rol del usuario ('medico', 'paciente', o 'administrador')
 
   constructor(
@@ -21,21 +20,21 @@ export class PerfilPage implements OnInit {
 
   ngOnInit() {
     this.rol = localStorage.getItem('role');  // Obtener el rol del localStorage
-
-    // Obtener los datos del usuario logueado
+    
+    // Obtener los datos del usuario logueado desde el localStorage
     const loggedUserData = this.servisioService.getLoggedUserData();
     
-    // Depurar para verificar si loggedUserData contiene el ID del usuario
+    // Depurar para verificar si loggedUserData contiene el ID del administrador, médico o paciente
     console.log('Logged User Data:', loggedUserData);
     
     const id = this.rol === 'medico'
       ? loggedUserData?.cod_medico
       : this.rol === 'administrador'
-      ? loggedUserData?.cod_admin
+      ? loggedUserData?.cod_admin  // Obtener el ID de administrador
       : loggedUserData?.cod_usuario;
 
     if (id) {
-      this.loadPerfil(id);  // Cargar el perfil del médico, administrador o paciente
+      this.loadPerfil(id);  // Cargar el perfil del administrador, médico o paciente
     } else {
       this.showToast('No se encontró el ID del usuario.', 'danger');
     }
@@ -44,56 +43,61 @@ export class PerfilPage implements OnInit {
   // Función para cargar el perfil dependiendo del rol
   loadPerfil(id: number) {
     if (this.rol === 'medico') {
-      this.servisioService.getPerfilMedico(id).subscribe((response) => {
-        this.usuario = response;
-      });
+      this.servisioService.getPerfilMedico(id).subscribe(
+        (response) => {
+          this.usuario = response;
+          console.log('Datos del médico cargados:', response);
+        },
+        (error) => {
+          this.showToast('Error al cargar el perfil del médico.', 'danger');
+        }
+      );
     } else if (this.rol === 'administrador') {
-      this.servisioService.getPerfilAdministrador(id).subscribe((response) => {
-        this.usuario = response;
-      });
+      // Lógica para administrador (similar al médico)
+      this.servisioService.getPerfilAdministrador(id).subscribe(
+        (response) => {
+          this.usuario = response;
+          console.log('Datos del administrador cargados:', response);
+        },
+        (error) => {
+          this.showToast('Error al cargar el perfil del administrador.', 'danger');
+        }
+      );
     } else {
-      this.servisioService.getPerfil(id).subscribe((response) => {
-        this.usuario = response;
-      });
+      this.servisioService.getPerfil(id).subscribe(
+        (response) => {
+          this.usuario = response;
+          console.log('Datos del usuario cargados:', response);
+        },
+        (error) => {
+          this.showToast('Error al cargar el perfil del usuario.', 'danger');
+        }
+      );
     }
   }
 
-  // Manejar la selección de archivos
-  onFileSelected(event: any) {
-    this.selectedFile = event.target.files[0];
-  }
-
-  // Actualizar el perfil con imagen y datos
+  // Actualizar el perfil con los datos cargados
   updateProfile() {
-    const formData = new FormData();
-    const userId = this.rol === 'medico'
-      ? this.usuario.cod_medico
-      : this.rol === 'administrador'
-      ? this.usuario.cod_admin
-      : this.usuario.cod_usuario;
+    if (this.usuario) {
+      const userId = this.rol === 'medico'
+        ? this.usuario.cod_medico
+        : this.rol === 'administrador'
+        ? this.usuario.cod_admin
+        : this.usuario.cod_usuario;
 
-    formData.append('id', userId);
-    formData.append('rol', this.rol as string);
-    formData.append('nombre', this.usuario.nom_usuario);
-    formData.append('apellido', this.usuario.ape_usuario);
-    formData.append('telefono', this.usuario.telefono_usuario);
-    formData.append('email', this.usuario.email_usuario);
-    formData.append('clave', this.usuario.clave_usuario);
-
-    if (this.selectedFile) {
-      formData.append('imagen', this.selectedFile);
+      // Actualizar datos del usuario en el backend (aquí se pueden agregar validaciones)
+      this.servisioService.updatePerfil(this.usuario).subscribe(
+        async (response) => {
+          await this.showToast('Perfil actualizado correctamente.');
+          this.loadPerfil(userId);  // Recargar el perfil
+        },
+        async (error) => {
+          await this.showToast('Error al actualizar el perfil.', 'danger');
+        }
+      );
+    } else {
+      this.showToast('No se ha podido cargar el perfil.', 'danger');
     }
-
-    // Enviar la solicitud al backend
-    this.servisioService.updateProfileWithImage(formData).subscribe(
-      async (response) => {
-        await this.showToast('Perfil actualizado correctamente.');
-        this.loadPerfil(userId); // Recargar el perfil
-      },
-      async (error) => {
-        await this.showToast('Error al actualizar el perfil.', 'danger');
-      }
-    );
   }
 
   // Mostrar un mensaje (toast)

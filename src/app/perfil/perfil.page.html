@@ -16,19 +16,17 @@
           <img *ngIf="usuario.imagen_usuario || usuario.imagen_medico; else defaultImage"
                [src]="'http://localhost/proyectointegrador/mpaciente' + (usuario.imagen_usuario || usuario.imagen_medico)" 
                alt="Imagen de perfil" 
-               style="width: 9000px; height: 70px; border-radius: 50%;">
+               style="width: 70px; height: 70px; border-radius: 50%;">
           
           <!-- Imagen por defecto -->
           <ng-template #defaultImage>
             <img src="assets/img/clinud.jpg" 
                  alt="Imagen de perfil por defecto" 
-                 style="width: 9000px; height: 70px; border-radius: 50%;">
+                 style="width: 70px; height: 70px; border-radius: 50%;">
           </ng-template>
         </ion-avatar>
       </ion-col>
     </ion-row>
-
-   
 
     <!-- Campos de información del usuario o médico -->
     <ion-row class="ion-justify-content-center">
@@ -64,7 +62,7 @@
     <ion-row class="ion-justify-content-center">
       <ion-col size="12" size-md="6">
         <ion-button expand="block" color="primary" (click)="updateProfile()">Actualizar Perfil</ion-button>
-        <ion-button expand="block" color="primary" (click)="csesion()">Cerrar Sesion</ion-button>
+        <ion-button expand="block" color="primary" (click)="csesion()">Cerrar Sesión</ion-button>
       </ion-col>
     </ion-row>
   </ion-grid>

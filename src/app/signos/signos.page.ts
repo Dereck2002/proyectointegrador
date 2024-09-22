@@ -9,9 +9,12 @@ import { AlertController, ToastController } from '@ionic/angular';
 })
 export class SignosPage implements OnInit {
   pacientes: any[] = [];
+  filteredPacientes: any[] = [];  // Pacientes filtrados por la búsqueda
   signos: any[] = [];
   selectedPaciente: number | null = null;
   editingSigno: any = null;  // Signo vital que se está editando
+  rol: string | null = '';  // Rol del usuario logueado
+  searchTerm: string = '';  // Término de búsqueda
 
   constructor(
     private servisioService: ServisioService,
@@ -20,16 +23,31 @@ export class SignosPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.loadPacientes();  // Cargar la lista de pacientes al inicio
+    this.rol = localStorage.getItem('role');  // Obtener el rol desde el localStorage
+    if (this.rol === 'paciente') {
+      this.loadSignosPaciente();  // Cargar los signos solo del paciente logueado
+    } else if (this.rol === 'medico') {
+      this.loadPacientes();  // Cargar la lista de pacientes para el médico
+    }
   }
 
-  // Cargar la lista de pacientes
+  // Cargar la lista de pacientes (solo para el médico)
   loadPacientes() {
     this.servisioService.listPacientes().subscribe(response => {
       this.pacientes = response;
+      this.filteredPacientes = [...this.pacientes];  // Inicialmente, mostrar todos los pacientes
     }, error => {
       console.error('Error al cargar la lista de pacientes:', error);
     });
+  }
+
+  // Filtrar los pacientes según el término de búsqueda
+  filterPacientes() {
+    const searchTermLower = this.searchTerm.toLowerCase();
+    this.filteredPacientes = this.pacientes.filter(paciente =>
+      paciente.nom_usuario.toLowerCase().includes(searchTermLower) ||
+      paciente.ape_usuario.toLowerCase().includes(searchTermLower)
+    );
   }
 
   // Cargar los signos vitales del paciente seleccionado
@@ -39,6 +57,20 @@ export class SignosPage implements OnInit {
         this.signos = response;
       }, error => {
         console.error('Error al cargar los signos vitales:', error);
+      });
+    }
+  }
+
+  // Cargar los signos del paciente logueado (cuando el usuario es un paciente)
+  loadSignosPaciente() {
+    const loggedUserData = this.servisioService.getLoggedUserData();
+    const cod_usuario = loggedUserData?.cod_usuario;
+
+    if (cod_usuario) {
+      this.servisioService.listSignosByPaciente(cod_usuario).subscribe(response => {
+        this.signos = response;
+      }, error => {
+        console.error('Error al cargar los signos vitales del paciente:', error);
       });
     }
   }
@@ -53,7 +85,11 @@ export class SignosPage implements OnInit {
     if (this.editingSigno) {
       this.servisioService.updateSigno(this.editingSigno).subscribe(async response => {
         console.log('Signo vital actualizado:', response);
-        this.loadSignos();  // Recargar la lista de signos vitales
+        if (this.rol === 'paciente') {
+          this.loadSignosPaciente();  // Recargar los signos vitales del paciente logueado
+        } else {
+          this.loadSignos();  // Recargar los signos vitales del paciente seleccionado (para el médico)
+        }
         this.editingSigno = null;  // Limpiar el formulario
         await this.showToast('Signo vital actualizado exitosamente.');  // Mostrar éxito
       }, async error => {
@@ -81,7 +117,11 @@ export class SignosPage implements OnInit {
           handler: () => {
             this.servisioService.deleteSigno(cod_signos).subscribe(async response => {
               console.log('Signo vital eliminado:', response);
-              this.loadSignos();  // Recargar la lista de signos vitales
+              if (this.rol === 'paciente') {
+                this.loadSignosPaciente();  // Recargar los signos vitales del paciente logueado
+              } else {
+                this.loadSignos();  // Recargar los signos vitales del paciente seleccionado (para el médico)
+              }
               await this.showToast('Signo vital eliminado exitosamente.');  // Mostrar éxito
             }, async error => {
               console.error('Error al eliminar el signo vital:', error);

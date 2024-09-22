@@ -13,47 +13,52 @@ export class ServisioService {
 
   constructor(private http: HttpClient) {}
 
-    // Obtener el rol del usuario logueado
-    getUserRole(): string {
-      return this.currentRole || localStorage.getItem('role') || '';  // Devolver el rol almacenado o una cadena vacía
-    }
-  
-// Guardar el rol y los datos del usuario logueado
-storeUserRoleAndData(role: string, userData: any) {
-  this.currentRole = role;
-  this.loggedInUserData = userData;
-
-  // Almacenar en localStorage tanto el rol como los datos del usuario
-  localStorage.setItem('role', role);
-  localStorage.setItem('loggedInUser', JSON.stringify(userData));
-}
-
-// Obtener los datos del usuario logueado
-getLoggedUserData(): any {
-  if (this.loggedInUserData) {
-    return this.loggedInUserData;
-  } else {
-    const storedUser = localStorage.getItem('loggedInUser');
-    return storedUser ? JSON.parse(storedUser) : null;  // Devolver los datos del usuario almacenados
+  // Obtener el rol del usuario logueado
+  getUserRole(): string {
+    return this.currentRole || localStorage.getItem('role') || '';  // Devolver el rol almacenado o una cadena vacía
   }
-}
 
+  // Guardar el rol y los datos del usuario logueado
+  storeUserRoleAndData(role: string, userData: any) {
+    this.currentRole = role;
+    this.loggedInUserData = userData;
 
-// Obtener el perfil del paciente
-getPerfil(cod_usuario: number): Observable<any> {
-  return this.http.get(`${this.API_URL}?action=getPerfil&cod_usuario=${cod_usuario}`);
-}
+    // Almacenar en localStorage tanto el rol como los datos del usuario
+    localStorage.setItem('role', role);
+    localStorage.setItem('loggedInUser', JSON.stringify(userData));
+  }
 
-// Obtener el perfil del doctor
-getPerfilMedico(cod_medico: number): Observable<any> {
-  return this.http.get(`${this.API_URL}?action=getPerfilMedico&cod_medico=${cod_medico}`);
-}
+  // Obtener los datos del usuario logueado
+  getLoggedUserData(): any {
+    if (this.loggedInUserData) {
+      return this.loggedInUserData;
+    } else {
+      const storedUser = localStorage.getItem('loggedInUser');
+      return storedUser ? JSON.parse(storedUser) : null;  // Devolver los datos del usuario almacenados
+    }
+  }
 
-// Obtener el perfil del administrador
-getPerfilAdministrador(cod_admin: number): Observable<any> {
-  return this.http.get(`${this.API_URL}?action=getPerfilAdmin&cod_admin=${cod_admin}`);
-}
+  // Obtener el perfil del paciente
+  getPerfil(cod_usuario: number): Observable<any> {
+    return this.http.get(`${this.API_URL}?action=getPerfil&cod_usuario=${cod_usuario}`);
+  }
 
+  // Obtener el perfil del doctor
+  getPerfilMedico(cod_medico: number): Observable<any> {
+    return this.http.get(`${this.API_URL}?action=getPerfilMedico&cod_medico=${cod_medico}`);
+  }
+
+  // Obtener el perfil del administrador
+  getPerfilAdministrador(cod_admin: number): Observable<any> {
+    return this.http.get(`${this.API_URL}?action=getPerfilAdmin&cod_admin=${cod_admin}`);
+  }
+
+  // Actualizar perfil
+  updatePerfil(usuario: any): Observable<any> {
+    return this.http.put(`${this.API_URL}?action=updatePerfil`, usuario, {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+    });
+  }
 
  addMedico(medico: any): Observable<any> {
   return this.http.post(`${this.API_URL}?action=addMedico`, medico, {
@@ -203,13 +208,6 @@ deleteMensaje(id: number): Observable<any> {
   // Eliminar un medicamento
   deleteMedicamento(cod_medicina: number): Observable<any> {
     return this.http.delete(`${this.API_URL}?action=deleteMedicamento&cod_medicina=${cod_medicina}`);
-  }
-
-  // Actualizar el perfil
-  updatePerfil(usuario: any): Observable<any> {
-    return this.http.put(`${this.API_URL}?action=updatePerfil`, usuario, {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-    });
   }
 
   // Actualizar el perfil con imagen

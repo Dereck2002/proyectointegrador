@@ -14,11 +14,19 @@
 </ion-fab>
 
 <ion-content>
+  <!-- Buscador solo visible para médicos -->
+  <ion-searchbar 
+    *ngIf="rol === 'medico'" 
+    [(ngModel)]="searchTerm" 
+    (ionInput)="filterPacientes()" 
+    placeholder="Buscar Paciente">
+  </ion-searchbar>
+
   <!-- Seleccionar el paciente -->
-  <ion-item>
+  <ion-item *ngIf="rol === 'medico'">
     <ion-label>Selecciona el Paciente</ion-label>
     <ion-select [(ngModel)]="selectedPaciente" name="selectedPaciente" (ionChange)="loadSignos()" interface="action-sheet">
-      <ion-select-option *ngFor="let paciente of pacientes" [value]="paciente.cod_usuario">
+      <ion-select-option *ngFor="let paciente of filteredPacientes" [value]="paciente.cod_usuario">
         {{ paciente.nom_usuario }} {{ paciente.ape_usuario }}
       </ion-select-option>
     </ion-select>

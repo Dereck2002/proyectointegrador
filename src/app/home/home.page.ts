@@ -23,12 +23,18 @@ export class HomePage {
     if (this.username && this.password) {
       this.servisioService.login({ username: this.username, password: this.password }).subscribe(
         async (response: any) => {
+          console.log('Login response:', response);  // Verificar el contenido de la respuesta
           if (response.success) {
-            // Guardar el rol y los datos del usuario (médico o paciente) utilizando el servicio
-            const userData = response.role === 'medico' ? { cod_medico: response.cod_medico } : { cod_usuario: response.cod_usuario };
-            this.servisioService.storeUserRoleAndData(response.role, userData);
+            let userData: any;
+            if (response.role === 'medico') {
+              userData = { cod_medico: response.cod_medico };
+            } else if (response.role === 'paciente') {
+              userData = { cod_usuario: response.cod_usuario };
+            } else if (response.role === 'administrador') {
+              userData = { cod_admin: response.cod_admin };
+            }
   
-            // Mostrar mensaje de éxito y redirigir
+            this.servisioService.storeUserRoleAndData(response.role, userData);
             await this.showToast('Inicio de sesión exitoso.');
             this.router.navigate(['/menu']);
           } else {
@@ -43,7 +49,8 @@ export class HomePage {
       this.errorMessage = 'Por favor, ingrese su usuario y contraseña.';
     }
   }
-
+  
+  
   // Función para mostrar un mensaje toast
   async showToast(message: string) {
     const toast = await this.toastController.create({
@@ -59,4 +66,3 @@ export class HomePage {
     this.router.navigate(['/reset-password']);
   }
 }
-

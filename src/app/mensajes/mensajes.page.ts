@@ -14,22 +14,25 @@ export class MensajesPage implements OnInit {
     cod_usuario: null as number | null,  // ID del paciente
     cod_medico: null as number | null    // ID del médico
   };
-  rol: string = '';  // Rol del usuario ('medico' o 'paciente')
+  rol: string = '';  // Rol del usuario ('medico', 'paciente', o 'administrador')
   recipients: any[] = [];  // Lista de destinatarios (pacientes o médicos)
+  filteredRecipients: any[] = [];  // Lista filtrada de destinatarios
   selectedRecipient: any;  // Destinatario seleccionado
-  navCtrl: any;
+  searchQuery: string = '';  // Campo de búsqueda
 
-  constructor(private servisioService: ServisioService, private toastController: ToastController) {}
+  constructor(private servisioService: ServisioService, private toastController: ToastController, private navCtrl: NavController) {}
 
   ngOnInit() {
     // Obtener el rol del usuario desde el localStorage
-    this.rol = localStorage.getItem('rol') || '';  // Rol del usuario ('medico' o 'paciente')
+    this.rol = this.servisioService.getUserRole();
 
-    // Si el rol es médico, carga la lista de pacientes. Si es paciente, carga la lista de médicos.
+    // Si el rol es médico, carga la lista de pacientes. Si es paciente, carga la lista de médicos. Si es administrador, carga ambas listas.
     if (this.rol === 'medico') {
       this.loadPacientes();
     } else if (this.rol === 'paciente') {
       this.loadMedicos();
+    } else if (this.rol === 'administrador') {
+      this.loadPacientesYMedicos();
     }
   }
 
@@ -41,6 +44,7 @@ export class MensajesPage implements OnInit {
         ape: paciente.ape_usuario,
         id: paciente.cod_usuario
       }));
+      this.filteredRecipients = this.recipients;  // Inicializar la lista filtrada
     });
   }
 
@@ -52,6 +56,31 @@ export class MensajesPage implements OnInit {
         ape: medico.ape_medico,
         id: medico.cod_medico
       }));
+      this.filteredRecipients = this.recipients;  // Inicializar la lista filtrada
+    });
+  }
+
+  // Cargar lista de pacientes y médicos si el usuario es un administrador
+  loadPacientesYMedicos() {
+    this.servisioService.listPacientes().subscribe(response => {
+      const pacientes = response.map((paciente: any) => ({
+        nom: paciente.nom_usuario,
+        ape: paciente.ape_usuario,
+        id: paciente.cod_usuario,
+        tipo: 'paciente'
+      }));
+
+      this.servisioService.listMedicos().subscribe(medicosResponse => {
+        const medicos = medicosResponse.map((medico: any) => ({
+          nom: medico.nom_medico,
+          ape: medico.ape_medico,
+          id: medico.cod_medico,
+          tipo: 'medico'
+        }));
+
+        this.recipients = [...pacientes, ...medicos];
+        this.filteredRecipients = this.recipients;  // Inicializar la lista filtrada
+      });
     });
   }
 
@@ -62,26 +91,33 @@ export class MensajesPage implements OnInit {
       return;
     }
 
-    // Obtener el código del usuario logueado desde el localStorage
+    const loggedUserData = this.servisioService.getLoggedUserData();
+
     if (this.rol === 'medico') {
-      // Si el usuario logueado es médico, asignar cod_medico al remitente y cod_usuario al destinatario
-      this.mensaje.cod_medico = parseInt(localStorage.getItem('cod_medico')!, 10);  // El que está logueado
-      this.mensaje.cod_usuario = this.selectedRecipient.id;  // El destinatario (paciente seleccionado)
+      this.mensaje.cod_medico = loggedUserData?.cod_medico || null;
+      this.mensaje.cod_usuario = this.selectedRecipient.id;
     } else if (this.rol === 'paciente') {
-      // Si el usuario logueado es paciente, asignar cod_usuario al remitente y cod_medico al destinatario
-      this.mensaje.cod_usuario = parseInt(localStorage.getItem('cod_usuario')!, 10);  // El que está logueado
-      this.mensaje.cod_medico = this.selectedRecipient.id;  // El destinatario (médico seleccionado)
+      this.mensaje.cod_usuario = loggedUserData?.cod_usuario || null;
+      this.mensaje.cod_medico = this.selectedRecipient.id;
+    } else if (this.rol === 'administrador') {
+      if (this.selectedRecipient.tipo === 'medico') {
+        this.mensaje.cod_medico = this.selectedRecipient.id;
+        this.mensaje.cod_usuario = null;
+      } else if (this.selectedRecipient.tipo === 'paciente') {
+        this.mensaje.cod_usuario = this.selectedRecipient.id;
+        this.mensaje.cod_medico = null;
+      }
     }
 
-    // Verifica los valores antes de enviar el mensaje
-    console.log('Enviando mensaje a:', this.selectedRecipient);
-    console.log('cod_medico:', this.mensaje.cod_medico);
-    console.log('cod_usuario:', this.mensaje.cod_usuario);
+    if (!this.mensaje.cod_medico && !this.mensaje.cod_usuario) {
+      this.showToast('No se pudo obtener los datos del remitente o destinatario.');
+      return;
+    }
 
-    // Enviar mensaje al servicio
     this.servisioService.enviarMensaje(this.mensaje).subscribe(response => {
       this.showToast('Mensaje enviado exitosamente.');
       this.mensaje.contenido = '';  // Limpiar el campo del mensaje
+      
     }, error => {
       this.showToast('Error al enviar el mensaje.');
     });
@@ -96,6 +132,19 @@ export class MensajesPage implements OnInit {
     });
     toast.present();
   }
+
+  // Filtrar destinatarios en función del texto ingresado en la barra de búsqueda
+  filterRecipients(event: any) {
+    const query = event.target.value.toLowerCase();
+    if (query && query.trim() !== '') {
+      this.filteredRecipients = this.recipients.filter(recipient =>
+        recipient.nom.toLowerCase().includes(query) || recipient.ape.toLowerCase().includes(query)
+      );
+    } else {
+      this.filteredRecipients = this.recipients;  // Mostrar todos los destinatarios si no hay texto
+    }
+  }
+
   verHistorial() {
     this.navCtrl.navigateForward('/historial');
   }

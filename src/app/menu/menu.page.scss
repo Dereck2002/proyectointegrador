@@ -1,18 +1,29 @@
-ion-menu {
-    ion-header {
-      background-color: #3880ff; /* Cambiar el color de fondo del menú */
-    }
-  
-    ion-toolbar {
-      color: white;
-    }
-  
-    ion-content {
-      --background: #f4f5f8; /* Fondo gris claro para el contenido */
-    }
-  
-    ion-item {
-      --color-selected: #3880ff; /* Color de los ítems seleccionados */
-    }
-  }
-  
+.message-badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  font-size: 0.8rem;
+}
+
+.menu-list ion-item {
+  --background: #f5f5f5;
+  --border-radius: 10px;
+  margin: 5px;
+  padding: 10px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out;
+}
+
+.menu-list ion-item:hover {
+  transform: scale(1.02);
+}
+
+.menu-list ion-icon {
+  color: #3b82f6;  /* Customize icon color */
+  font-size: 1.5rem;
+}
+
+.menu-list ion-label {
+  font-weight: bold;
+  font-size: 1.1rem;
+}

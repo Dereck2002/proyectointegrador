@@ -13,17 +13,19 @@ export class ServisioService {
 
   constructor(private http: HttpClient) {}
 
-  // Guardar el rol y los datos del usuario logueado
-  storeUserRoleAndData(role: string, userData: any) {
-    this.currentRole = role;
-    this.loggedInUserData = userData;
-    localStorage.setItem('role', role);
-    localStorage.setItem('loggedInUser', JSON.stringify(userData));  // Guardar los datos del usuario logueado
-  }
+    // Obtener el rol del usuario logueado
+    getUserRole(): string {
+      return this.currentRole || localStorage.getItem('role') || '';  // Devolver el rol almacenado o una cadena vacía
+    }
+  
+// Guardar el rol y los datos del usuario logueado
+storeUserRoleAndData(role: string, userData: any) {
+  this.currentRole = role;
+  this.loggedInUserData = userData;
 
- // Obtener el rol del usuario logueado
- getUserRole(): string {
-  return this.currentRole || localStorage.getItem('role') || '';  // Devolver el rol almacenado o una cadena vacía
+  // Almacenar en localStorage tanto el rol como los datos del usuario
+  localStorage.setItem('role', role);
+  localStorage.setItem('loggedInUser', JSON.stringify(userData));
 }
 
 // Obtener los datos del usuario logueado
@@ -31,8 +33,25 @@ getLoggedUserData(): any {
   if (this.loggedInUserData) {
     return this.loggedInUserData;
   } else {
-    return JSON.parse(localStorage.getItem('loggedInUser') || '{}');  // Devolver los datos del usuario almacenados
+    const storedUser = localStorage.getItem('loggedInUser');
+    return storedUser ? JSON.parse(storedUser) : null;  // Devolver los datos del usuario almacenados
   }
+}
+
+
+// Obtener el perfil del paciente
+getPerfil(cod_usuario: number): Observable<any> {
+  return this.http.get(`${this.API_URL}?action=getPerfil&cod_usuario=${cod_usuario}`);
+}
+
+// Obtener el perfil del doctor
+getPerfilMedico(cod_medico: number): Observable<any> {
+  return this.http.get(`${this.API_URL}?action=getPerfilMedico&cod_medico=${cod_medico}`);
+}
+
+// Obtener el perfil del administrador
+getPerfilAdministrador(cod_admin: number): Observable<any> {
+  return this.http.get(`${this.API_URL}?action=getPerfilAdmin&cod_admin=${cod_admin}`);
 }
 
 
@@ -139,9 +158,29 @@ enviarMensaje(mensaje: any): Observable<any> {
   });
 }
 
-listMensajes(userId: number, role: string): Observable<any> {
+// Actualizar mensaje
+updateMensaje(id: number, mensaje: string): Observable<any> {
+  const payload = { id, mensaje };
+  return this.http.put(`${this.API_URL}?action=updateMensaje`, payload, {
+    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+  });
+}
+
+// Eliminar mensaje
+deleteMensaje(id: number): Observable<any> {
+  const payload = { id };
+  return this.http.delete(`${this.API_URL}?action=deleteMensaje`, {
+    body: payload,
+    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+  });
+}
+
+ // Obtener mensajes de un usuario
+ listMensajes(userId: number, role: string): Observable<any> {
   return this.http.get(`${this.API_URL}?action=listMessages&user_id=${userId}&role=${role}`);
 }
+
+
 
   // Obtener los mensajes para un usuario específico
   getMensajes(userId: number): Observable<any> {
@@ -166,16 +205,6 @@ listMensajes(userId: number, role: string): Observable<any> {
     return this.http.delete(`${this.API_URL}?action=deleteMedicamento&cod_medicina=${cod_medicina}`);
   }
 
-  // Obtener el perfil del paciente
-  getPerfil(cod_usuario: number): Observable<any> {
-    return this.http.get(`${this.API_URL}?action=getPerfil&cod_usuario=${cod_usuario}`);
-  }
-
-  // Obtener el perfil del doctor
-  getPerfilMedico(cod_medico: number): Observable<any> {
-    return this.http.get(`${this.API_URL}?action=getPerfilMedico&cod_medico=${cod_medico}`);
-  }
-
   // Actualizar el perfil
   updatePerfil(usuario: any): Observable<any> {
     return this.http.put(`${this.API_URL}?action=updatePerfil`, usuario, {
@@ -183,9 +212,14 @@ listMensajes(userId: number, role: string): Observable<any> {
     });
   }
 
-  // Método para actualizar el perfil con imagen
-updateProfileWithImage(formData: FormData): Observable<any> {
-  return this.http.post(`${this.API_URL}?action=updateProfileWithImage`, formData);
+  // Actualizar el perfil con imagen
+  updateProfileWithImage(formData: FormData): Observable<any> {
+    return this.http.post(`${this.API_URL}?action=updateProfileWithImage`, formData);
+  }
+
+// Obtener el número de mensajes no leídos para un usuario
+getUnreadMessages(userId: number): Observable<any> {
+  return this.http.get(`${this.API_URL}?action=getUnreadMessages&user_id=${userId}`);
 }
 
 }

@@ -64,6 +64,10 @@ const routes: Routes = [
     path: 'medicos',
     loadChildren: () => import('./medicos/medicos.module').then( m => m.MedicosPageModule)
   },
+  {
+    path: 'chat',
+    loadChildren: () => import('./chat/chat.module').then( m => m.ChatPageModule)
+  },
 ];
 
 @NgModule({

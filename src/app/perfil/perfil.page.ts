@@ -9,10 +9,9 @@ import { NavController } from '@ionic/angular';
   styleUrls: ['./perfil.page.scss'],
 })
 export class PerfilPage implements OnInit {
-  usuario: any = {};  // Aquí se almacenan los datos del usuario o médico
+  usuario: any = {};  // Aquí se almacenan los datos del usuario, médico o administrador
   selectedFile: File | null = null;  // Imagen seleccionada
-  rol: string | null = ''; // Rol del usuario ('medico' o 'paciente')
-  
+  rol: string | null = ''; // Rol del usuario ('medico', 'paciente', o 'administrador')
 
   constructor(
     private servisioService: ServisioService,
@@ -25,10 +24,18 @@ export class PerfilPage implements OnInit {
 
     // Obtener los datos del usuario logueado
     const loggedUserData = this.servisioService.getLoggedUserData();
-    const id = this.rol === 'medico' ? loggedUserData.cod_medico : loggedUserData.cod_usuario;
     
+    // Depurar para verificar si loggedUserData contiene el ID del usuario
+    console.log('Logged User Data:', loggedUserData);
+    
+    const id = this.rol === 'medico'
+      ? loggedUserData?.cod_medico
+      : this.rol === 'administrador'
+      ? loggedUserData?.cod_admin
+      : loggedUserData?.cod_usuario;
+
     if (id) {
-      this.loadPerfil(id);  // Cargar el perfil del médico o paciente
+      this.loadPerfil(id);  // Cargar el perfil del médico, administrador o paciente
     } else {
       this.showToast('No se encontró el ID del usuario.', 'danger');
     }
@@ -38,6 +45,10 @@ export class PerfilPage implements OnInit {
   loadPerfil(id: number) {
     if (this.rol === 'medico') {
       this.servisioService.getPerfilMedico(id).subscribe((response) => {
+        this.usuario = response;
+      });
+    } else if (this.rol === 'administrador') {
+      this.servisioService.getPerfilAdministrador(id).subscribe((response) => {
         this.usuario = response;
       });
     } else {
@@ -55,7 +66,13 @@ export class PerfilPage implements OnInit {
   // Actualizar el perfil con imagen y datos
   updateProfile() {
     const formData = new FormData();
-    formData.append('id', this.rol === 'medico' ? this.usuario.cod_medico : this.usuario.cod_usuario);
+    const userId = this.rol === 'medico'
+      ? this.usuario.cod_medico
+      : this.rol === 'administrador'
+      ? this.usuario.cod_admin
+      : this.usuario.cod_usuario;
+
+    formData.append('id', userId);
     formData.append('rol', this.rol as string);
     formData.append('nombre', this.usuario.nom_usuario);
     formData.append('apellido', this.usuario.ape_usuario);
@@ -71,7 +88,7 @@ export class PerfilPage implements OnInit {
     this.servisioService.updateProfileWithImage(formData).subscribe(
       async (response) => {
         await this.showToast('Perfil actualizado correctamente.');
-        this.loadPerfil(this.usuario.cod_usuario || this.usuario.cod_medico); // Recargar el perfil
+        this.loadPerfil(userId); // Recargar el perfil
       },
       async (error) => {
         await this.showToast('Error al actualizar el perfil.', 'danger');

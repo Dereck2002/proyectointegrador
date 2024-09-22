@@ -7,31 +7,43 @@
   </ion-toolbar>
 </ion-header>
 
-
 <ion-content>
-  <!-- Seleccionar destinatario -->
-  <ion-item>
-    <ion-label>Destinatario</ion-label>
-    <ion-select [(ngModel)]="selectedRecipient" interface="action-sheet">
-      <ion-select-option *ngFor="let recipient of recipients" [value]="recipient">
-        {{ recipient.nom }} {{ recipient.ape }}
-      </ion-select-option>
-    </ion-select>
-  </ion-item>
+  <!-- Tarjeta de envío de mensajes -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title class="ion-text-center">Nuevo Mensaje</ion-card-title>
+    </ion-card-header>
 
-  <!-- Mostrar destinatario seleccionado -->
-  <ion-item *ngIf="selectedRecipient">
-    <ion-label>
-      <strong>Mensaje a: </strong>{{ selectedRecipient.nom }} {{ selectedRecipient.ape }}
-    </ion-label>
-  </ion-item>
+    <ion-card-content>
+      <!-- Campo de búsqueda para destinatarios -->
+      <ion-searchbar [(ngModel)]="searchQuery" (ionInput)="filterRecipients($event)" placeholder="Buscar por nombre..."></ion-searchbar>
 
-  <!-- Campo para escribir el mensaje -->
-  <ion-item>
-    <ion-label position="floating">Escribe tu mensaje</ion-label>
-    <ion-textarea [(ngModel)]="mensaje.contenido" required></ion-textarea>
-  </ion-item>
+      <!-- Seleccionar destinatario -->
+      <ion-item>
+        <ion-label>Destinatario</ion-label>
+        <ion-select [(ngModel)]="selectedRecipient" interface="action-sheet">
+          <ion-select-option *ngFor="let recipient of filteredRecipients" [value]="recipient">
+            {{ recipient.nom }} {{ recipient.ape }} - {{ recipient.tipo === 'medico' ? 'Médico' : 'Paciente' }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
 
-  <!-- Botón para enviar el mensaje -->
-  <ion-button expand="full" (click)="enviarMensaje()">Enviar Mensaje</ion-button>
+      <!-- Mostrar destinatario seleccionado -->
+      <ion-item *ngIf="selectedRecipient">
+        <ion-label>
+          <strong>Mensaje a:</strong>
+          {{ selectedRecipient.nom }} {{ selectedRecipient.ape }} ({{ selectedRecipient.tipo === 'medico' ? 'Médico' : 'Paciente' }})
+        </ion-label>
+      </ion-item>
+
+      <!-- Campo para escribir el mensaje -->
+      <ion-item>
+        <ion-label position="floating">Escribe tu mensaje</ion-label>
+        <ion-textarea [(ngModel)]="mensaje.contenido" required></ion-textarea>
+      </ion-item>
+
+      <!-- Botón para enviar el mensaje -->
+      <ion-button expand="full" color="primary" (click)="enviarMensaje()">Enviar Mensaje</ion-button>
+    </ion-card-content>
+  </ion-card>
 </ion-content>

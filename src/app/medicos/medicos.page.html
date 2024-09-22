@@ -41,14 +41,6 @@
       <ion-input [(ngModel)]="medico.espe_medico" name="espe_medico" type="text" required></ion-input>
     </ion-item>
 
-    <ion-item>
-      <ion-label position="stacked">Rol</ion-label>
-      <ion-select [(ngModel)]="medico.rol" name="rol" required>
-        <ion-select-option value="medico">Médico</ion-select-option>
-        <ion-select-option value="administrador">Administrador</ion-select-option>
-      </ion-select>
-    </ion-item>
-
     <ion-button expand="full" type="submit">Registrar Médico</ion-button>
   </form>
 </ion-content>

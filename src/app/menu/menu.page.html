@@ -4,49 +4,50 @@
     <ion-buttons slot="end">
       <ion-button (click)="mensaje()">
         <ion-icon slot="icon-only" name="mail"></ion-icon>
+        <ion-badge *ngIf="unreadMessages > 0" color="danger">{{ unreadMessages }}</ion-badge>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
+
 <ion-content>
-  <!-- Listado de opciones del menú -->
-  <ion-list>
+  <!-- Listado de opciones del menú con un diseño dinámico -->
+  <ion-list class="menu-list">
     <ion-menu-toggle auto-hide="false">
 
-      <!-- Enlace a la lista de pacientes (visible para médicos y administradores) -->
+      <!-- Enlace a la lista de pacientes -->
       <ion-item routerLink="/list-pacientes" routerDirection="root" *ngIf="role === 'medico' || role === 'administrador'">
         <ion-icon name="people" slot="start"></ion-icon>
         <ion-label>Pacientes</ion-label>
       </ion-item>
 
-      <!-- Enlace a la lista de médicos (visible solo para administradores) -->
+      <!-- Enlace a la lista de médicos -->
       <ion-item routerLink="/medicos" routerDirection="root" *ngIf="role === 'administrador'">
         <ion-icon name="people" slot="start"></ion-icon>
         <ion-label>Médicos</ion-label>
       </ion-item>
 
-      <!-- Enlace para agregar signos vitales (visible para todos) -->
+      <!-- Enlace para agregar signos vitales -->
       <ion-item (click)="signos()">
         <ion-icon name="pulse" slot="start"></ion-icon>
         <ion-label>Agregar Signos Vitales</ion-label>
       </ion-item>
 
-      <!-- Enlace para agregar medicamento (solo visible para médicos y administradores) -->
+      <!-- Enlace para medicamentos (según el rol) -->
       <ion-item (click)="medicamento()" *ngIf="role === 'medico' || role === 'administrador'">
         <ion-icon name="medkit" slot="start"></ion-icon>
         <ion-label>Medicamentos</ion-label>
       </ion-item>
 
-      <!-- Enlace para agregar medicamento (solo visible para pacientes) -->
       <ion-item (click)="medicamentop()" *ngIf="role === 'paciente'">
         <ion-icon name="medkit" slot="start"></ion-icon>
         <ion-label>Medicamentos</ion-label>
       </ion-item>
 
-      <!-- Enlace para ver el perfil (visible para todos) -->
+      <!-- Enlace para ver el perfil -->
       <ion-item (click)="openHistorial()">
-        <ion-icon name="time-outline" slot="start"></ion-icon>
+        <ion-icon name="person-circle-outline" slot="start"></ion-icon>
         <ion-label>Perfil</ion-label>
       </ion-item>
 

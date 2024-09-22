@@ -14,13 +14,31 @@
 </ion-fab>
 
 <ion-content>
-  <!-- Mostrar lista de mensajes -->
+  <!-- Mostrar lista de mensajes con opciones de deslizar -->
   <ion-list>
-    <ion-item *ngFor="let mensaje of mensajes">
-      <ion-label>
-        <h2>{{ mensaje.nom_medico || mensaje.nom_usuario }} {{ mensaje.ape_medico || mensaje.ape_usuario }}</h2>
-        <p>{{ mensaje.mensaje }}</p>
-      </ion-label>
-    </ion-item>
+    <ion-item-sliding *ngFor="let mensaje of mensajes">
+      
+      <!-- Item de mensaje que lleva al chat -->
+      <ion-item (click)="goToChat(mensaje)">
+        <ion-label>
+          <h2>{{ mensaje.nom_medico || mensaje.nom_usuario }} {{ mensaje.ape_medico || mensaje.ape_usuario }}</h2>
+          <p>{{ mensaje.mensaje }}</p>
+        </ion-label>
+      </ion-item>
+
+      <!-- Botones deslizables para editar o eliminar -->
+      <ion-item-options side="end">
+        <!-- Botón de editar -->
+        <ion-item-option (click)="editMensaje(mensaje)" color="primary">
+          <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+        </ion-item-option>
+
+        <!-- Botón de eliminar -->
+        <ion-item-option (click)="deleteMensaje(mensaje)" color="danger">
+          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+
+    </ion-item-sliding>
   </ion-list>
 </ion-content>

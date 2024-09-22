@@ -19,50 +19,59 @@ include('config.php');
 // Leer los datos JSON enviados en la solicitud
 $input = json_decode(file_get_contents("php://input"), true);
 
-// LOGIN: Verificar si es médico, administrador o paciente, y devolver los datos
+// LOGIN: Verificar si es administrador, médico o paciente
 if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'login') {
     $username = $input['username'];
     $password = $input['password'];
 
-    // Verificar en la tabla de médicos
-    $stmt = $mysqli->prepare("SELECT * FROM medico WHERE email_medico = ? AND clave_medico = ?");
+    // Verificar en la tabla de administradores
+    $stmt = $mysqli->prepare("SELECT * FROM administrador WHERE email_medico = ? AND clave_medico = ?");
     $stmt->bind_param("ss", $username, $password);
     $stmt->execute();
     $result = $stmt->get_result();
-    $medico = $result->fetch_assoc();
-    
-    if ($medico) {
-        // Si el médico existe, verificar si es administrador o solo médico
-        $role = ($medico['rol'] === 'administrador') ? 'administrador' : 'medico';
+    $admin = $result->fetch_assoc();
+
+    if ($admin) {
         echo json_encode([
             "success" => true,
-            "role" => $role,
-            "cod_medico" => $medico['cod_medico']
+            "role" => 'administrador',
+            "cod_admin" => $admin['cod_medico_admin']  // Enviar cod_medico_admin como cod_admin
         ]);
     } else {
-        // Si no es un médico, verificar en la tabla de pacientes (usuarios)
-        $stmt = $mysqli->prepare("SELECT * FROM usuario WHERE email_usuario = ? AND clave_usuario = ?");
+        // Verificar en la tabla de médicos
+        $stmt = $mysqli->prepare("SELECT * FROM medico WHERE email_medico = ? AND clave_medico = ?");
         $stmt->bind_param("ss", $username, $password);
         $stmt->execute();
         $result = $stmt->get_result();
-        $paciente = $result->fetch_assoc();
-
-        if ($paciente) {
-            // Si el paciente existe, devolver su información
+        $medico = $result->fetch_assoc();
+        
+        if ($medico) {
             echo json_encode([
                 "success" => true,
-                "role" => "paciente",
-                "cod_usuario" => $paciente['cod_usuario']
+                "role" => 'medico',
+                "cod_medico" => $medico['cod_medico']  // Enviar cod_medico
             ]);
         } else {
-            // Si no es ni médico ni paciente
-            echo json_encode(["success" => false, "message" => "Credenciales incorrectas."]);
+            // Verificar en la tabla de pacientes
+            $stmt = $mysqli->prepare("SELECT * FROM usuario WHERE email_usuario = ? AND clave_usuario = ?");
+            $stmt->bind_param("ss", $username, $password);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $paciente = $result->fetch_assoc();
+
+            if ($paciente) {
+                echo json_encode([
+                    "success" => true,
+                    "role" => 'paciente',
+                    "cod_usuario" => $paciente['cod_usuario']
+                ]);
+            } else {
+                echo json_encode(["success" => false, "message" => "Credenciales incorrectas."]);
+            }
         }
     }
-    
     $stmt->close();
 }
-
 
 // LISTAR PACIENTES
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] == 'listPacientes') {
@@ -76,7 +85,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
 
     echo json_encode($patients);
 }
-
 
 // AGREGAR PACIENTE
 if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'addPatient') {
@@ -178,6 +186,7 @@ if ($method == 'GET' && isset($_GET['action']) && $_GET['action'] == 'listSignos
     echo json_encode($signos);
     $stmt->close();
 }
+
 
 // ACTUALIZAR SIGNO VITAL
 if ($method == 'PUT' && isset($_GET['action']) && $_GET['action'] == 'updateSigno') {
@@ -305,38 +314,102 @@ if ($method == 'DELETE' && isset($_GET['action']) && $_GET['action'] == 'deleteM
 
 
 
-// ENVIAR MENSAJE
+// AGREGAR MENSAJE (SendMessage)
 if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'sendMessage') {
-    $mensaje = $input['contenido'];
-    $cod_medico = $input['cod_medico'];
-    $cod_usuario = $input['cod_usuario'];
+    $input = json_decode(file_get_contents('php://input'), true);
 
-    $stmt = $mysqli->prepare("INSERT INTO mensaje (mensaje, cod_medico, cod_usuario) VALUES (?, ?, ?)");
-    $stmt->bind_param("sii", $mensaje, $cod_medico, $cod_usuario);
-    
-    if ($stmt->execute()) {
-        echo json_encode(["message" => "Mensaje enviado exitosamente."]);
+    // Verificar que se haya enviado el contenido del mensaje
+    if (isset($input['mensaje']) && isset($input['cod_medico']) && isset($input['cod_usuario'])) {
+        $mensaje = $input['mensaje'];
+        $cod_medico = $input['cod_medico'];
+        $cod_usuario = $input['cod_usuario'];
+
+        // Preparar la consulta para insertar el mensaje en la base de datos
+        $stmt = $mysqli->prepare("INSERT INTO mensaje (mensaje, cod_medico, cod_usuario) VALUES (?, ?, ?)");
+        $stmt->bind_param("sii", $mensaje, $cod_medico, $cod_usuario);
+        
+        if ($stmt->execute()) {
+            echo json_encode(["message" => "Mensaje enviado exitosamente."]);
+        } else {
+            echo json_encode(["message" => "Error al enviar el mensaje: " . $stmt->error]);
+        }
+
+        $stmt->close();
     } else {
-        echo json_encode(["message" => "Error al enviar el mensaje."]);
+        echo json_encode(["message" => "Faltan campos obligatorios."]);
     }
+}
 
-    $stmt->close();
+
+// Actualizar mensaje
+if ($_SERVER['REQUEST_METHOD'] === 'PUT' && isset($_GET['action']) && $_GET['action'] == 'updateMensaje') {
+    // Leer los datos JSON enviados en la solicitud PUT
+    $input = json_decode(file_get_contents("php://input"), true);
+    
+    $id_mensaje = isset($input['id']) ? intval($input['id']) : null;
+    $nuevo_mensaje = isset($input['mensaje']) ? $input['mensaje'] : null;
+
+    // Verificar que los datos necesarios están presentes
+    if ($id_mensaje && $nuevo_mensaje) {
+        $stmt = $mysqli->prepare("UPDATE mensaje SET mensaje = ? WHERE id = ?");
+        $stmt->bind_param('si', $nuevo_mensaje, $id_mensaje);
+        
+        if ($stmt->execute()) {
+            echo json_encode(["message" => "Mensaje actualizado exitosamente."]);
+        } else {
+            echo json_encode(["message" => "Error al actualizar el mensaje: " . $stmt->error]);
+        }
+        $stmt->close();
+    } else {
+        echo json_encode(["message" => "Datos incompletos para actualizar el mensaje."]);
+    }
+}
+
+// Eliminar mensaje
+if ($_SERVER['REQUEST_METHOD'] === 'DELETE' && isset($_GET['action']) && $_GET['action'] == 'deleteMensaje') {
+    // Leer los datos JSON enviados en la solicitud DELETE
+    $input = json_decode(file_get_contents("php://input"), true);
+
+    $id_mensaje = isset($input['id']) ? intval($input['id']) : null;
+
+    // Verificar que el ID del mensaje está presente
+    if ($id_mensaje) {
+        $stmt = $mysqli->prepare("DELETE FROM mensaje WHERE id = ?");
+        $stmt->bind_param('i', $id_mensaje);
+        
+        if ($stmt->execute()) {
+            echo json_encode(["message" => "Mensaje eliminado exitosamente."]);
+        } else {
+            echo json_encode(["message" => "Error al eliminar el mensaje: " . $stmt->error]);
+        }
+        $stmt->close();
+    } else {
+        echo json_encode(["message" => "ID del mensaje no proporcionado."]);
+    }
 }
 
 // LISTAR MENSAJES DEL USUARIO LOGUEADO
 if ($method == 'GET' && isset($_GET['action']) && $_GET['action'] == 'listMessages') {
     $user_id = $_GET['user_id'];  // ID del usuario logueado
-    $role = $_GET['role'];  // Rol del usuario ('medico' o 'paciente')
+    $role = $_GET['role'];  // Rol del usuario ('medico', 'paciente', o 'administrador')
 
-    // Dependiendo del rol, buscar mensajes donde el usuario esté involucrado
     if ($role === 'medico') {
+        // Mensajes enviados o recibidos por el médico
         $query = "SELECT m.*, u.nom_usuario, u.ape_usuario FROM mensaje m 
                   JOIN usuario u ON m.cod_usuario = u.cod_usuario
                   WHERE m.cod_medico = ?";
     } else if ($role === 'paciente') {
+        // Mensajes enviados o recibidos por el paciente
         $query = "SELECT m.*, med.nom_medico, med.ape_medico FROM mensaje m 
                   JOIN medico med ON m.cod_medico = med.cod_medico
                   WHERE m.cod_usuario = ?";
+    } else if ($role === 'administrador') {
+        // Si es administrador, obtener todos los mensajes relacionados con el administrador
+        $query = "SELECT m.*, u.nom_usuario, u.ape_usuario, med.nom_medico, med.ape_medico 
+                  FROM mensaje m
+                  LEFT JOIN usuario u ON m.cod_usuario = u.cod_usuario
+                  LEFT JOIN medico med ON m.cod_medico = med.cod_medico
+                  WHERE m.cod_admin = ? OR m.cod_usuario IS NOT NULL OR m.cod_medico IS NOT NULL";
     }
 
     $stmt = $mysqli->prepare($query);
@@ -495,41 +568,6 @@ if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'resetPass
 
 // AGREGAR MÉDICO
 if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'addMedico') {
-    $input = json_decode(file_get_contents('php://input'), true);
-
-    // Verificar los valores recibidos
-    error_log(print_r($input, true));  // Depuración: imprime los valores recibidos en los logs del servidor
-
-    $cedula = $input['cedula'] ?? null;
-    $nombre = $input['nom_medico'] ?? null;
-    $apellido = $input['ape_medico'] ?? null;
-    $telefono = $input['telefono_medico'] ?? null;
-    $email = $input['email_medico'] ?? null;
-    $clave = $input['clave_medico'] ?? null;
-    $especialidad = $input['espe_medico'] ?? null;
-    $rol = $input['rol'] ?? 'medico';
-
-    // Verificar si todos los campos están presentes
-    if ($cedula && $nombre && $apellido && $telefono && $email && $clave && $especialidad && $rol) {
-        $stmt = $mysqli->prepare("INSERT INTO medico (cedula, nom_medico, ape_medico, telefono_medico, email_medico, clave_medico, espe_medico, rol) 
-                                  VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssssssss", $cedula, $nombre, $apellido, $telefono, $email, $clave, $especialidad, $rol);
-        
-        if ($stmt->execute()) {
-            echo json_encode(["message" => "Médico agregado exitosamente."]);
-        } else {
-            echo json_encode(["message" => "Error al agregar el médico: " . $stmt->error]);
-        }
-
-        $stmt->close();
-    } else {
-        echo json_encode(["message" => "Faltan campos obligatorios."]);
-    }
-}
-
-// ACTUALIZAR MÉDICO
-if ($method == 'PUT' && isset($_GET['action']) && $_GET['action'] == 'editMedico') {
-    $id = $input['cod_medico'];  // Se espera que el código del médico sea enviado en el JSON
     $cedula = $input['cedula'];
     $nombre = $input['nom_medico'];
     $apellido = $input['ape_medico'];
@@ -537,12 +575,34 @@ if ($method == 'PUT' && isset($_GET['action']) && $_GET['action'] == 'editMedico
     $email = $input['email_medico'];
     $clave = $input['clave_medico'];
     $especialidad = $input['espe_medico'];
-    $rol = $input['rol'];
 
-    // Preparar consulta de actualización
-    $stmt = $mysqli->prepare("UPDATE medico SET cedula = ?, nom_medico = ?, ape_medico = ?, telefono_medico = ?, email_medico = ?, clave_medico = ?, espe_medico = ?, rol = ? 
+    $stmt = $mysqli->prepare("INSERT INTO medico (cedula, nom_medico, ape_medico, telefono_medico, email_medico, clave_medico, espe_medico) 
+                              VALUES (?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssssss", $cedula, $nombre, $apellido, $telefono, $email, $clave, $especialidad);
+    
+    if ($stmt->execute()) {
+        echo json_encode(["message" => "Médico agregado exitosamente."]);
+    } else {
+        echo json_encode(["message" => "Error al agregar el médico."]);
+    }
+
+    $stmt->close();
+}
+
+// ACTUALIZAR MÉDICO
+if ($method == 'PUT' && isset($_GET['action']) && $_GET['action'] == 'editMedico') {
+    $id = $input['cod_medico'];
+    $cedula = $input['cedula'];
+    $nombre = $input['nom_medico'];
+    $apellido = $input['ape_medico'];
+    $telefono = $input['telefono_medico'];
+    $email = $input['email_medico'];
+    $clave = $input['clave_medico'];
+    $especialidad = $input['espe_medico'];
+
+    $stmt = $mysqli->prepare("UPDATE medico SET cedula = ?, nom_medico = ?, ape_medico = ?, telefono_medico = ?, email_medico = ?, clave_medico = ?, espe_medico = ? 
                               WHERE cod_medico = ?");
-    $stmt->bind_param("ssssssssi", $cedula, $nombre, $apellido, $telefono, $email, $clave, $especialidad, $rol, $id);
+    $stmt->bind_param("sssssssi", $cedula, $nombre, $apellido, $telefono, $email, $clave, $especialidad, $id);
     
     if ($stmt->execute()) {
         echo json_encode(["message" => "Médico actualizado exitosamente."]);
@@ -553,41 +613,53 @@ if ($method == 'PUT' && isset($_GET['action']) && $_GET['action'] == 'editMedico
     $stmt->close();
 }
 
+// LISTAR MÉDICOS
+if ($method == 'GET' && isset($_GET['action']) && $_GET['action'] == 'listMedicos') {
+    $query = "SELECT cod_medico, nom_medico, ape_medico FROM medico";
+    $result = $mysqli->query($query);
+    $medicos = [];
 
-if ($method == 'PUT' && isset($_GET['action']) && $_GET['action'] == 'updateMedico') {
-    // Leer los datos JSON enviados en la solicitud
-    $input = json_decode(file_get_contents('php://input'), true);
-
-    $cedula = isset($input['cedula']) ? intval($input['cedula']) : null;
-    $nombre = $input['nom_medico'] ?? null;
-    $apellido = $input['ape_medico'] ?? null;
-    $telefono = $input['telefono_medico'] ?? null;
-    $email = $input['email_medico'] ?? null;
-    $clave = $input['clave_medico'] ?? null;
-    $especialidad = $input['espe_medico'] ?? null;
-    $rol = $input['rol'] ?? 'medico';
-    $cod_medico = $input['cod_medico'] ?? null; // ID del médico que se va a actualizar
-    $imagen = $input['imagen_medico'] ?? null;
-
-    if ($cedula && $nombre && $apellido && $telefono && $email && $clave && $especialidad && $rol && $cod_medico) {
-        // Consulta de actualización
-        $stmt = $mysqli->prepare("UPDATE medico SET cedula = ?, nom_medico = ?, ape_medico = ?, telefono_medico = ?, email_medico = ?, clave_medico = ?, espe_medico = ?, rol = ?, imagen_medico = ? WHERE cod_medico = ?");
-        if ($stmt) {
-            $stmt->bind_param('issssssssi', $cedula, $nombre, $apellido, $telefono, $email, $clave, $especialidad, $rol, $imagen, $cod_medico);
-            if ($stmt->execute()) {
-                echo json_encode(["message" => "Médico actualizado exitosamente."]);
-            } else {
-                echo json_encode(["message" => "Error al actualizar el médico: " . $stmt->error]);
-            }
-            $stmt->close();
-        } else {
-            echo json_encode(["message" => "Error en la consulta SQL: " . $mysqli->error]);
-        }
-    } else {
-        echo json_encode(["message" => "Faltan campos requeridos."]);
+    while ($row = $result->fetch_assoc()) {
+        $medicos[] = $row;
     }
+
+    echo json_encode($medicos);
+}
+// AGREGAR ADMINISTRADOR
+if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'addAdmin') {
+    $cedula = $input['cedula'];
+    $nombre = $input['nom_medico'];
+    $apellido = $input['ape_medico'];
+    $telefono = $input['telefono_medico'];
+    $email = $input['email_medico'];
+    $clave = $input['clave_medico'];
+    $especialidad = $input['espe_medico'];
+
+    $stmt = $mysqli->prepare("INSERT INTO administrador (cedula, nom_medico, ape_medico, telefono_medico, email_medico, clave_medico, espe_medico) 
+                              VALUES (?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssssss", $cedula, $nombre, $apellido, $telefono, $email, $clave, $especialidad);
+    
+    if ($stmt->execute()) {
+        echo json_encode(["message" => "Administrador agregado exitosamente."]);
+    } else {
+        echo json_encode(["message" => "Error al agregar el administrador."]);
+    }
+
+    $stmt->close();
 }
 
+// LISTAR ADMINISTRADORES
+if ($method == 'GET' && isset($_GET['action']) && $_GET['action'] == 'listAdmins') {
+    $query = "SELECT cod_medico_admin, nom_medico, ape_medico FROM administrador";
+    $result = $mysqli->query($query);
+    $administradores = [];
+
+    while ($row = $result->fetch_assoc()) {
+        $administradores[] = $row;
+    }
+
+    echo json_encode($administradores);
+}
 
 }
 

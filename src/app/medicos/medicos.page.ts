@@ -17,7 +17,6 @@ export class MedicosPage implements OnInit {
     email_medico: '',
     clave_medico: '',
     espe_medico: '',
-    rol: 'medico'  // Valor por defecto 'medico'
   };
   editingMedico: any = null;  // Médico que se está editando
 
@@ -41,7 +40,7 @@ export class MedicosPage implements OnInit {
     // Validar campos antes de enviar
     if (!this.medico.cedula || !this.medico.nom_medico || !this.medico.ape_medico || 
         !this.medico.telefono_medico || !this.medico.email_medico || !this.medico.clave_medico || 
-        !this.medico.espe_medico || !this.medico.rol) {
+        !this.medico.espe_medico) {
       this.showToast('Por favor, completa todos los campos obligatorios.', 'danger');
       return;
     }

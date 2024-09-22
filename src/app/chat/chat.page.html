@@ -1,0 +1,54 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/menu"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Chat</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list *ngIf="mensajes.length > 0">
+    <ion-item *ngFor="let mensaje of mensajes">
+      <ion-label [ngClass]="{ 'sent': mensaje.isSentByUser, 'received': !mensaje.isSentByUser }">
+        <h3>{{ mensaje.user }}:</h3>
+        <p>{{ mensaje.content }}</p>
+        <span class="timestamp">{{ mensaje.timestamp | date: 'shortTime' }}</span>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <div *ngIf="mensajes.length === 0" class="no-messages">
+    <p>No hay mensajes aún.</p>
+  </div>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-input [(ngModel)]="nuevoMensaje" placeholder="Escribe un mensaje..." type="text"></ion-input>
+    <ion-button (click)="enviarMensaje()" expand="full" [disabled]="!nuevoMensaje">Enviar</ion-button>
+  </ion-toolbar>
+</ion-footer>
+
+<style>
+  ion-label.sent {
+    text-align: right;
+    color: blue;
+  }
+
+  ion-label.received {
+    text-align: left;
+    color: green;
+  }
+
+  .no-messages {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  .timestamp {
+    font-size: 0.8rem;
+    color: gray;
+    margin-left: 5px;
+  }
+</style>

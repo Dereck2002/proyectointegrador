@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
+import { ServisioService } from '../servisio/servisio.service';
 
 @Component({
   selector: 'app-menu',
@@ -7,12 +8,12 @@ import { NavController } from '@ionic/angular';
   styleUrls: ['./menu.page.scss'],
 })
 export class MenuPage implements OnInit {
-  rol: string | null = null; // Variable para almacenar el rol del usuario
+  role: string | null = null; // Variable para almacenar el rol del usuario
 
-  constructor(private navCtrl: NavController) { }
+  constructor(private navCtrl: NavController, private servisioService: ServisioService) { }
 
   ngOnInit() {
-    this.rol = localStorage.getItem('rol');  // Obtener el rol del localStorage
+    this.role = this.servisioService.getUserRole();  // Obtener el rol del usuario logueado
   }
   
   // Navegar a la página de signos

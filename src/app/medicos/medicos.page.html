@@ -1,0 +1,54 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Registrar Médico</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form (ngSubmit)="submitMedico()">
+    <ion-item>
+      <ion-label position="stacked">Cédula</ion-label>
+      <ion-input [(ngModel)]="medico.cedula" name="cedula" type="text" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Nombre</ion-label>
+      <ion-input [(ngModel)]="medico.nom_medico" name="nom_medico" type="text" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Apellido</ion-label>
+      <ion-input [(ngModel)]="medico.ape_medico" name="ape_medico" type="text" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Teléfono</ion-label>
+      <ion-input [(ngModel)]="medico.telefono_medico" name="telefono_medico" type="tel" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Email</ion-label>
+      <ion-input [(ngModel)]="medico.email_medico" name="email_medico" type="email" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Contraseña</ion-label>
+      <ion-input [(ngModel)]="medico.clave_medico" name="clave_medico" type="password" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Especialidad</ion-label>
+      <ion-input [(ngModel)]="medico.espe_medico" name="espe_medico" type="text" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Rol</ion-label>
+      <ion-select [(ngModel)]="medico.rol" name="rol" required>
+        <ion-select-option value="medico">Médico</ion-select-option>
+        <ion-select-option value="administrador">Administrador</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-button expand="full" type="submit">Registrar Médico</ion-button>
+  </form>
+</ion-content>

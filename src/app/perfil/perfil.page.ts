@@ -21,10 +21,13 @@ export class PerfilPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.rol = localStorage.getItem('rol');  // Obtener el rol del localStorage
-    const id = this.rol === 'medico' ? parseInt(localStorage.getItem('cod_medico') ?? '0', 10) 
-                                     : parseInt(localStorage.getItem('cod_usuario') ?? '0', 10);
-    if (id !== 0) {
+    this.rol = localStorage.getItem('role');  // Obtener el rol del localStorage
+
+    // Obtener los datos del usuario logueado
+    const loggedUserData = this.servisioService.getLoggedUserData();
+    const id = this.rol === 'medico' ? loggedUserData.cod_medico : loggedUserData.cod_usuario;
+    
+    if (id) {
       this.loadPerfil(id);  // Cargar el perfil del médico o paciente
     } else {
       this.showToast('No se encontró el ID del usuario.', 'danger');
@@ -86,7 +89,9 @@ export class PerfilPage implements OnInit {
     });
     toast.present();
   }
-  csesion(){
+
+  // Cerrar sesión y volver al login
+  csesion() {
     this.navCtrl.navigateRoot('/home');
   }
 }

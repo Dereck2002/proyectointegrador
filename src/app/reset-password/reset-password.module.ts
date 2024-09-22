@@ -4,17 +4,17 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { RegistrarMedicoPageRoutingModule } from './registrar-medico-routing.module';
+import { ResetPasswordPageRoutingModule } from './reset-password-routing.module';
 
-import { RegistrarMedicoPage } from './registrar-medico.page';
+import { ResetPasswordPage } from './reset-password.page';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    RegistrarMedicoPageRoutingModule
+    ResetPasswordPageRoutingModule
   ],
-  declarations: [RegistrarMedicoPage]
+  declarations: [ResetPasswordPage]
 })
-export class RegistrarMedicoPageModule {}
+export class ResetPasswordPageModule {}

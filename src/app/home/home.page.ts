@@ -24,17 +24,9 @@ export class HomePage {
       this.servisioService.login({ username: this.username, password: this.password }).subscribe(
         async (response: any) => {
           if (response.success) {
-            // Guardar el rol en el localStorage
-            localStorage.setItem('rol', response.role);  // 'medico' o 'paciente'
-  
-            // Guardar el cod_medico o cod_usuario dependiendo del rol
-            if (response.role === 'medico') {
-              localStorage.setItem('cod_medico', response.cod_medico);  // Guardar el ID del médico
-              localStorage.removeItem('cod_usuario');  // Asegurarse de eliminar el ID del paciente si está guardado
-            } else if (response.role === 'paciente') {
-              localStorage.setItem('cod_usuario', response.cod_usuario);  // Guardar el ID del paciente
-              localStorage.removeItem('cod_medico');  // Asegurarse de eliminar el ID del médico si está guardado
-            }
+            // Guardar el rol y los datos del usuario (médico o paciente) utilizando el servicio
+            const userData = response.role === 'medico' ? { cod_medico: response.cod_medico } : { cod_usuario: response.cod_usuario };
+            this.servisioService.storeUserRoleAndData(response.role, userData);
   
             // Mostrar mensaje de éxito y redirigir
             await this.showToast('Inicio de sesión exitoso.');
@@ -51,6 +43,7 @@ export class HomePage {
       this.errorMessage = 'Por favor, ingrese su usuario y contraseña.';
     }
   }
+
   // Función para mostrar un mensaje toast
   async showToast(message: string) {
     const toast = await this.toastController.create({
@@ -60,7 +53,10 @@ export class HomePage {
     });
     toast.present();
   }
-  recoverPassword(){
-    this.router.navigate(['/recover']);
+
+  // Función para redirigir a la página de recuperación de contraseña
+  recoverPassword() {
+    this.router.navigate(['/reset-password']);
   }
 }
+

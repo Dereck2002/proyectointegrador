@@ -21,6 +21,18 @@
   transform: scale(1.05);
 }
 
+.logo-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.logo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+}
+
 .card-title {
   text-align: center;
   font-size: 1.8em;

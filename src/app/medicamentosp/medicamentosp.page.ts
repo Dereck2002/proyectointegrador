@@ -21,11 +21,11 @@ export class MedicamentospPage implements OnInit {
 
   // Cargar los medicamentos del paciente
   loadMedicamentos() {
-    const cod_usuario = localStorage.getItem('cod_usuario');  // Obtener el ID del paciente
+    const loggedUser = this.servisioService.getLoggedUserData();  // Obtener los datos del usuario logueado
+    const cod_usuario = loggedUser.cod_usuario;
 
     if (cod_usuario) {
-      const parsedCodUsuario = parseInt(cod_usuario, 10);
-      this.servisioService.listMedicamentosByPaciente(parsedCodUsuario).subscribe(response => {
+      this.servisioService.listMedicamentosByPaciente(cod_usuario).subscribe(response => {
         if (response.length > 0) {
           this.medicamentos = response;
         } else {

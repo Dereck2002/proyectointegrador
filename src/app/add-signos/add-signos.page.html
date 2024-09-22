@@ -9,6 +9,17 @@
 
 <ion-content>
   <form (ngSubmit)="submitSignos()">
+
+    <!-- Desplegable para seleccionar el paciente, solo si el usuario es médico -->
+    <ion-item *ngIf="role === 'medico'">
+      <ion-label>Seleccionar Paciente</ion-label>
+      <ion-select [(ngModel)]="signos.cod_usuario" name="cod_usuario" interface="popover" placeholder="Seleccione un paciente" required>
+        <ion-select-option *ngFor="let paciente of pacientes" [value]="paciente.cod_usuario">
+          {{ paciente.nom_usuario }} {{ paciente.ape_usuario }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
     <ion-item>
       <ion-label position="floating">Presión</ion-label>
       <ion-input [(ngModel)]="signos.precion" type="number" name="precion" required></ion-input>

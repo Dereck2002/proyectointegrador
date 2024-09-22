@@ -19,7 +19,7 @@ include('config.php');
 // Leer los datos JSON enviados en la solicitud
 $input = json_decode(file_get_contents("php://input"), true);
 
-// LOGIN: Verificar si es médico o paciente, y devolver los datos
+// LOGIN: Verificar si es médico, administrador o paciente, y devolver los datos
 if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'login') {
     $username = $input['username'];
     $password = $input['password'];
@@ -32,10 +32,11 @@ if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'login') {
     $medico = $result->fetch_assoc();
     
     if ($medico) {
-        // Si el médico existe, devolver su información
+        // Si el médico existe, verificar si es administrador o solo médico
+        $role = ($medico['rol'] === 'administrador') ? 'administrador' : 'medico';
         echo json_encode([
             "success" => true,
-            "role" => "medico",
+            "role" => $role,
             "cod_medico" => $medico['cod_medico']
         ]);
     } else {
@@ -61,6 +62,7 @@ if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'login') {
     
     $stmt->close();
 }
+
 
 // LISTAR PACIENTES
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] == 'listPacientes') {
@@ -443,59 +445,149 @@ if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'updatePro
     } else {
         echo json_encode(["message" => "No se ha seleccionado una imagen."]);
     }
-    // REGISTRAR MÉDICO
-if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'registerMedico') {
-    $cedula = $_POST['cedula'];
-    $nombre = $_POST['nom_medico'];
-    $apellido = $_POST['ape_medico'];
-    $telefono = $_POST['telefono_medico'];
-    $email = $_POST['email_medico'];
-    $clave = $_POST['clave_medico'];
-    $especialidad = $_POST['espe_medico'];
 
-    // Verificar si se subió una imagen
-    if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
-        $fileTmpPath = $_FILES['imagen']['tmp_name'];
-        $fileName = $_FILES['imagen']['name'];
-        $uploadFileDir = './uploads/';
-        $dest_path = $uploadFileDir . $fileName;
+    // RECUPERAR CONTRASEÑA AUTOMÁTICAMENTE (SIN ROL MANUAL)
+if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'resetPassword') {
+    $cedula = $input['cedula'];
+    $email = $input['email'];
+    $new_password = password_hash($input['new_password'], PASSWORD_DEFAULT); // Encriptar nueva contraseña
 
-        // Mover la imagen al directorio de uploads
-        if (!is_dir($uploadFileDir)) {
-            mkdir($uploadFileDir, 0777, true);  // Crear el directorio si no existe
-        }
+    // Buscar primero en la tabla de médicos
+    $stmt = $mysqli->prepare("SELECT * FROM medico WHERE cedula = ? AND email_medico = ?");
+    $stmt->bind_param('ss', $cedula, $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $medico = $result->fetch_assoc();
 
-        if (move_uploaded_file($fileTmpPath, $dest_path)) {
-            $relativePath = '/uploads/' . $fileName; // Ruta relativa para guardar en la BD
-
-            // Insertar los datos del médico
-            $stmt = $mysqli->prepare("INSERT INTO medico (cedula, nom_medico, ape_medico, telefono_medico, email_medico, clave_medico, espe_medico, imagen_medico) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("ssssssss", $cedula, $nombre, $apellido, $telefono, $email, $clave, $especialidad, $relativePath);
-
-            if ($stmt->execute()) {
-                echo json_encode(["success" => true, "message" => "Médico registrado exitosamente."]);
-            } else {
-                echo json_encode(["success" => false, "message" => "Error al registrar el médico."]);
-            }
-
-            $stmt->close();
+    if ($medico) {
+        // Si es un médico, actualizamos su contraseña
+        $stmt = $mysqli->prepare("UPDATE medico SET clave_medico = ? WHERE cod_medico = ?");
+        $stmt->bind_param('si', $new_password, $medico['cod_medico']);
+        if ($stmt->execute()) {
+            echo json_encode(["message" => "Contraseña de médico actualizada correctamente."]);
         } else {
-            echo json_encode(["success" => false, "message" => "Error al subir la imagen."]);
+            echo json_encode(["message" => "Error al actualizar la contraseña del médico."]);
         }
     } else {
-        // Registrar médico sin imagen
-        $stmt = $mysqli->prepare("INSERT INTO medico (cedula, nom_medico, ape_medico, telefono_medico, email_medico, clave_medico, espe_medico) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssssss", $cedula, $nombre, $apellido, $telefono, $email, $clave, $especialidad);
+        // Si no es médico, buscar en la tabla de pacientes (usuarios)
+        $stmt = $mysqli->prepare("SELECT * FROM usuario WHERE cedula = ? AND email_usuario = ?");
+        $stmt->bind_param('ss', $cedula, $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $paciente = $result->fetch_assoc();
 
-        if ($stmt->execute()) {
-            echo json_encode(["success" => true, "message" => "Médico registrado exitosamente."]);
+        if ($paciente) {
+            // Si es un paciente, actualizamos su contraseña
+            $stmt = $mysqli->prepare("UPDATE usuario SET clave_usuario = ? WHERE cod_usuario = ?");
+            $stmt->bind_param('si', $new_password, $paciente['cod_usuario']);
+            if ($stmt->execute()) {
+                echo json_encode(["message" => "Contraseña de paciente actualizada correctamente."]);
+            } else {
+                echo json_encode(["message" => "Error al actualizar la contraseña del paciente."]);
+            }
         } else {
-            echo json_encode(["success" => false, "message" => "Error al registrar el médico."]);
+            echo json_encode(["message" => "Cédula o email incorrectos."]);
+        }
+    }
+
+    $stmt->close();
+}
+
+// AGREGAR MÉDICO
+if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'addMedico') {
+    $input = json_decode(file_get_contents('php://input'), true);
+
+    // Verificar los valores recibidos
+    error_log(print_r($input, true));  // Depuración: imprime los valores recibidos en los logs del servidor
+
+    $cedula = $input['cedula'] ?? null;
+    $nombre = $input['nom_medico'] ?? null;
+    $apellido = $input['ape_medico'] ?? null;
+    $telefono = $input['telefono_medico'] ?? null;
+    $email = $input['email_medico'] ?? null;
+    $clave = $input['clave_medico'] ?? null;
+    $especialidad = $input['espe_medico'] ?? null;
+    $rol = $input['rol'] ?? 'medico';
+
+    // Verificar si todos los campos están presentes
+    if ($cedula && $nombre && $apellido && $telefono && $email && $clave && $especialidad && $rol) {
+        $stmt = $mysqli->prepare("INSERT INTO medico (cedula, nom_medico, ape_medico, telefono_medico, email_medico, clave_medico, espe_medico, rol) 
+                                  VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssssssss", $cedula, $nombre, $apellido, $telefono, $email, $clave, $especialidad, $rol);
+        
+        if ($stmt->execute()) {
+            echo json_encode(["message" => "Médico agregado exitosamente."]);
+        } else {
+            echo json_encode(["message" => "Error al agregar el médico: " . $stmt->error]);
         }
 
         $stmt->close();
+    } else {
+        echo json_encode(["message" => "Faltan campos obligatorios."]);
     }
 }
+
+// ACTUALIZAR MÉDICO
+if ($method == 'PUT' && isset($_GET['action']) && $_GET['action'] == 'editMedico') {
+    $id = $input['cod_medico'];  // Se espera que el código del médico sea enviado en el JSON
+    $cedula = $input['cedula'];
+    $nombre = $input['nom_medico'];
+    $apellido = $input['ape_medico'];
+    $telefono = $input['telefono_medico'];
+    $email = $input['email_medico'];
+    $clave = $input['clave_medico'];
+    $especialidad = $input['espe_medico'];
+    $rol = $input['rol'];
+
+    // Preparar consulta de actualización
+    $stmt = $mysqli->prepare("UPDATE medico SET cedula = ?, nom_medico = ?, ape_medico = ?, telefono_medico = ?, email_medico = ?, clave_medico = ?, espe_medico = ?, rol = ? 
+                              WHERE cod_medico = ?");
+    $stmt->bind_param("ssssssssi", $cedula, $nombre, $apellido, $telefono, $email, $clave, $especialidad, $rol, $id);
+    
+    if ($stmt->execute()) {
+        echo json_encode(["message" => "Médico actualizado exitosamente."]);
+    } else {
+        echo json_encode(["message" => "Error al actualizar el médico."]);
+    }
+
+    $stmt->close();
+}
+
+
+if ($method == 'PUT' && isset($_GET['action']) && $_GET['action'] == 'updateMedico') {
+    // Leer los datos JSON enviados en la solicitud
+    $input = json_decode(file_get_contents('php://input'), true);
+
+    $cedula = isset($input['cedula']) ? intval($input['cedula']) : null;
+    $nombre = $input['nom_medico'] ?? null;
+    $apellido = $input['ape_medico'] ?? null;
+    $telefono = $input['telefono_medico'] ?? null;
+    $email = $input['email_medico'] ?? null;
+    $clave = $input['clave_medico'] ?? null;
+    $especialidad = $input['espe_medico'] ?? null;
+    $rol = $input['rol'] ?? 'medico';
+    $cod_medico = $input['cod_medico'] ?? null; // ID del médico que se va a actualizar
+    $imagen = $input['imagen_medico'] ?? null;
+
+    if ($cedula && $nombre && $apellido && $telefono && $email && $clave && $especialidad && $rol && $cod_medico) {
+        // Consulta de actualización
+        $stmt = $mysqli->prepare("UPDATE medico SET cedula = ?, nom_medico = ?, ape_medico = ?, telefono_medico = ?, email_medico = ?, clave_medico = ?, espe_medico = ?, rol = ?, imagen_medico = ? WHERE cod_medico = ?");
+        if ($stmt) {
+            $stmt->bind_param('issssssssi', $cedula, $nombre, $apellido, $telefono, $email, $clave, $especialidad, $rol, $imagen, $cod_medico);
+            if ($stmt->execute()) {
+                echo json_encode(["message" => "Médico actualizado exitosamente."]);
+            } else {
+                echo json_encode(["message" => "Error al actualizar el médico: " . $stmt->error]);
+            }
+            $stmt->close();
+        } else {
+            echo json_encode(["message" => "Error en la consulta SQL: " . $mysqli->error]);
+        }
+    } else {
+        echo json_encode(["message" => "Faltan campos requeridos."]);
+    }
+}
+
 
 }
 

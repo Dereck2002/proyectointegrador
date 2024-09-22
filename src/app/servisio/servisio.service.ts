@@ -6,12 +6,54 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ServisioService {
- 
 
   private API_URL = 'http://localhost/proyectointegrador/mpaciente/mpacientes.php';
   private currentRole: string | null = null;
+  private loggedInUserData: any = null;  // Almacenar datos del usuario logueado
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
+
+  // Guardar el rol y los datos del usuario logueado
+  storeUserRoleAndData(role: string, userData: any) {
+    this.currentRole = role;
+    this.loggedInUserData = userData;
+    localStorage.setItem('role', role);
+    localStorage.setItem('loggedInUser', JSON.stringify(userData));  // Guardar los datos del usuario logueado
+  }
+
+ // Obtener el rol del usuario logueado
+ getUserRole(): string {
+  return this.currentRole || localStorage.getItem('role') || '';  // Devolver el rol almacenado o una cadena vacía
+}
+
+// Obtener los datos del usuario logueado
+getLoggedUserData(): any {
+  if (this.loggedInUserData) {
+    return this.loggedInUserData;
+  } else {
+    return JSON.parse(localStorage.getItem('loggedInUser') || '{}');  // Devolver los datos del usuario almacenados
+  }
+}
+
+
+ addMedico(medico: any): Observable<any> {
+  return this.http.post(`${this.API_URL}?action=addMedico`, medico, {
+    headers: new HttpHeaders({ 'Content-Type': 'application/json' })  // Asegúrate de que sea JSON
+  });
+}
+
+updateMedico(medico: any): Observable<any> {
+  return this.http.put(`${this.API_URL}?action=updateMedico`, medico, {
+    headers: new HttpHeaders({ 'Content-Type': 'application/json' })  // Asegúrate de que sea JSON
+  });
+}
+
+   // Método para iniciar sesión
+   resetPassword(data: any): Observable<any> {
+    return this.http.post(`${this.API_URL}?action=resetPassword`, data, {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+    });
+  }
 
   // Método para iniciar sesión
   login(credentials: any): Observable<any> {
@@ -26,14 +68,6 @@ export class ServisioService {
     localStorage.setItem('role', role);
   }
 
-  // Obtener rol del usuario
-  getUserRole(): string | null {
-    if (this.currentRole) {
-      return this.currentRole;
-    } else {
-      return localStorage.getItem('role');
-    }
-  }
 
   // Obtener lista de pacientes
   listPacientes(): Observable<any> {
@@ -153,8 +187,6 @@ listMensajes(userId: number, role: string): Observable<any> {
 updateProfileWithImage(formData: FormData): Observable<any> {
   return this.http.post(`${this.API_URL}?action=updateProfileWithImage`, formData);
 }
-registerMedico(formData: FormData) {
-  return this.http.post('http://localhost/proyectointegrador/mpaciente/mpacientes.php?action=registerMedico', formData);
-}
+
 }
 

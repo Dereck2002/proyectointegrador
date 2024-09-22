@@ -14,16 +14,16 @@
   <ion-list>
     <ion-menu-toggle auto-hide="false">
 
-      <!-- Enlace a la lista de pacientes (solo visible para médicos) -->
-      <ion-item routerLink="/list-pacientes" routerDirection="root" *ngIf="rol === 'medico'">
+      <!-- Enlace a la lista de pacientes (visible para médicos y administradores) -->
+      <ion-item routerLink="/list-pacientes" routerDirection="root" *ngIf="role === 'medico' || role === 'administrador'">
         <ion-icon name="people" slot="start"></ion-icon>
         <ion-label>Pacientes</ion-label>
       </ion-item>
 
-      <!-- Enlace a la lista de pacientes (solo visible para médicos) -->
-      <ion-item routerLink="/registrar-medico" routerDirection="root" *ngIf="rol === 'medico'">
+      <!-- Enlace a la lista de médicos (visible solo para administradores) -->
+      <ion-item routerLink="/medicos" routerDirection="root" *ngIf="role === 'administrador'">
         <ion-icon name="people" slot="start"></ion-icon>
-        <ion-label>Medicos</ion-label>
+        <ion-label>Médicos</ion-label>
       </ion-item>
 
       <!-- Enlace para agregar signos vitales (visible para todos) -->
@@ -32,14 +32,14 @@
         <ion-label>Agregar Signos Vitales</ion-label>
       </ion-item>
 
-      <!-- Enlace para agregar medicamento (solo visible para médicos) -->
-      <ion-item (click)="medicamento()" *ngIf="rol === 'medico'">
+      <!-- Enlace para agregar medicamento (solo visible para médicos y administradores) -->
+      <ion-item (click)="medicamento()" *ngIf="role === 'medico' || role === 'administrador'">
         <ion-icon name="medkit" slot="start"></ion-icon>
         <ion-label>Medicamentos</ion-label>
       </ion-item>
 
       <!-- Enlace para agregar medicamento (solo visible para pacientes) -->
-      <ion-item (click)="medicamentop()" *ngIf="rol === 'paciente'">
+      <ion-item (click)="medicamentop()" *ngIf="role === 'paciente'">
         <ion-icon name="medkit" slot="start"></ion-icon>
         <ion-label>Medicamentos</ion-label>
       </ion-item>

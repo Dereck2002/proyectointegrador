@@ -45,12 +45,15 @@ export class HistorialPage implements OnInit {
     this.servisioService.listMensajes(this.userId, this.rol).subscribe(response => {
       this.mensajes = response.map((mensaje: any) => {
         // Si el mensaje fue enviado por el médico
-        if (mensaje.cod_medico) {
+        if (mensaje.cod_medico && mensaje.nom_medico && mensaje.ape_medico) {
           mensaje.user = `${mensaje.nom_medico} ${mensaje.ape_medico}`;  // Nombre completo del médico
         } 
         // Si el mensaje fue enviado por el paciente
-        else if (mensaje.cod_usuario) {
+        else if (mensaje.cod_usuario && mensaje.nom_usuario && mensaje.ape_usuario) {
           mensaje.user = `${mensaje.nom_usuario} ${mensaje.ape_usuario}`;  // Nombre completo del paciente
+        } else {
+          // Si no se encuentra el nombre, asignar 'Desconocido' como fallback
+          mensaje.user = 'Desconocido';
         }
         // Retornar el mensaje con el nombre asignado
         return mensaje;
@@ -59,6 +62,7 @@ export class HistorialPage implements OnInit {
       console.error('Error al cargar los mensajes:', error);
     });
   }
+  
   
   
   // Redirigir a la página de chat con el mensaje seleccionado

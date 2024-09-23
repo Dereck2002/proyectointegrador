@@ -17,7 +17,10 @@ export class PacientesPage implements OnInit {
     email_usuario: '',
     clave_usuario: ''
   };
+  confirmarClave = ''; // Campo para confirmar la contraseña
   editingPaciente: any = null;  // Paciente que se está editando
+  claveNoCoincide: boolean = false;  // Indicador si las contraseñas no coinciden
+  claveInvalida: boolean | undefined;
 
   constructor(
     private servisioService: ServisioService,
@@ -26,7 +29,6 @@ export class PacientesPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Si hay un paciente pasado desde la lista, cargarlo para editar
     const state = history.state;
     if (state.patient) {
       this.paciente = { ...state.patient };
@@ -36,24 +38,50 @@ export class PacientesPage implements OnInit {
 
   // Función para agregar o actualizar un paciente
   submitPaciente() {
-    if (this.editingPaciente) {
-      // Actualizar paciente
-      this.servisioService.updatePaciente(this.paciente).subscribe(async response => {
-        await this.showToast('Paciente actualizado exitosamente.');
-        this.router.navigate(['/list-pacientes']);  // Volver a la lista de pacientes
-      }, async error => {
-        await this.showToast('Error al actualizar el paciente.', 'danger');
-      });
-    } else {
-      // Agregar nuevo paciente
-      this.servisioService.addPaciente(this.paciente).subscribe(async response => {
-        await this.showToast('Paciente agregado exitosamente.');
-        this.router.navigate(['/list-pacientes']);  // Volver a la lista de pacientes
-      }, async error => {
-        await this.showToast('Error al agregar el paciente.', 'danger');
-      });
+    if (this.validarContraseñas()) {
+      if (this.editingPaciente) {
+        this.servisioService.updatePaciente(this.paciente).subscribe(async response => {
+          await this.showToast('Paciente actualizado exitosamente.');
+          this.router.navigate(['/list-pacientes']);  // Volver a la lista de pacientes
+        }, async error => {
+          await this.showToast('Error al actualizar el paciente.', 'danger');
+        });
+      } else {
+        // Agregar nuevo paciente
+        this.servisioService.addPaciente(this.paciente).subscribe(async response => {
+          await this.showToast('Paciente agregado exitosamente.');
+          this.router.navigate(['/list-pacientes']);  // Volver a la lista de pacientes
+        }, async error => {
+          await this.showToast('Error al agregar el paciente.', 'danger');
+        });
+      }
     }
   }
+
+  validarContraseñas(): boolean {
+    const regexEspecial = /[!@#$%^&*(),.?":{}|<>]/;  // Expresión regular para caracteres especiales
+    const longitudValida = this.paciente.clave_usuario.length >= 8;
+    const tieneCaracterEspecial = regexEspecial.test(this.paciente.clave_usuario);
+    
+    this.claveNoCoincide = this.paciente.clave_usuario !== this.confirmarClave;
+    this.claveInvalida = !(longitudValida && tieneCaracterEspecial);  // Nueva validación
+  
+    return !this.claveNoCoincide && !this.claveInvalida;
+  }
+  
+
+  // Verificar si el formulario es válido
+  formValido(): boolean {
+    return !!this.paciente.cedula && !!this.paciente.nom_usuario && !!this.paciente.ape_usuario && 
+           !!this.paciente.telefono_usuario && !!this.paciente.email_usuario &&
+           !!this.paciente.clave_usuario && !!this.confirmarClave && !this.claveNoCoincide;
+  }
+
+    // Verificar si el email es válido
+    emailValido(): boolean {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(this.paciente.email_usuario);
+    }
 
   // Función para mostrar notificación (toast)
   async showToast(message: string, color: string = 'success') {

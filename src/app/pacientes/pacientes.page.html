@@ -8,39 +8,65 @@
 </ion-header>
 
 <ion-content>
-  <!-- Formulario para agregar/editar pacientes -->
-  <form (ngSubmit)="submitPaciente()">
+  <form (ngSubmit)="submitPaciente()" [ngClass]="{'invalid-form': !formValido()}">
+    
+    <!-- Cédula -->
     <ion-item>
       <ion-label position="floating">Cédula</ion-label>
       <ion-input [(ngModel)]="paciente.cedula" name="cedula" type="number" required></ion-input>
     </ion-item>
 
+    <!-- Nombre -->
     <ion-item>
       <ion-label position="floating">Nombre</ion-label>
       <ion-input [(ngModel)]="paciente.nom_usuario" name="nombre" required></ion-input>
     </ion-item>
 
+    <!-- Apellido -->
     <ion-item>
       <ion-label position="floating">Apellido</ion-label>
       <ion-input [(ngModel)]="paciente.ape_usuario" name="apellido" required></ion-input>
     </ion-item>
 
+    <!-- Teléfono -->
     <ion-item>
       <ion-label position="floating">Teléfono</ion-label>
-      <ion-input [(ngModel)]="paciente.telefono_usuario" name="telefono" required></ion-input>
+      <ion-input [(ngModel)]="paciente.telefono_usuario" name="telefono" type="tel" required minlength="10" maxlength="10"></ion-input>
+      <ion-note color="danger" *ngIf="paciente.telefono_usuario.length !== 10 && paciente.telefono_usuario">
+        El teléfono debe tener 10 dígitos.
+      </ion-note>
     </ion-item>
 
+    <!-- Email -->
     <ion-item>
       <ion-label position="floating">Email</ion-label>
-      <ion-input [(ngModel)]="paciente.email_usuario" name="email" required></ion-input>
+      <ion-input [(ngModel)]="paciente.email_usuario" name="email" type="email" required></ion-input>
+      <ion-note color="danger" *ngIf="!emailValido() && paciente.email_usuario">
+        Introduzca un correo válido.
+      </ion-note>
     </ion-item>
 
-    <ion-item>
-      <ion-label position="floating">Clave</ion-label>
-      <ion-input [(ngModel)]="paciente.clave_usuario" type="password" name="clave" required></ion-input>
-    </ion-item>
+   <!-- Contraseña -->
+<ion-item>
+  <ion-label position="floating">Contraseña</ion-label>
+  <ion-input [(ngModel)]="paciente.clave_usuario" name="clave" type="password" minlength="8" required></ion-input>
+  <ion-note color="danger" *ngIf="claveInvalida">
+    La contraseña debe tener al menos 8 caracteres y un carácter especial.
+  </ion-note>
+</ion-item>
 
-    <ion-button expand="full" type="submit">
+<!-- Confirmar Contraseña -->
+<ion-item>
+  <ion-label position="floating">Confirmar Contraseña</ion-label>
+  <ion-input [(ngModel)]="confirmarClave" name="confirmarClave" type="password" required></ion-input>
+  <ion-note color="danger" *ngIf="claveNoCoincide">
+    Las contraseñas no coinciden.
+  </ion-note>
+</ion-item>
+
+
+    <!-- Botón de Enviar -->
+    <ion-button expand="full" type="submit" [disabled]="!formValido()">
       {{ editingPaciente ? 'Actualizar Paciente' : 'Agregar Paciente' }}
     </ion-button>
   </form>

@@ -22,56 +22,70 @@ $input = json_decode(file_get_contents("php://input"), true);
 // LOGIN: Verificar si es administrador, médico o paciente
 if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'login') {
     $username = $input['username'];
-    $password = $input['password'];
+    $password = $input['password']; // Contraseña ingresada por el usuario
 
     // Verificar en la tabla de administradores
-    $stmt = $mysqli->prepare("SELECT * FROM administrador WHERE email_medico = ? AND clave_medico = ?");
-    $stmt->bind_param("ss", $username, $password);
+    $stmt = $mysqli->prepare("SELECT * FROM administrador WHERE email_medico = ?");
+    $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();
     $admin = $result->fetch_assoc();
 
     if ($admin) {
-        echo json_encode([
-            "success" => true,
-            "role" => 'administrador',
-            "cod_admin" => $admin['cod_medico_admin']  // Enviar cod_medico_admin como cod_admin
-        ]);
+        // Verificar si la contraseña ingresada coincide con la encriptada
+        if (password_verify($password, $admin['clave_medico'])) {
+            echo json_encode([
+                "success" => true,
+                "role" => 'administrador',
+                "cod_admin" => $admin['cod_medico_admin']  // Enviar cod_medico_admin como cod_admin
+            ]);
+        } else {
+            echo json_encode(["success" => false, "message" => "Contraseña incorrecta para el administrador."]);
+        }
     } else {
         // Verificar en la tabla de médicos
-        $stmt = $mysqli->prepare("SELECT * FROM medico WHERE email_medico = ? AND clave_medico = ?");
-        $stmt->bind_param("ss", $username, $password);
+        $stmt = $mysqli->prepare("SELECT * FROM medico WHERE email_medico = ?");
+        $stmt->bind_param("s", $username);
         $stmt->execute();
         $result = $stmt->get_result();
         $medico = $result->fetch_assoc();
         
         if ($medico) {
-            echo json_encode([
-                "success" => true,
-                "role" => 'medico',
-                "cod_medico" => $medico['cod_medico']  // Enviar cod_medico
-            ]);
+            if (password_verify($password, $medico['clave_medico'])) {
+                echo json_encode([
+                    "success" => true,
+                    "role" => 'medico',
+                    "cod_medico" => $medico['cod_medico']  // Enviar cod_medico
+                ]);
+            } else {
+                echo json_encode(["success" => false, "message" => "Contraseña incorrecta para el médico."]);
+            }
         } else {
             // Verificar en la tabla de pacientes
-            $stmt = $mysqli->prepare("SELECT * FROM usuario WHERE email_usuario = ? AND clave_usuario = ?");
-            $stmt->bind_param("ss", $username, $password);
+            $stmt = $mysqli->prepare("SELECT * FROM usuario WHERE email_usuario = ?");
+            $stmt->bind_param("s", $username);
             $stmt->execute();
             $result = $stmt->get_result();
             $paciente = $result->fetch_assoc();
 
             if ($paciente) {
-                echo json_encode([
-                    "success" => true,
-                    "role" => 'paciente',
-                    "cod_usuario" => $paciente['cod_usuario']
-                ]);
+                if (password_verify($password, $paciente['clave_usuario'])) {
+                    echo json_encode([
+                        "success" => true,
+                        "role" => 'paciente',
+                        "cod_usuario" => $paciente['cod_usuario']
+                    ]);
+                } else {
+                    echo json_encode(["success" => false, "message" => "Contraseña incorrecta para el paciente."]);
+                }
             } else {
-                echo json_encode(["success" => false, "message" => "Credenciales incorrectas."]);
+                echo json_encode(["success" => false, "message" => "Usuario no encontrado."]);
             }
         }
     }
     $stmt->close();
 }
+
 
 // LISTAR PACIENTES
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] == 'listPacientes') {
@@ -93,7 +107,7 @@ if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'addPatien
     $apellido = $input['ape_usuario'];
     $telefono = $input['telefono_usuario'];
     $email = $input['email_usuario'];
-    $clave = $input['clave_usuario'];
+    $clave = password_hash($input['clave_usuario'], PASSWORD_DEFAULT); // Encriptar la contraseña
 
     $stmt = $mysqli->prepare("INSERT INTO usuario (cedula, nom_usuario, ape_usuario, telefono_usuario, email_usuario, clave_usuario) VALUES (?, ?, ?, ?, ?, ?)");
     $stmt->bind_param("ssssss", $cedula, $nombre, $apellido, $telefono, $email, $clave);
@@ -107,6 +121,7 @@ if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'addPatien
     $stmt->close();
 }
 
+
 // ACTUALIZAR PACIENTE
 if ($method == 'PUT' && isset($_GET['action']) && $_GET['action'] == 'editPatient') {
     $id = $input['cod_usuario'];
@@ -115,7 +130,7 @@ if ($method == 'PUT' && isset($_GET['action']) && $_GET['action'] == 'editPatien
     $apellido = $input['ape_usuario'];
     $telefono = $input['telefono_usuario'];
     $email = $input['email_usuario'];
-    $clave = $input['clave_usuario'];
+    $clave = password_hash($input['clave_usuario'], PASSWORD_DEFAULT); // Encriptar la nueva contraseña
 
     $stmt = $mysqli->prepare("UPDATE usuario SET cedula = ?, nom_usuario = ?, ape_usuario = ?, telefono_usuario = ?, email_usuario = ?, clave_usuario = ? WHERE cod_usuario = ?");
     $stmt->bind_param("ssssssi", $cedula, $nombre, $apellido, $telefono, $email, $clave, $id);
@@ -128,6 +143,7 @@ if ($method == 'PUT' && isset($_GET['action']) && $_GET['action'] == 'editPatien
 
     $stmt->close();
 }
+
 
 // ELIMINAR PACIENTE: Eliminar un paciente por su ID
 if ($method == 'DELETE' && isset($_GET['action']) && $_GET['action'] == 'deletePatient') {
@@ -469,57 +485,7 @@ if ($method == 'GET' && isset($_GET['action']) && $_GET['action'] == 'getPerfilM
     $stmt->close();
 }
 
-// ACTUALIZAR PERFIL CON IMAGEN
-if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'updateProfileWithImage') {
-    $rol = $_POST['rol']; // 'medico' o 'paciente'
-    $id = $_POST['id'];
-
-    // Verificar si se subió una imagen
-    if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
-        $fileTmpPath = $_FILES['imagen']['tmp_name'];
-        $fileName = $_FILES['imagen']['name'];
-        
-        // Ruta absoluta del directorio de subida en el servidor
-        $uploadFileDir = './uploads/';
-        
-        // Verificar si el directorio 'uploads' existe, si no, crear uno
-        if (!is_dir($uploadFileDir)) {
-            mkdir($uploadFileDir, 0777, true);  // Crear la carpeta con permisos de escritura
-        }
-
-        // Ruta completa en el servidor para guardar la imagen
-        $dest_path = $uploadFileDir . $fileName;
-
-        // Mover la imagen subida al directorio de destino
-        if (move_uploaded_file($fileTmpPath, $dest_path)) {
-            // Ruta relativa para acceder a la imagen desde el navegador
-            $relativePath = '/uploads/' . $fileName;
-
-            if ($rol === 'medico') {
-                // Actualizar imagen del médico en la base de datos con la ruta relativa
-                $stmt = $mysqli->prepare("UPDATE medico SET imagen_medico = ? WHERE cod_medico = ?");
-                $stmt->bind_param('si', $relativePath, $id);
-            } else {
-                // Actualizar imagen del paciente en la base de datos con la ruta relativa
-                $stmt = $mysqli->prepare("UPDATE usuario SET imagen_usuario = ? WHERE cod_usuario = ?");
-                $stmt->bind_param('si', $relativePath, $id);
-            }
-
-            if ($stmt->execute()) {
-                echo json_encode(["message" => "Perfil actualizado exitosamente."]);
-            } else {
-                echo json_encode(["message" => "Error al actualizar el perfil."]);
-            }
-
-            $stmt->close();
-        } else {
-            echo json_encode(["message" => "Error al mover la imagen al directorio de destino."]);
-        }
-    } else {
-        echo json_encode(["message" => "No se ha seleccionado una imagen."]);
-    }
-
-    // RECUPERAR CONTRASEÑA AUTOMÁTICAMENTE (SIN ROL MANUAL)
+// RECUPERAR CONTRASEÑA AUTOMÁTICAMENTE (SIN ROL MANUAL)
 if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'resetPassword') {
     $cedula = $input['cedula'];
     $email = $input['email'];
@@ -542,29 +508,46 @@ if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'resetPass
             echo json_encode(["message" => "Error al actualizar la contraseña del médico."]);
         }
     } else {
-        // Si no es médico, buscar en la tabla de pacientes (usuarios)
-        $stmt = $mysqli->prepare("SELECT * FROM usuario WHERE cedula = ? AND email_usuario = ?");
+        // Verificar si es un administrador
+        $stmt = $mysqli->prepare("SELECT * FROM administrador WHERE cedula = ? AND email_medico = ?");
         $stmt->bind_param('ss', $cedula, $email);
         $stmt->execute();
         $result = $stmt->get_result();
-        $paciente = $result->fetch_assoc();
+        $admin = $result->fetch_assoc();
 
-        if ($paciente) {
-            // Si es un paciente, actualizamos su contraseña
-            $stmt = $mysqli->prepare("UPDATE usuario SET clave_usuario = ? WHERE cod_usuario = ?");
-            $stmt->bind_param('si', $new_password, $paciente['cod_usuario']);
+        if ($admin) {
+            // Si es un administrador, actualizamos su contraseña
+            $stmt = $mysqli->prepare("UPDATE administrador SET clave_medico = ? WHERE cod_medico_admin = ?");
+            $stmt->bind_param('si', $new_password, $admin['cod_medico_admin']);
             if ($stmt->execute()) {
-                echo json_encode(["message" => "Contraseña de paciente actualizada correctamente."]);
+                echo json_encode(["message" => "Contraseña de administrador actualizada correctamente."]);
             } else {
-                echo json_encode(["message" => "Error al actualizar la contraseña del paciente."]);
+                echo json_encode(["message" => "Error al actualizar la contraseña del administrador."]);
             }
         } else {
-            echo json_encode(["message" => "Cédula o email incorrectos."]);
+            // Si no es médico ni administrador, buscar en la tabla de pacientes (usuarios)
+            $stmt = $mysqli->prepare("SELECT * FROM usuario WHERE cedula = ? AND email_usuario = ?");
+            $stmt->bind_param('ss', $cedula, $email);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $paciente = $result->fetch_assoc();
+
+            if ($paciente) {
+                // Si es un paciente, actualizamos su contraseña
+                $stmt = $mysqli->prepare("UPDATE usuario SET clave_usuario = ? WHERE cod_usuario = ?");
+                $stmt->bind_param('si', $new_password, $paciente['cod_usuario']);
+                if ($stmt->execute()) {
+                    echo json_encode(["message" => "Contraseña de paciente actualizada correctamente."]);
+                } else {
+                    echo json_encode(["message" => "Error al actualizar la contraseña del paciente."]);
+                }
+            } else {
+                echo json_encode(["message" => "Cédula o email incorrectos."]);
+            }
         }
     }
 
     $stmt->close();
-}
 
 // AGREGAR MÉDICO
 if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'addMedico') {
@@ -580,9 +563,12 @@ if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'addMedico
         $clave = $input['clave_medico'];
         $especialidad = $input['espe_medico'];
 
+        // Encriptar la contraseña usando password_hash()
+        $clave_encriptada = password_hash($clave, PASSWORD_BCRYPT);
+
         // Preparar la consulta para insertar el médico en la base de datos
         $stmt = $mysqli->prepare("INSERT INTO medico (cedula, nom_medico, ape_medico, telefono_medico, email_medico, clave_medico, espe_medico) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssssss", $cedula, $nombre, $apellido, $telefono, $email, $clave, $especialidad);
+        $stmt->bind_param("sssssss", $cedula, $nombre, $apellido, $telefono, $email, $clave_encriptada, $especialidad);
 
         // Ejecutar la consulta y verificar si se ejecutó correctamente
         if ($stmt->execute()) {
@@ -611,9 +597,12 @@ if ($method == 'PUT' && isset($_GET['action']) && $_GET['action'] == 'editMedico
     $clave = $input['clave_medico'];
     $especialidad = $input['espe_medico'];
 
+    // Encriptar la contraseña usando password_hash()
+    $clave_encriptada = password_hash($clave, PASSWORD_BCRYPT);
+
     $stmt = $mysqli->prepare("UPDATE medico SET cedula = ?, nom_medico = ?, ape_medico = ?, telefono_medico = ?, email_medico = ?, clave_medico = ?, espe_medico = ? 
                               WHERE cod_medico = ?");
-    $stmt->bind_param("sssssssi", $cedula, $nombre, $apellido, $telefono, $email, $clave, $especialidad, $id);
+    $stmt->bind_param("sssssssi", $cedula, $nombre, $apellido, $telefono, $email, $clave_encriptada, $especialidad, $id);
     
     if ($stmt->execute()) {
         echo json_encode(["message" => "Médico actualizado exitosamente."]);
@@ -655,26 +644,41 @@ if ($method == 'DELETE' && isset($_GET['action']) && $_GET['action'] == 'deleteM
 
 // AGREGAR ADMINISTRADOR
 if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'addAdmin') {
-    $cedula = $input['cedula'];
-    $nombre = $input['nom_medico'];
-    $apellido = $input['ape_medico'];
-    $telefono = $input['telefono_medico'];
-    $email = $input['email_medico'];
-    $clave = $input['clave_medico'];
-    $especialidad = $input['espe_medico'];
+    // Asegurarse de que los datos se están recibiendo correctamente
+    if (isset($input['cedula'], $input['nom_medico'], $input['ape_medico'], $input['telefono_medico'], $input['email_medico'], $input['clave_medico'], $input['espe_medico'])) {
+        
+        // Recoger los datos enviados en la solicitud
+        $cedula = $input['cedula'];
+        $nombre = $input['nom_medico'];
+        $apellido = $input['ape_medico'];
+        $telefono = $input['telefono_medico'];
+        $email = $input['email_medico'];
+        $clave = $input['clave_medico'];
+        $especialidad = $input['espe_medico'];
 
-    $stmt = $mysqli->prepare("INSERT INTO administrador (cedula, nom_medico, ape_medico, telefono_medico, email_medico, clave_medico, espe_medico) 
-                              VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssssss", $cedula, $nombre, $apellido, $telefono, $email, $clave, $especialidad);
-    
-    if ($stmt->execute()) {
-        echo json_encode(["message" => "Administrador agregado exitosamente."]);
+        // Encriptar la contraseña usando password_hash()
+        $clave_encriptada = password_hash($clave, PASSWORD_BCRYPT);
+
+        // Preparar la consulta para insertar el administrador en la base de datos
+        $stmt = $mysqli->prepare("INSERT INTO administrador (cedula, nom_medico, ape_medico, telefono_medico, email_medico, clave_medico, espe_medico) 
+                                  VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssssss", $cedula, $nombre, $apellido, $telefono, $email, $clave_encriptada, $especialidad);
+
+        // Ejecutar la consulta y verificar si se ejecutó correctamente
+        if ($stmt->execute()) {
+            echo json_encode(["message" => "Administrador agregado exitosamente."]);
+        } else {
+            echo json_encode(["message" => "Error al agregar el administrador."]);
+        }
+
+        // Cerrar la consulta
+        $stmt->close();
     } else {
-        echo json_encode(["message" => "Error al agregar el administrador."]);
+        // Si faltan datos, devolver un mensaje de error
+        echo json_encode(["message" => "Datos incompletos para agregar el administrador."]);
     }
-
-    $stmt->close();
 }
+
 
 // LISTAR ADMINISTRADORES
 if ($method == 'GET' && isset($_GET['action']) && $_GET['action'] == 'listAdmins') {
@@ -704,10 +708,7 @@ if ($method == 'GET' && isset($_GET['action']) && $_GET['action'] == 'getPerfilA
     $stmt->close();
 }
 
-
 }
-
-
 
 
 // Cerrar la conexión a la base de datos

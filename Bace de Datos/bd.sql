@@ -3,13 +3,19 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 22-09-2024 a las 20:57:53
+-- Tiempo de generación: 23-09-2024 a las 04:53:41
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
 --
 -- Base de datos: `clinudbd`
@@ -50,20 +56,21 @@ CREATE TABLE `medicina` (
   `medicamento` varchar(100) NOT NULL,
   `dosis` varchar(100) NOT NULL,
   `tiempo` varchar(100) NOT NULL,
-  `cod_usuario` int(11) NOT NULL,
-  `cod_medico` int(11) NOT NULL
+  `cod_usuario` int(11) DEFAULT NULL,
+  `cod_medico` int(11) DEFAULT NULL,
+  `cod_medico_admin` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `medicina`
 --
 
-INSERT INTO `medicina` (`cod_medicina`, `medicamento`, `dosis`, `tiempo`, `cod_usuario`, `cod_medico`) VALUES
-(6, 'Apronax', 'despues de cada comida', 'durante una semana', 1, 1),
-(7, 'Paracetamol', 'antes de cada comida', 'durante 15 dias', 1, 1),
-(8, 'Apronax', '1 cada 12 horas', 'por 3 dias', 3, 1),
-(9, 'pruebas', 'aaa', 'aaa', 3, 1),
-(11, 'dgdf', 'dfgdf', 'dfgd', 3, 1);
+INSERT INTO `medicina` (`cod_medicina`, `medicamento`, `dosis`, `tiempo`, `cod_usuario`, `cod_medico`, `cod_medico_admin`) VALUES
+(6, 'Apronax', 'despues de cada comida', 'durante una semana', 1, 1, 1),
+(7, 'Paracetamol', 'antes de cada comida', 'durante 15 dias', 1, 1, 1),
+(8, 'Apronax', '1 cada 12 horas', 'por 3 dias', 3, 1, 1),
+(9, 'pruebas', 'aaa', 'aaa', 3, 1, 1),
+(11, 'dgdf', 'dfgdf', 'dfgd', 3, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -99,23 +106,19 @@ INSERT INTO `medico` (`cod_medico`, `cedula`, `nom_medico`, `ape_medico`, `telef
 CREATE TABLE `mensaje` (
   `cod_mensaje` int(11) NOT NULL,
   `mensaje` varchar(1000) NOT NULL,
-  `cod_medico` int(11) NOT NULL,
-  `cod_usuario` int(11) NOT NULL
+  `cod_medico` int(11) DEFAULT NULL,
+  `cod_usuario` int(11) DEFAULT NULL,
+  `cod_medico_admin` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `mensaje`
 --
 
-INSERT INTO `mensaje` (`cod_mensaje`, `mensaje`, `cod_medico`, `cod_usuario`) VALUES
-(1, 'Buenas noches', 1, 1),
-(5, 'todo bien\n', 1, 1),
-(6, 'prueba proyecto integrador', 1, 1),
-(7, 'Revisar su medicacion', 1, 1),
-(8, 'que tal', 1, 3),
-(9, 'prueba 1', 1, 1),
-(10, 'prueba', 1, 1),
-(11, 'dgdfg', 4, 3);
+INSERT INTO `mensaje` (`cod_mensaje`, `mensaje`, `cod_medico`, `cod_usuario`, `cod_medico_admin`) VALUES
+(1, 'Buenas noches', 1, 1, 1),
+(7, 'Revisar su medicacion', 1, 1, 1),
+(11, 'dgdfg', 4, 3, 1);
 
 -- --------------------------------------------------------
 
@@ -185,7 +188,8 @@ ALTER TABLE `administrador`
 ALTER TABLE `medicina`
   ADD PRIMARY KEY (`cod_medicina`),
   ADD KEY `cod_usuario` (`cod_usuario`),
-  ADD KEY `cod_medico` (`cod_medico`);
+  ADD KEY `cod_medico` (`cod_medico`),
+  ADD KEY `cod_medico_admin` (`cod_medico_admin`);
 
 --
 -- Indices de la tabla `medico`
@@ -199,7 +203,8 @@ ALTER TABLE `medico`
 ALTER TABLE `mensaje`
   ADD PRIMARY KEY (`cod_mensaje`),
   ADD KEY `cod_medico` (`cod_medico`),
-  ADD KEY `cod_usuario` (`cod_usuario`);
+  ADD KEY `cod_usuario` (`cod_usuario`),
+  ADD KEY `cod_medico_admin` (`cod_medico_admin`);
 
 --
 -- Indices de la tabla `signos`
@@ -263,14 +268,16 @@ ALTER TABLE `usuario`
 --
 ALTER TABLE `medicina`
   ADD CONSTRAINT `medicina_ibfk_1` FOREIGN KEY (`cod_medico`) REFERENCES `medico` (`cod_medico`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `medicina_ibfk_2` FOREIGN KEY (`cod_usuario`) REFERENCES `usuario` (`cod_usuario`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `medicina_ibfk_2` FOREIGN KEY (`cod_usuario`) REFERENCES `usuario` (`cod_usuario`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `medicina_ibfk_3` FOREIGN KEY (`cod_medico_admin`) REFERENCES `administrador` (`cod_medico_admin`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `mensaje`
 --
 ALTER TABLE `mensaje`
   ADD CONSTRAINT `mensaje_ibfk_1` FOREIGN KEY (`cod_medico`) REFERENCES `medico` (`cod_medico`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `mensaje_ibfk_2` FOREIGN KEY (`cod_usuario`) REFERENCES `usuario` (`cod_usuario`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `mensaje_ibfk_2` FOREIGN KEY (`cod_usuario`) REFERENCES `usuario` (`cod_usuario`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `mensaje_ibfk_3` FOREIGN KEY (`cod_medico_admin`) REFERENCES `administrador` (`cod_medico_admin`);
 
 --
 -- Filtros para la tabla `signos`
@@ -278,3 +285,7 @@ ALTER TABLE `mensaje`
 ALTER TABLE `signos`
   ADD CONSTRAINT `signos_ibfk_1` FOREIGN KEY (`cod_usuario`) REFERENCES `usuario` (`cod_usuario`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

@@ -3,84 +3,55 @@
   justify-content: center;
   align-items: center;
   height: 100%;
-  background: linear-gradient(135deg, #6dd5ed, #2193b0);
-  padding: 20px;
+  background-color: #ffffff;
 }
 
 .login-card {
   width: 100%;
-  max-width: 350px;
-  padding: 16px;
-  border-radius: 16px;
-  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
-  background-color: #fff;
-  transition: transform 0.3s ease;
-}
-
-.login-card:hover {
-  transform: scale(1.05);
+  max-width: 400px;
 }
 
 .logo-container {
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
+  padding: 20px 0;
 }
 
 .logo {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
+  max-width: 150px;
 }
 
 .card-title {
   text-align: center;
-  font-size: 1.8em;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 20px;
-}
-
-.custom-input {
-  --background: #f7f7f7;
-  --placeholder-color: #999;
-  border-radius: 8px;
-  margin-bottom: 20px;
+  font-size: 1.5rem;
+  color: #A2478A;  /* Color 1 */
 }
 
 .custom-input ion-label {
-  color: #555;
+  color: #009999;  /* Color 2 */
 }
 
 .login-button {
-  margin-top: 20px;
-  border-radius: 12px;
-  background-color: #2193b0;
-  --background-hover: #176180;
-  --background-activated: #13546a;
-  color: #fff;
-  transition: background-color 0.3s ease;
-}
-
-.login-button:hover {
-  background-color: #176180;
+  --background: #A2478A;  /* Color 1 */
 }
 
 .forgot-password-button {
-  margin-top: 10px;
-  --color: #2193b0;
-  text-decoration: underline;
-  font-weight: bold;
-  text-align: center;
+  --color: #009999;  /* Color 2 */
 }
 
-.forgot-password-button:hover {
-  --color: #176180;
+.social-media-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.social-icon {
+  font-size: 24px;
+  color: #A2478A;  /* Color 1 */
 }
 
 .error-message {
-  color: red;
+  color: #ff0000;
   text-align: center;
-  font-size: 0.9em;
-  margin-top: 15px;
+  margin-top: 10px;
 }

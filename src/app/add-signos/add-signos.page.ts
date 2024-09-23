@@ -54,7 +54,7 @@ export class AddSignosPage implements OnInit {
     // Enviar los signos vitales al servicio
     this.servisioService.addSignos(signosData).subscribe(response => {
       console.log('Signos vitales añadidos', response);
-      this.router.navigate(['/menu']);  // Redirigir a otra página después de agregar los signos
+      this.router.navigate(['/signos']);  // Redirigir a otra página después de agregar los signos
     });
   }
 }

@@ -1,8 +1,4 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Login</ion-title>
-  </ion-toolbar>
-</ion-header>
+
 
 <ion-content>
   <div class="login-container">
@@ -35,6 +31,19 @@
         </ion-button>
 
         <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
+
+        <!-- Redes Sociales -->
+        <div class="social-media-container">
+          <ion-button fill="clear" href="https://www.facebook.com/nutricionydiabetes2" target="_blank">
+            <ion-icon name="logo-facebook" class="social-icon"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" href="https://www.instagram.com/clinud/" target="_blank">
+            <ion-icon name="logo-instagram" class="social-icon"></ion-icon>
+          </ion-button>
+          <ion-button fill="clear" href="https://api.whatsapp.com/send?phone=56944606350&text=Hola%2C%20buenos%20dias" target="_blank">
+            <ion-icon name="logo-whatsapp" class="social-icon"></ion-icon>
+          </ion-button>
+        </div>
       </ion-card-content>
     </ion-card>
   </div>

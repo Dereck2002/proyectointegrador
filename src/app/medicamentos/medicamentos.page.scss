@@ -1,70 +1,37 @@
-ion-header {
-    ion-toolbar {
-      background-color: #3b5998;  /* Cambiar el color del header a un tono azul */
-      color: white;
-    }
-  
-    ion-title {
-      font-weight: bold;
-    }
-  }
-  
-  ion-content {
-    .ion-padding {
-      background-color: #f4f6f9;  /* Fondo suave para el contenido */
-    }
-  
-    ion-searchbar {
-      --background: #ffffff;
-      --placeholder-color: #888;
-      --color: #444;
-      margin-bottom: 15px;
-      border-radius: 15px;
-    }
-  
-    .select-item {
-      --background: #fff;
-      margin-bottom: 15px;
-      border-radius: 15px;
-      box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-    }
-  
-    .med-list {
-      .med-item {
-        --background: #fff;
-        margin-bottom: 10px;
-        border-radius: 15px;
-        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-        padding: 10px;
-  
-        .med-name {
-          font-size: 1.2rem;
-          font-weight: bold;
-          color: #2c3e50;
-        }
-  
-        ion-button {
-          --border-radius: 50%;  /* Los botones tienen forma redonda */
-          --box-shadow: none;
-          padding: 5px;
-        }
-  
-        ion-icon {
-          font-size: 1.5rem;  /* Iconos más grandes */
-        }
-      }
-    }
-  
-    ion-button {
-      --background: #3b5998;  /* Botones primarios con el mismo tono azul */
-      --color: white;
-      margin-top: 20px;
-      border-radius: 10px;
-    }
-  
-    ion-fab-button {
-      --background: #f39c12;  /* Color del botón flotante */
-      --color: white;
-    }
-  }
-  
+/* Logo en la esquina izquierda del toolbar */
+.logo-menu {
+  max-width: 40px; /* Ajusta el tamaño del logo aquí */
+  max-height: 40px;
+}
+
+/* Toolbar y colores */
+ion-toolbar {
+  --background: #A2478A; /* Color 1 */
+}
+
+/* Botones y texto del botón flotante */
+ion-button {
+  --color: #ffffff; /* Color del texto y borde del botón */
+}
+
+ion-button[fill="outline"] {
+  --border-color: #009999; /* Color del borde del botón */
+  --color: #009999; /* Color del texto del botón */
+}
+
+ion-fab-button {
+  --background: #A2478A; /* Color de fondo del botón flotante */
+}
+
+/* Estilos de las tarjetas de pacientes */
+.patient-card {
+  --background: #ffffff; /* Color de fondo de las tarjetas */
+  --color: #000000; /* Color del texto de las tarjetas */
+}
+
+/* Estilo del buscador */
+ion-searchbar {
+  --background: #ffffff; /* Color de fondo del campo de búsqueda */
+  --color: #000000; /* Color del texto del campo de búsqueda */
+  --placeholder-color: #009999; /* Color del texto de placeholder */
+}

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { ServisioService } from '../servisio/servisio.service';
 import { ToastController } from '@ionic/angular';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-reset-password',
@@ -14,7 +15,8 @@ export class ResetPasswordPage {
 
   constructor(
     private servisioService: ServisioService,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private navCtrl: NavController
   ) {}
 
   async resetPassword() {
@@ -36,6 +38,7 @@ export class ResetPasswordPage {
       async (response: any) => {
         if (response && response.message) {
           await this.showToast(response.message);
+          this.navCtrl.navigateForward('/home');
         } else {
           await this.showToast('Error inesperado. Inténtelo nuevamente.');
         }

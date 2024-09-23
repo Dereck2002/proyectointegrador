@@ -1,9 +1,14 @@
 <ion-header>
-  <ion-toolbar color="primary">
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/menu"></ion-back-button>
+  <ion-toolbar>
+    <!-- Logo en la esquina derecha -->
+    <ion-buttons slot="end">
+      <img src="assets/img/clinudb.png" alt="Logo Empresa" class="logo-menu">
     </ion-buttons>
-    <ion-title>Medicamentos por Paciente</ion-title>
+
+    <ion-buttons slot="start">
+      <ion-back-button color="light" defaultHref="/menu"></ion-back-button>
+    </ion-buttons>
+    <ion-title color="light" class="ion-text-center">Medicamentos</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -70,11 +75,11 @@
   </ion-item>
 
   <!-- Botón para guardar cambios -->
-  <ion-button expand="block" color="primary" *ngIf="editingMedicamento" (click)="updateMedicamento()">Guardar Cambios</ion-button>
+  <ion-button expand="block" color="success" *ngIf="editingMedicamento" (click)="updateMedicamento()">Guardar Cambios</ion-button>
 
   <!-- Floating action button para agregar medicamentos -->
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button color="tertiary" routerLink="/add-medicamento">
+    <ion-fab-button color="success" routerLink="/add-medicamento">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
   </ion-fab>

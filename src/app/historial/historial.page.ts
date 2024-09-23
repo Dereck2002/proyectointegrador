@@ -41,15 +41,25 @@ export class HistorialPage implements OnInit {
     }
   }
   
-  // Cargar los mensajes del usuario logueado
-loadMensajes() {
-  this.servisioService.listMensajes(this.userId, this.rol).subscribe(response => {
-    console.log('Mensajes recibidos del servidor:', response);  // Depurar la respuesta
-    this.mensajes = response;
-  }, error => {
-    console.error('Error al cargar los mensajes:', error);
-  });
-}
+  loadMensajes() {
+    this.servisioService.listMensajes(this.userId, this.rol).subscribe(response => {
+      this.mensajes = response.map((mensaje: any) => {
+        // Si el mensaje fue enviado por el médico
+        if (mensaje.cod_medico) {
+          mensaje.user = `${mensaje.nom_medico} ${mensaje.ape_medico}`;  // Nombre completo del médico
+        } 
+        // Si el mensaje fue enviado por el paciente
+        else if (mensaje.cod_usuario) {
+          mensaje.user = `${mensaje.nom_usuario} ${mensaje.ape_usuario}`;  // Nombre completo del paciente
+        }
+        // Retornar el mensaje con el nombre asignado
+        return mensaje;
+      });
+    }, error => {
+      console.error('Error al cargar los mensajes:', error);
+    });
+  }
+  
   
   // Redirigir a la página de chat con el mensaje seleccionado
   goToChat(mensaje: any) {

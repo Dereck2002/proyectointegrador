@@ -1,9 +1,13 @@
 <ion-header>
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/historial"></ion-back-button>
+    <!-- Logo en la esquina derecha -->
+    <ion-buttons slot="end">
+      <img src="assets/img/clinudb.png" alt="Logo Empresa" class="logo-menu">
     </ion-buttons>
-    <ion-title>Enviar Mensaje</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button color="light" defaultHref="/historial"></ion-back-button>
+    </ion-buttons>
+    <ion-title color="light" class="ion-text-center">Enviar Mensaje</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -39,7 +43,7 @@
       <!-- Campo para escribir el mensaje -->
       <ion-item>
         <ion-label position="floating">Escribe tu mensaje</ion-label>
-        <ion-textarea [(ngModel)]="mensaje.contenido" required></ion-textarea>
+        <ion-textarea [(ngModel)]="mensaje.mensaje" required></ion-textarea> <!-- Cambiado a mensaje.mensaje -->
       </ion-item>
 
       <!-- Botón para enviar el mensaje -->

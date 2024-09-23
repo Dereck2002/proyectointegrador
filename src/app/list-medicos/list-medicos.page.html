@@ -1,43 +1,56 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/menu"></ion-back-button>
+      <ion-back-button color="light" defaultHref="/menu"></ion-back-button>
     </ion-buttons>
-    <ion-title>Lista de Médicos</ion-title>
+    <!-- Logo en la esquina derecha -->
+    <ion-buttons slot="end">
+      <img src="assets/img/clinudb.png" alt="Logo Empresa" class="logo-menu">
+    </ion-buttons>
+
+    <!-- Título centrado con color blanco -->
+    <ion-title color="light" class="ion-text-center">Lista de Médicos</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="ion-padding">
   <!-- Buscador de médicos -->
-  <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="filterMedicos()" placeholder="Buscar Médico"></ion-searchbar>
+  <ion-searchbar 
+    [(ngModel)]="searchTerm" 
+    (ionInput)="filterMedicos()" 
+    placeholder="Buscar Médico" 
+    debounce="500"
+    animated>
+  </ion-searchbar>
 
-  <!-- Lista de médicos -->
+  <!-- Lista de médicos filtrados -->
   <ion-list *ngIf="filteredMedicos.length > 0">
-    <ion-item *ngFor="let medico of filteredMedicos">
-      <ion-label>
-        <h2>{{ medico.nom_medico }} {{ medico.ape_medico }}</h2>
-        <p>Cédula: {{ medico.cedula }}</p>
-        <p>Teléfono: {{ medico.telefono_medico }}</p>
-        <p>Email: {{ medico.email_medico }}</p>
-        <p>Especialidad: {{ medico.espe_medico }}</p>
-      </ion-label>
-
-      <!-- Botón para editar -->
-      <ion-button fill="outline" (click)="editMedico(medico)">Editar</ion-button>
-
-      <!-- Botón para eliminar -->
-      <ion-button fill="outline" color="danger" (click)="confirmDelete(medico.cod_medico)">Eliminar</ion-button>
-    </ion-item>
+    <ion-card *ngFor="let medico of filteredMedicos" class="medico-card">
+      <ion-card-header>
+        <ion-card-title>{{ medico.nom_medico }} {{ medico.ape_medico }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p><strong>Cédula:</strong> {{ medico.cedula }}</p>
+        <p><strong>Teléfono:</strong> {{ medico.telefono_medico }}</p>
+        <p><strong>Email:</strong> {{ medico.email_medico }}</p>
+        <p><strong>Especialidad:</strong> {{ medico.espe_medico }}</p>
+        <ion-buttons slot="end">
+          <!-- Botón para editar -->
+          <ion-button fill="outline" color="tertiary" (click)="editMedico(medico)">Editar</ion-button>
+          <!-- Botón para eliminar -->
+          <ion-button fill="outline" color="danger" (click)="confirmDelete(medico.cod_medico)">Eliminar</ion-button>
+        </ion-buttons>
+      </ion-card-content>
+    </ion-card>
   </ion-list>
 
-  <!-- Mensaje si no hay médicos -->
+  <!-- Mensaje si no hay médicos registrados -->
   <ion-item *ngIf="filteredMedicos.length === 0">
     <ion-label>No hay médicos registrados o no se encontraron resultados.</ion-label>
   </ion-item>
-  
 </ion-content>
 
-<!-- Botón flotante para añadir medicos -->
+<!-- Botón flotante para añadir médicos -->
 <ion-fab vertical="bottom" horizontal="end" slot="fixed">
   <ion-fab-button color="success" routerLink="/medicos">
     <ion-icon name="add"></ion-icon>

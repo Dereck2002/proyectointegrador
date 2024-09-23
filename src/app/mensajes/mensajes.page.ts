@@ -10,7 +10,7 @@ import { NavController } from '@ionic/angular';
 })
 export class MensajesPage implements OnInit {
   mensaje = {
-    contenido: '',
+    mensaje: '',  // Cambiado a 'mensaje' para consistencia
     cod_usuario: null as number | null,  // ID del paciente
     cod_medico: null as number | null    // ID del médico
   };
@@ -26,7 +26,7 @@ export class MensajesPage implements OnInit {
     // Obtener el rol del usuario desde el localStorage
     this.rol = this.servisioService.getUserRole();
 
-    // Si el rol es médico, carga la lista de pacientes. Si es paciente, carga la lista de médicos. Si es administrador, carga ambas listas.
+    // Cargar lista de destinatarios según el rol del usuario logueado
     if (this.rol === 'medico') {
       this.loadPacientes();
     } else if (this.rol === 'paciente') {
@@ -86,41 +86,51 @@ export class MensajesPage implements OnInit {
 
   // Enviar mensaje
   enviarMensaje() {
-    if (this.mensaje.contenido.trim() === '') {
+    // Verificar si el contenido del mensaje está vacío
+    if (this.mensaje.mensaje.trim() === '') {
       this.showToast('El mensaje no puede estar vacío.');
       return;
     }
 
-    const loggedUserData = this.servisioService.getLoggedUserData();
-
-    if (this.rol === 'medico') {
-      this.mensaje.cod_medico = loggedUserData?.cod_medico || null;
-      this.mensaje.cod_usuario = this.selectedRecipient.id;
-    } else if (this.rol === 'paciente') {
-      this.mensaje.cod_usuario = loggedUserData?.cod_usuario || null;
-      this.mensaje.cod_medico = this.selectedRecipient.id;
-    } else if (this.rol === 'administrador') {
-      if (this.selectedRecipient.tipo === 'medico') {
-        this.mensaje.cod_medico = this.selectedRecipient.id;
-        this.mensaje.cod_usuario = null;
-      } else if (this.selectedRecipient.tipo === 'paciente') {
-        this.mensaje.cod_usuario = this.selectedRecipient.id;
-        this.mensaje.cod_medico = null;
-      }
+    // Verificar si el destinatario ha sido seleccionado
+    if (!this.selectedRecipient) {
+      this.showToast('Por favor, selecciona un destinatario.');
+      return;
     }
 
+    // Obtener los datos del usuario logueado
+    const loggedUserData = this.servisioService.getLoggedUserData();
+
+    // Asignar los valores de cod_medico y cod_usuario según el rol del usuario logueado
+    if (this.rol === 'medico') {
+      this.mensaje.cod_medico = loggedUserData?.cod_medico || null;
+      this.mensaje.cod_usuario = this.selectedRecipient.id;  // ID del paciente seleccionado
+    } else if (this.rol === 'paciente') {
+      this.mensaje.cod_usuario = loggedUserData?.cod_usuario || null;
+      this.mensaje.cod_medico = this.selectedRecipient.id;  // ID del médico seleccionado
+    }
+
+    // Validar que haya un destinatario antes de proceder
     if (!this.mensaje.cod_medico && !this.mensaje.cod_usuario) {
       this.showToast('No se pudo obtener los datos del remitente o destinatario.');
       return;
     }
 
-    this.servisioService.enviarMensaje(this.mensaje).subscribe(response => {
-      this.showToast('Mensaje enviado exitosamente.');
-      this.mensaje.contenido = '';  // Limpiar el campo del mensaje
-      
-    }, error => {
-      this.showToast('Error al enviar el mensaje.');
-    });
+    // Enviar el mensaje a través del servicio
+    this.servisioService.enviarMensaje(this.mensaje).subscribe(
+      async (response: any) => {
+        if (response && response.message === 'Mensaje enviado exitosamente.') {
+          this.showToast('Mensaje enviado exitosamente.');
+          this.mensaje.mensaje = '';  // Limpiar el campo del mensaje
+          this.navCtrl.navigateForward('/historial');  // Redirigir al historial
+        } else {
+          this.showToast('Error al enviar el mensaje: ' + (response?.message || 'Error desconocido.'));
+        }
+      },
+      (error) => {
+        this.showToast('Error en la solicitud al servidor.');
+      }
+    );
   }
 
   // Mostrar mensajes de éxito/error

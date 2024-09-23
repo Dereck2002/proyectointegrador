@@ -1,9 +1,15 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/list-medicos"></ion-back-button>
+      <ion-back-button color="light" defaultHref="/list-medicos"></ion-back-button>
     </ion-buttons>
-    <ion-title>Registrar Médico</ion-title>
+    <!-- Logo en la esquina derecha -->
+    <ion-buttons slot="end">
+      <img src="assets/img/clinudb.png" alt="Logo Empresa" class="logo-menu">
+    </ion-buttons>
+    
+    <!-- Título centrado -->
+    <ion-title color="light" class="ion-text-center">Registrar Médico</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -44,6 +50,6 @@
       <ion-input [(ngModel)]="medico['espe_medico']" name="espe_medico" type="text" required></ion-input>
     </ion-item>
 
-    <ion-button expand="full" type="submit">Registrar Médico</ion-button>
+    <ion-button color="success" expand="full" type="submit">Registrar Médico</ion-button>
   </form>
 </ion-content>

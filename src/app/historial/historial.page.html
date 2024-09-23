@@ -1,9 +1,13 @@
 <ion-header>
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/menu"></ion-back-button>
+    <!-- Logo en la esquina derecha -->
+    <ion-buttons slot="end">
+      <img src="assets/img/clinudb.png" alt="Logo Empresa" class="logo-menu">
     </ion-buttons>
-    <ion-title>Historial de Mensajes</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button color="light" defaultHref="/menu"></ion-back-button>
+    </ion-buttons>
+    <ion-title color="light" class="ion-text-center">Historial de Mensajes</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -15,13 +19,13 @@
 
 <ion-content>
   <!-- Mostrar lista de mensajes con opciones de deslizar -->
-  <ion-list>
+  <ion-list *ngIf="mensajes.length > 0">
     <ion-item-sliding *ngFor="let mensaje of mensajes">
       
       <!-- Item de mensaje que lleva al chat -->
       <ion-item (click)="goToChat(mensaje)">
         <ion-label>
-          <h2>{{ mensaje.nom_medico || mensaje.nom_usuario }} {{ mensaje.ape_medico || mensaje.ape_usuario }}</h2>
+          <h2>{{ mensaje.user }}</h2>  <!-- Solo se muestra el nombre del remitente -->
           <p>{{ mensaje.mensaje }}</p>
         </ion-label>
       </ion-item>
@@ -41,4 +45,8 @@
 
     </ion-item-sliding>
   </ion-list>
+
+  <div *ngIf="mensajes.length === 0" class="no-messages">
+    <p>No hay mensajes aún.</p>
+  </div>
 </ion-content>

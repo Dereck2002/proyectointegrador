@@ -1,36 +1,42 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/list-pacientes"></ion-back-button>
+      <ion-back-button color="light" defaultHref="/list-pacientes"></ion-back-button>
     </ion-buttons>
-    <ion-title>{{ editingPaciente ? 'Editar Paciente' : 'Agregar Paciente' }}</ion-title>
+    <!-- Logo en la esquina derecha -->
+    <ion-buttons slot="end">
+      <img src="assets/img/clinudb.png" alt="Logo Empresa" class="logo-menu">
+    </ion-buttons>
+
+    <!-- Título centrado con color blanco -->
+    <ion-title color="light" class="ion-text-center">{{ editingPaciente ? 'Editar Paciente' : 'Agregar Paciente' }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="ion-padding">
   <form (ngSubmit)="submitPaciente()" [ngClass]="{'invalid-form': !formValido()}">
     
     <!-- Cédula -->
     <ion-item>
-      <ion-label position="floating">Cédula</ion-label>
+      <ion-label position="floating" color="primary">Cédula</ion-label>
       <ion-input [(ngModel)]="paciente.cedula" name="cedula" type="number" required></ion-input>
     </ion-item>
 
     <!-- Nombre -->
     <ion-item>
-      <ion-label position="floating">Nombre</ion-label>
+      <ion-label position="floating" color="primary">Nombre</ion-label>
       <ion-input [(ngModel)]="paciente.nom_usuario" name="nombre" required></ion-input>
     </ion-item>
 
     <!-- Apellido -->
     <ion-item>
-      <ion-label position="floating">Apellido</ion-label>
+      <ion-label position="floating" color="primary">Apellido</ion-label>
       <ion-input [(ngModel)]="paciente.ape_usuario" name="apellido" required></ion-input>
     </ion-item>
 
     <!-- Teléfono -->
     <ion-item>
-      <ion-label position="floating">Teléfono</ion-label>
+      <ion-label position="floating" color="primary">Teléfono</ion-label>
       <ion-input [(ngModel)]="paciente.telefono_usuario" name="telefono" type="tel" required minlength="10" maxlength="10"></ion-input>
       <ion-note color="danger" *ngIf="paciente.telefono_usuario.length !== 10 && paciente.telefono_usuario">
         El teléfono debe tener 10 dígitos.
@@ -39,34 +45,33 @@
 
     <!-- Email -->
     <ion-item>
-      <ion-label position="floating">Email</ion-label>
+      <ion-label position="floating" color="primary">Email</ion-label>
       <ion-input [(ngModel)]="paciente.email_usuario" name="email" type="email" required></ion-input>
       <ion-note color="danger" *ngIf="!emailValido() && paciente.email_usuario">
         Introduzca un correo válido.
       </ion-note>
     </ion-item>
 
-   <!-- Contraseña -->
-<ion-item>
-  <ion-label position="floating">Contraseña</ion-label>
-  <ion-input [(ngModel)]="paciente.clave_usuario" name="clave" type="password" minlength="8" required></ion-input>
-  <ion-note color="danger" *ngIf="claveInvalida">
-    La contraseña debe tener al menos 8 caracteres y un carácter especial.
-  </ion-note>
-</ion-item>
+    <!-- Contraseña -->
+    <ion-item>
+      <ion-label position="floating" color="primary">Contraseña</ion-label>
+      <ion-input [(ngModel)]="paciente.clave_usuario" name="clave" type="password" minlength="8" required></ion-input>
+      <ion-note color="danger" *ngIf="claveInvalida">
+        La contraseña debe tener al menos 8 caracteres y un carácter especial.
+      </ion-note>
+    </ion-item>
 
-<!-- Confirmar Contraseña -->
-<ion-item>
-  <ion-label position="floating">Confirmar Contraseña</ion-label>
-  <ion-input [(ngModel)]="confirmarClave" name="confirmarClave" type="password" required></ion-input>
-  <ion-note color="danger" *ngIf="claveNoCoincide">
-    Las contraseñas no coinciden.
-  </ion-note>
-</ion-item>
-
+    <!-- Confirmar Contraseña -->
+    <ion-item>
+      <ion-label position="floating" color="primary">Confirmar Contraseña</ion-label>
+      <ion-input [(ngModel)]="confirmarClave" name="confirmarClave" type="password" required></ion-input>
+      <ion-note color="danger" *ngIf="claveNoCoincide">
+        Las contraseñas no coinciden.
+      </ion-note>
+    </ion-item>
 
     <!-- Botón de Enviar -->
-    <ion-button expand="full" type="submit" [disabled]="!formValido()">
+    <ion-button expand="full" type="submit" [disabled]="!formValido()" color="success">
       {{ editingPaciente ? 'Actualizar Paciente' : 'Agregar Paciente' }}
     </ion-button>
   </form>

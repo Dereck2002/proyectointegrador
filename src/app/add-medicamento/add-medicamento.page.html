@@ -1,9 +1,14 @@
 <ion-header>
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/medicamentos"></ion-back-button>
+    <!-- Logo en la esquina derecha -->
+    <ion-buttons slot="end">
+      <img src="assets/img/clinudb.png" alt="Logo Empresa" class="logo-menu">
     </ion-buttons>
-    <ion-title>Añadir Medicamento</ion-title>
+
+    <ion-buttons slot="start">
+      <ion-back-button color="light" defaultHref="/medicamentos"></ion-back-button>
+    </ion-buttons>
+    <ion-title color="light">Añadir Medicamento</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -34,6 +39,6 @@
       </ion-select>
     </ion-item>
 
-    <ion-button expand="full" type="submit">Guardar Medicamento</ion-button>
+    <ion-button color="success" expand="full" type="submit">Guardar Medicamento</ion-button>
   </form>
 </ion-content>

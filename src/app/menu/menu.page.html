@@ -1,12 +1,21 @@
 <ion-header>
   <ion-toolbar>
+    <!-- Logo en la esquina izquierda -->
+    <ion-buttons slot="start">
+      <img src="assets/img/clinudb.png" alt="Logo Empresa" class="logo-menu">
+    </ion-buttons>
+
+    <!-- Título centrado -->
     <ion-title>Menú</ion-title>
+
+    <!-- Botón de mensaje en la esquina derecha -->
     <ion-buttons slot="end">
       <ion-button (click)="mensaje()">
-        <ion-icon slot="icon-only" name="mail"></ion-icon>
+        <ion-icon slot="icon-only" name="mail" color="light"></ion-icon> <!-- Aquí se establece el color blanco -->
         <ion-badge *ngIf="unreadMessages > 0" color="danger">{{ unreadMessages }}</ion-badge>
       </ion-button>
     </ion-buttons>
+    
   </ion-toolbar>
 </ion-header>
 

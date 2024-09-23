@@ -1,27 +1,37 @@
+/* Logo en la esquina izquierda del toolbar */
+.logo-menu {
+  max-width: 40px; /* Ajusta el tamaño del logo aquí */
+  max-height: 40px;
+}
+
+/* Toolbar y colores */
+ion-toolbar {
+  --background: #A2478A; /* Color 1 */
+}
+
+/* Botones y texto del botón flotante */
+ion-button {
+  --color: #ffffff; /* Color del texto y borde del botón */
+}
+
+ion-button[fill="outline"] {
+  --border-color: #009999; /* Color del borde del botón */
+  --color: #009999; /* Color del texto del botón */
+}
+
+ion-fab-button {
+  --background: #A2478A; /* Color de fondo del botón flotante */
+}
+
+/* Estilos de las tarjetas de pacientes */
 .patient-card {
-    margin-bottom: 15px;
-    border-radius: 12px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  ion-card-title {
-    font-size: 18px;
-    font-weight: 500;
-  }
-  
-  ion-card-content p {
-    font-size: 15px;
-    margin: 5px 0;
-  }
-  
-  ion-searchbar {
-    margin-bottom: 15px;
-    border-radius: 8px;
-    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  ion-fab-button {
-    --box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
-    --border-radius: 50%;
-  }
-  
+  --background: #ffffff; /* Color de fondo de las tarjetas */
+  --color: #000000; /* Color del texto de las tarjetas */
+}
+
+/* Estilo del buscador */
+ion-searchbar {
+  --background: #ffffff; /* Color de fondo del campo de búsqueda */
+  --color: #000000; /* Color del texto del campo de búsqueda */
+  --placeholder-color: #009999; /* Color del texto de placeholder */
+}

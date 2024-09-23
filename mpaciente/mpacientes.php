@@ -356,7 +356,6 @@ if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'sendMessa
     }
 }
 
-
 // Actualizar mensaje
 if ($_SERVER['REQUEST_METHOD'] === 'PUT' && isset($_GET['action']) && $_GET['action'] == 'updateMensaje') {
     // Leer los datos JSON enviados en la solicitud PUT

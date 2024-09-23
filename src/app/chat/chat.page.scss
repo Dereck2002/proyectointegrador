@@ -1,0 +1,58 @@
+.sent-message {
+  text-align: right;
+  background-color: #e0f7fa;  /* Fondo para mensajes enviados */
+}
+
+.received-message {
+  text-align: left;
+  background-color: #f1f1f1;  /* Fondo para mensajes recibidos */
+}
+
+.message-content {
+  display: inline-block;
+  padding: 10px;
+  border-radius: 8px;
+  max-width: 70%;
+}
+
+.timestamp {
+  font-size: 0.75em;
+  color: #999;
+}
+/* Logo en la esquina izquierda del toolbar */
+.logo-menu {
+  max-width: 40px; /* Ajusta el tamaño del logo aquí */
+  max-height: 40px;
+}
+
+/* Toolbar y colores */
+ion-toolbar {
+  --background: #A2478A; /* Color 1 */
+}
+
+/* Botones y texto del botón flotante */
+ion-button {
+  --color: #ffffff; /* Color del texto y borde del botón */
+}
+
+ion-button[fill="outline"] {
+  --border-color: #009999; /* Color del borde del botón */
+  --color: #009999; /* Color del texto del botón */
+}
+
+ion-fab-button {
+  --background: #A2478A; /* Color de fondo del botón flotante */
+}
+
+/* Estilos de las tarjetas de pacientes */
+.patient-card {
+  --background: #ffffff; /* Color de fondo de las tarjetas */
+  --color: #000000; /* Color del texto de las tarjetas */
+}
+
+/* Estilo del buscador */
+ion-searchbar {
+  --background: #ffffff; /* Color de fondo del campo de búsqueda */
+  --color: #000000; /* Color del texto del campo de búsqueda */
+  --placeholder-color: #009999; /* Color del texto de placeholder */
+}

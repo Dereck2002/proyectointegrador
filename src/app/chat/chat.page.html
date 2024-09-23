@@ -1,18 +1,25 @@
 <ion-header>
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/menu"></ion-back-button>
+     <!-- Logo en la esquina derecha -->
+     <ion-buttons slot="end">
+      <img src="assets/img/clinudb.png" alt="Logo Empresa" class="logo-menu">
     </ion-buttons>
-    <ion-title>Chat</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button color="light" defaultHref="/menu"></ion-back-button>
+    </ion-buttons>
+    <ion-title color="light" class="ion-text-center">Chat</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <ion-list *ngIf="mensajes.length > 0">
-    <ion-item *ngFor="let mensaje of mensajes">
-      <ion-label [ngClass]="{ 'sent': mensaje.isSentByUser, 'received': !mensaje.isSentByUser }">
-        <h3>{{ mensaje.user }}:</h3>
-        <p>{{ mensaje.content }}</p>
+    <!-- Ciclo para mostrar los mensajes -->
+    <ion-item *ngFor="let mensaje of mensajes" 
+              [ngClass]="{ 'sent-message': mensaje.isSentByUser, 'received-message': !mensaje.isSentByUser }">
+      <ion-label class="message-content">
+        <!-- Mostrar el nombre del emisor del mensaje -->
+        <h3>{{ mensaje.user }}:</h3>  <!-- Nombre real del remitente -->
+        <p>{{ mensaje.mensaje }}</p>
         <span class="timestamp">{{ mensaje.timestamp | date: 'shortTime' }}</span>
       </ion-label>
     </ion-item>
@@ -29,26 +36,3 @@
     <ion-button (click)="enviarMensaje()" expand="full" [disabled]="!nuevoMensaje">Enviar</ion-button>
   </ion-toolbar>
 </ion-footer>
-
-<style>
-  ion-label.sent {
-    text-align: right;
-    color: blue;
-  }
-
-  ion-label.received {
-    text-align: left;
-    color: green;
-  }
-
-  .no-messages {
-    text-align: center;
-    margin-top: 20px;
-  }
-
-  .timestamp {
-    font-size: 0.8rem;
-    color: gray;
-    margin-left: 5px;
-  }
-</style>

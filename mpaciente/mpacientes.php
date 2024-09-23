@@ -568,26 +568,37 @@ if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'resetPass
 
 // AGREGAR MÉDICO
 if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'addMedico') {
-    $cedula = $input['cedula'];
-    $nombre = $input['nom_medico'];
-    $apellido = $input['ape_medico'];
-    $telefono = $input['telefono_medico'];
-    $email = $input['email_medico'];
-    $clave = $input['clave_medico'];
-    $especialidad = $input['espe_medico'];
+    // Asegúrate de que los datos se están recibiendo
+    if (isset($input['cedula'], $input['nom_medico'], $input['ape_medico'], $input['telefono_medico'], $input['email_medico'], $input['clave_medico'], $input['espe_medico'])) {
+        
+        // Recoger los datos enviados en la solicitud
+        $cedula = $input['cedula'];
+        $nombre = $input['nom_medico'];
+        $apellido = $input['ape_medico'];
+        $telefono = $input['telefono_medico'];
+        $email = $input['email_medico'];
+        $clave = $input['clave_medico'];
+        $especialidad = $input['espe_medico'];
 
-    $stmt = $mysqli->prepare("INSERT INTO medico (cedula, nom_medico, ape_medico, telefono_medico, email_medico, clave_medico, espe_medico) 
-                              VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssssss", $cedula, $nombre, $apellido, $telefono, $email, $clave, $especialidad);
-    
-    if ($stmt->execute()) {
-        echo json_encode(["message" => "Médico agregado exitosamente."]);
+        // Preparar la consulta para insertar el médico en la base de datos
+        $stmt = $mysqli->prepare("INSERT INTO medico (cedula, nom_medico, ape_medico, telefono_medico, email_medico, clave_medico, espe_medico) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssssss", $cedula, $nombre, $apellido, $telefono, $email, $clave, $especialidad);
+
+        // Ejecutar la consulta y verificar si se ejecutó correctamente
+        if ($stmt->execute()) {
+            echo json_encode(["message" => "Médico agregado exitosamente."]);
+        } else {
+            echo json_encode(["message" => "Error al agregar el médico."]);
+        }
+
+        // Cerrar la consulta
+        $stmt->close();
     } else {
-        echo json_encode(["message" => "Error al agregar el médico."]);
+        // Si faltan datos, devolver un mensaje de error
+        echo json_encode(["message" => "Datos incompletos para agregar el médico."]);
     }
-
-    $stmt->close();
 }
+
 
 // ACTUALIZAR MÉDICO
 if ($method == 'PUT' && isset($_GET['action']) && $_GET['action'] == 'editMedico') {

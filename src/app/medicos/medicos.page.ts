@@ -16,7 +16,7 @@ export class MedicosPage implements OnInit {
     telefono_medico: '',
     email_medico: '',
     clave_medico: '',
-    espe_medico: '',
+    espe_medico: ''
   };
   editingMedico: any = null;  // Médico que se está editando
 
@@ -37,15 +37,6 @@ export class MedicosPage implements OnInit {
 
   // Función para agregar o actualizar un médico
   submitMedico() {
-    // Validar campos antes de enviar
-    if (!this.medico.cedula || !this.medico.nom_medico || !this.medico.ape_medico || 
-        !this.medico.telefono_medico || !this.medico.email_medico || !this.medico.clave_medico || 
-        !this.medico.espe_medico) {
-      this.showToast('Por favor, completa todos los campos obligatorios.', 'danger');
-      return;
-    }
-
-    // Agregar o actualizar médico
     if (this.editingMedico) {
       // Actualizar médico
       this.servisioService.updateMedico(this.medico).subscribe(async response => {
@@ -53,18 +44,14 @@ export class MedicosPage implements OnInit {
         this.router.navigate(['/list-medicos']);  // Volver a la lista de médicos
       }, async error => {
         await this.showToast('Error al actualizar el médico.', 'danger');
-        console.error('Error al actualizar:', error);
       });
     } else {
-      this.servisioService.addMedico(this.medico).subscribe(async (response: any) => {
-        if (response && response.message) {
-          await this.showToast(response.message);
-        } else {
-          await this.showToast('Ocurrió un error inesperado.', 'danger');
-        }
+      // Agregar nuevo médico
+      this.servisioService.addMedico(this.medico).subscribe(async response => {
+        await this.showToast('Médico agregado exitosamente.');
+        this.router.navigate(['/list-medicos']);  // Volver a la lista de médicos
       }, async error => {
-        await this.showToast('Error de conexión con el servidor.', 'danger');
-        console.error('Error al agregar:', error);
+        await this.showToast('Error al agregar el médico.', 'danger');
       });
     }
   }

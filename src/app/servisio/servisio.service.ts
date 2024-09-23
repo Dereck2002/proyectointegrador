@@ -60,9 +60,10 @@ export class ServisioService {
     });
   }
 
- addMedico(medico: any): Observable<any> {
-  return this.http.post(`${this.API_URL}?action=addMedico`, medico, {
-    headers: new HttpHeaders({ 'Content-Type': 'application/json' })  // Asegúrate de que sea JSON
+// Agregar un nuevo paciente
+addMedico(paciente: any): Observable<any> {
+  return this.http.post(`${this.API_URL}?action=addMedico`, paciente, {
+    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
   });
 }
 

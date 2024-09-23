@@ -38,8 +38,13 @@ export class ListMedicosPage implements OnInit {
   filterMedicos() {
     const searchTermLower = this.searchTerm.toLowerCase();
     this.filteredMedicos = this.medicos.filter(medico =>
+      medico.cedula.toLowerCase().includes(searchTermLower) ||
       medico.nom_medico.toLowerCase().includes(searchTermLower) ||
-      medico.ape_medico.toLowerCase().includes(searchTermLower)
+      medico.ape_medico.toLowerCase().includes(searchTermLower) ||
+      medico.telefono_medico.toLowerCase().includes(searchTermLower) ||
+      medico.email_medico.toLowerCase().includes(searchTermLower) ||
+      medico.clave_medico.toLowerCase().includes(searchTermLower) ||
+      medico.espe_medico.toLowerCase().includes(searchTermLower)
     );
   }
 

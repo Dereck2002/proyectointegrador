@@ -428,7 +428,7 @@ if ($method == 'GET' && isset($_GET['action']) && $_GET['action'] == 'listMessag
 
 // LISTAR MÉDICOS
 if ($method == 'GET' && isset($_GET['action']) && $_GET['action'] == 'listMedicos') {
-    $query = "SELECT cod_medico, nom_medico, ape_medico FROM medico";
+    $query = "SELECT cod_medico, cedula, nom_medico, ape_medico, telefono_medico, email_medico, clave_medico, espe_medico FROM medico";
     $result = $mysqli->query($query);
     $medicos = [];
 

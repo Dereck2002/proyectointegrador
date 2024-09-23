@@ -625,6 +625,23 @@ if ($method == 'GET' && isset($_GET['action']) && $_GET['action'] == 'listMedico
 
     echo json_encode($medicos);
 }
+
+// ELIMINAR MÉDICO
+if ($method == 'DELETE' && isset($_GET['action']) && $_GET['action'] == 'deleteMedico') {
+    $cod_medico = $input['cod_medico'];
+
+    $stmt = $mysqli->prepare("DELETE FROM medico WHERE cod_medico = ?");
+    $stmt->bind_param("i", $cod_medico);
+
+    if ($stmt->execute()) {
+        echo json_encode(["message" => "Médico eliminado exitosamente."]);
+    } else {
+        echo json_encode(["message" => "Error al eliminar el médico."]);
+    }
+
+    $stmt->close();
+}
+
 // AGREGAR ADMINISTRADOR
 if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'addAdmin') {
     $cedula = $input['cedula'];

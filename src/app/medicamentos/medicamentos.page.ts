@@ -8,11 +8,12 @@ import { ToastController } from '@ionic/angular';
   styleUrls: ['./medicamentos.page.scss'],
 })
 export class MedicamentosPage implements OnInit {
-  pacientes: any[] = [];
+  pacientes: any[] = [];  // Lista completa de pacientes
+  filteredPacientes: any[] = [];  // Pacientes filtrados por el buscador
   medicamentos: any[] = [];
   selectedPaciente: number | null = null;
   editingMedicamento: any = null;  // Medicamento que se está editando
-  navCtrl: any;
+  searchTerm: string = '';  // Término de búsqueda para filtrar pacientes
 
   constructor(private servisioService: ServisioService, private toastController: ToastController) {}
 
@@ -24,9 +25,18 @@ export class MedicamentosPage implements OnInit {
   loadPacientes() {
     this.servisioService.listPacientes().subscribe(response => {
       this.pacientes = response;
+      this.filteredPacientes = this.pacientes;  // Inicialmente, mostrar todos los pacientes
     }, error => {
       console.error('Error al cargar la lista de pacientes:', error);
     });
+  }
+
+  // Filtrar pacientes según el término de búsqueda
+  filterPacientes() {
+    const searchTermLower = this.searchTerm.toLowerCase();
+    this.filteredPacientes = this.pacientes.filter(paciente => 
+      `${paciente.nom_usuario} ${paciente.ape_usuario}`.toLowerCase().includes(searchTermLower)
+    );
   }
 
   // Cargar los medicamentos del paciente seleccionado
@@ -68,5 +78,15 @@ export class MedicamentosPage implements OnInit {
       console.error('Error al eliminar el medicamento:', error);
     });
   }
- 
+
+  // Función para mostrar un mensaje toast
+  async showToast(message: string, color: string = 'success') {
+    const toast = await this.toastController.create({
+      message: message,
+      duration: 2000,
+      position: 'bottom',
+      color: color  // 'success' para éxito, 'danger' para error
+    });
+    toast.present();
+  }
 }

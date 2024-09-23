@@ -8,7 +8,9 @@ import { ToastController } from '@ionic/angular';
   styleUrls: ['./medicamentosp.page.scss'],
 })
 export class MedicamentospPage implements OnInit {
-  medicamentos: any[] = [];  // Aquí almacenaremos los medicamentos
+  medicamentos: any[] = [];  // Lista completa de medicamentos
+  filteredMedicamentos: any[] = [];  // Lista filtrada de medicamentos
+  searchTerm: string = '';  // Término de búsqueda
 
   constructor(
     private servisioService: ServisioService,
@@ -28,6 +30,7 @@ export class MedicamentospPage implements OnInit {
       this.servisioService.listMedicamentosByPaciente(cod_usuario).subscribe(response => {
         if (response.length > 0) {
           this.medicamentos = response;
+          this.filteredMedicamentos = [...this.medicamentos];  // Inicialmente, mostrar todos los medicamentos
         } else {
           this.showToast('No se encontraron medicamentos.');
         }
@@ -38,6 +41,15 @@ export class MedicamentospPage implements OnInit {
     } else {
       this.showToast('No se encontró el ID del paciente.');
     }
+  }
+
+  // Filtrar medicamentos según el término de búsqueda
+  filterMedicamentos() {
+    const searchTermLower = this.searchTerm.toLowerCase();
+    this.filteredMedicamentos = this.medicamentos.filter(medicamento =>
+      medicamento.medicamento.toLowerCase().includes(searchTermLower) ||
+      medicamento.dosis.toLowerCase().includes(searchTermLower)
+    );
   }
 
   // Mostrar mensajes (toasts)

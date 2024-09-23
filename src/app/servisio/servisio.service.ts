@@ -72,6 +72,15 @@ updateMedico(medico: any): Observable<any> {
   });
 }
 
+// Método para eliminar un médico
+deleteMedico(cod_medico: number): Observable<any> {
+  return this.http.delete(`${this.API_URL}?action=deleteMedico`, {
+    body: { cod_medico: cod_medico },
+    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+  });
+}
+
+
    // Método para iniciar sesión
    resetPassword(data: any): Observable<any> {
     return this.http.post(`${this.API_URL}?action=resetPassword`, data, {

@@ -1,0 +1,45 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/menu"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Lista de Médicos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Buscador de médicos -->
+  <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="filterMedicos()" placeholder="Buscar Médico"></ion-searchbar>
+
+  <!-- Lista de médicos -->
+  <ion-list *ngIf="filteredMedicos.length > 0">
+    <ion-item *ngFor="let medico of filteredMedicos">
+      <ion-label>
+        <h2>{{ medico.nom_medico }} {{ medico.ape_medico }}</h2>
+        <p>Cédula: {{ medico.cedula }}</p>
+        <p>Teléfono: {{ medico.telefono_medico }}</p>
+        <p>Email: {{ medico.email_medico }}</p>
+        <p>Especialidad: {{ medico.espe_medico }}</p>
+      </ion-label>
+
+      <!-- Botón para editar -->
+      <ion-button fill="outline" (click)="editMedico(medico)">Editar</ion-button>
+
+      <!-- Botón para eliminar -->
+      <ion-button fill="outline" color="danger" (click)="confirmDelete(medico.cod_medico)">Eliminar</ion-button>
+    </ion-item>
+  </ion-list>
+
+  <!-- Mensaje si no hay médicos -->
+  <ion-item *ngIf="filteredMedicos.length === 0">
+    <ion-label>No hay médicos registrados o no se encontraron resultados.</ion-label>
+  </ion-item>
+  
+</ion-content>
+
+<!-- Botón flotante para añadir medicos -->
+<ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab-button color="success" routerLink="/medicos">
+    <ion-icon name="add"></ion-icon>
+  </ion-fab-button>
+</ion-fab>

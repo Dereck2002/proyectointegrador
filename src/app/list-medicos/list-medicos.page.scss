@@ -1,0 +1,33 @@
+ion-header {
+    ion-toolbar {
+      background-color: #4caf50; // Color de fondo personalizado
+      color: white;
+    }
+  
+    ion-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+  }
+  
+  ion-searchbar {
+    margin: 10px;
+  }
+  
+  ion-item {
+    margin-bottom: 10px;
+  }
+  
+  ion-label h2 {
+    font-weight: bold;
+    color: #333;
+  }
+  
+  ion-label p {
+    color: #666;
+  }
+  
+  ion-button {
+    margin-left: 10px;
+  }
+  

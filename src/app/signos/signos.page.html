@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar color="primary">
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/menu"></ion-back-button>
     </ion-buttons>
@@ -7,22 +7,18 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-fab vertical="bottom" horizontal="end" slot="fixed">
-  <ion-fab-button routerLink="/add-signos">
-    <ion-icon name="add"></ion-icon>
-  </ion-fab-button>
-</ion-fab>
-
 <ion-content>
   <!-- Buscador solo visible para médicos -->
   <ion-searchbar 
     *ngIf="rol === 'medico'" 
     [(ngModel)]="searchTerm" 
     (ionInput)="filterPacientes()" 
-    placeholder="Buscar Paciente">
+    placeholder="Buscar Paciente" 
+    showCancelButton="focus"
+    debounce="500">
   </ion-searchbar>
 
-  <!-- Seleccionar el paciente -->
+  <!-- Seleccionar el paciente (solo para el médico) -->
   <ion-item *ngIf="rol === 'medico'">
     <ion-label>Selecciona el Paciente</ion-label>
     <ion-select [(ngModel)]="selectedPaciente" name="selectedPaciente" (ionChange)="loadSignos()" interface="action-sheet">
@@ -34,61 +30,79 @@
 
   <!-- Mostrar los signos del paciente seleccionado -->
   <ion-list *ngIf="signos.length > 0">
-    <ion-item *ngFor="let signo of signos">
-      <ion-label>
-        <h2>Fecha: {{ signo.fecha }}</h2>
-        <p>Presión: {{ signo.precion }}</p>
-        <p>Glucosa: {{ signo.glucosa }}</p>
-        <p>Peso: {{ signo.peso }}</p>
-        <p>Glicemia: {{ signo.glicemia }}</p>
-        <p>Pulso: {{ signo.pulso }}</p>
-        <p>Temperatura: {{ signo.temperatura }}</p>
-      </ion-label>
+    <ion-card *ngFor="let signo of signos">
+      <ion-card-header>
+        <ion-card-title>Fecha: {{ signo.fecha }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p><strong>Presión:</strong> {{ signo.precion }}</p>
+        <p><strong>Glucosa:</strong> {{ signo.glucosa }}</p>
+        <p><strong>Peso:</strong> {{ signo.peso }}</p>
+        <p><strong>Glicemia:</strong> {{ signo.glicemia }}</p>
+        <p><strong>Pulso:</strong> {{ signo.pulso }}</p>
+        <p><strong>Temperatura:</strong> {{ signo.temperatura }}</p>
 
-      <!-- Botón para editar -->
-      <ion-button fill="outline" (click)="editSigno(signo)">Editar</ion-button>
-      
-      <!-- Botón para eliminar -->
-      <ion-button fill="outline" color="danger" (click)="deleteSigno(signo.cod_signos)">Eliminar</ion-button>
-    </ion-item>
+        <ion-buttons slot="end">
+          <!-- Botón para editar -->
+          <ion-button fill="outline" color="tertiary" (click)="editSigno(signo)">Editar</ion-button>
+          <!-- Botón para eliminar -->
+          <ion-button fill="outline" color="danger" (click)="deleteSigno(signo.cod_signos)">Eliminar</ion-button>
+        </ion-buttons>
+      </ion-card-content>
+    </ion-card>
   </ion-list>
 
   <!-- Mostrar mensaje si no hay signos vitales -->
   <ion-item *ngIf="signos.length === 0 && selectedPaciente">
-    <ion-label>No hay signos vitales registrados para este paciente.</ion-label>
+    <ion-label color="medium" text-center>No hay signos vitales registrados para este paciente.</ion-label>
   </ion-item>
 
   <!-- Formulario para editar signos -->
-  <ion-item *ngIf="editingSigno">
-    <ion-label position="floating">Presión</ion-label>
-    <ion-input [(ngModel)]="editingSigno.precion" type="number" required></ion-input>
-  </ion-item>
+  <ion-card *ngIf="editingSigno">
+    <ion-card-header>
+      <ion-card-title>Editar Signo Vital</ion-card-title>
+    </ion-card-header>
 
-  <ion-item *ngIf="editingSigno">
-    <ion-label position="floating">Glucosa</ion-label>
-    <ion-input [(ngModel)]="editingSigno.glucosa" type="number" required></ion-input>
-  </ion-item>
+    <ion-card-content>
+      <ion-item>
+        <ion-label position="floating">Presión</ion-label>
+        <ion-input [(ngModel)]="editingSigno.precion" type="number" required></ion-input>
+      </ion-item>
 
-  <ion-item *ngIf="editingSigno">
-    <ion-label position="floating">Peso</ion-label>
-    <ion-input [(ngModel)]="editingSigno.peso" type="number" required></ion-input>
-  </ion-item>
+      <ion-item>
+        <ion-label position="floating">Glucosa</ion-label>
+        <ion-input [(ngModel)]="editingSigno.glucosa" type="number" required></ion-input>
+      </ion-item>
 
-  <ion-item *ngIf="editingSigno">
-    <ion-label position="floating">Glicemia</ion-label>
-    <ion-input [(ngModel)]="editingSigno.glicemia" type="number" required></ion-input>
-  </ion-item>
+      <ion-item>
+        <ion-label position="floating">Peso</ion-label>
+        <ion-input [(ngModel)]="editingSigno.peso" type="number" required></ion-input>
+      </ion-item>
 
-  <ion-item *ngIf="editingSigno">
-    <ion-label position="floating">Pulso</ion-label>
-    <ion-input [(ngModel)]="editingSigno.pulso" type="number" required></ion-input>
-  </ion-item>
+      <ion-item>
+        <ion-label position="floating">Glicemia</ion-label>
+        <ion-input [(ngModel)]="editingSigno.glicemia" type="number" required></ion-input>
+      </ion-item>
 
-  <ion-item *ngIf="editingSigno">
-    <ion-label position="floating">Temperatura</ion-label>
-    <ion-input [(ngModel)]="editingSigno.temperatura" type="number" required></ion-input>
-  </ion-item>
+      <ion-item>
+        <ion-label position="floating">Pulso</ion-label>
+        <ion-input [(ngModel)]="editingSigno.pulso" type="number" required></ion-input>
+      </ion-item>
 
-  <!-- Botón para guardar cambios -->
-  <ion-button expand="full" *ngIf="editingSigno" (click)="updateSigno()">Guardar Cambios</ion-button>
+      <ion-item>
+        <ion-label position="floating">Temperatura</ion-label>
+        <ion-input [(ngModel)]="editingSigno.temperatura" type="number" required></ion-input>
+      </ion-item>
+
+      <!-- Botón para guardar cambios -->
+      <ion-button expand="full" color="primary" (click)="updateSigno()">Guardar Cambios</ion-button>
+    </ion-card-content>
+  </ion-card>
 </ion-content>
+
+<!-- Botón flotante para añadir signos -->
+<ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab-button color="success" routerLink="/add-signos">
+    <ion-icon name="add"></ion-icon>
+  </ion-fab-button>
+</ion-fab>

@@ -52,6 +52,51 @@
       </ion-note>
     </ion-item>
 
+    <!-- Fecha de Nacimiento -->
+    <ion-item>
+      <ion-label position="floating" color="primary">Fecha de Nacimiento</ion-label>
+      <ion-input [(ngModel)]="paciente.fecha_nacimiento" name="fechaNacimiento" type="date" required></ion-input>
+    </ion-item>
+
+    <!-- Dirección -->
+    <ion-item>
+      <ion-label position="floating" color="primary">Dirección</ion-label>
+      <ion-textarea [(ngModel)]="paciente.direccion" name="direccion" required></ion-textarea>
+    </ion-item>
+
+    <!-- Sexo -->
+    <ion-item>
+      <ion-label>Sexo</ion-label>
+      <ion-select [(ngModel)]="paciente.sexo" name="sexo" placeholder="Seleccione uno" required>
+        <ion-select-option value="Masculino">Masculino</ion-select-option>
+        <ion-select-option value="Femenino">Femenino</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <!-- Grupo Sanguíneo -->
+    <ion-item>
+      <ion-label position="floating" color="primary">Grupo Sanguíneo</ion-label>
+      <ion-input [(ngModel)]="paciente.grupo_sanguineo" name="grupoSanguineo" required></ion-input>
+    </ion-item>
+
+    <!-- Alergias -->
+    <ion-item>
+      <ion-label position="floating" color="primary">Alergias</ion-label>
+      <ion-textarea [(ngModel)]="paciente.alergias" name="alergias"></ion-textarea>
+    </ion-item>
+
+    <!-- Enfermedades Crónicas -->
+    <ion-item>
+      <ion-label position="floating" color="primary">Enfermedades Crónicas</ion-label>
+      <ion-textarea [(ngModel)]="paciente.enfermedades_cronicas" name="enfermedadesCronicas"></ion-textarea>
+    </ion-item>
+
+    <!-- Medicación Actual -->
+    <ion-item>
+      <ion-label position="floating" color="primary">Medicación Actual</ion-label>
+      <ion-textarea [(ngModel)]="paciente.medicacion_actual" name="medicacionActual"></ion-textarea>
+    </ion-item>
+
     <!-- Contraseña -->
     <ion-item>
       <ion-label position="floating" color="primary">Contraseña</ion-label>

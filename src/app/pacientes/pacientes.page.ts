@@ -15,7 +15,14 @@ export class PacientesPage implements OnInit {
     ape_usuario: '',
     telefono_usuario: '',
     email_usuario: '',
-    clave_usuario: ''
+    clave_usuario: '',
+    fecha_nacimiento: '', // Nuevo campo
+    direccion: '', // Nuevo campo
+    sexo: '', // Nuevo campo
+    grupo_sanguineo: '', // Nuevo campo
+    alergias: '', // Nuevo campo
+    enfermedades_cronicas: '', // Nuevo campo
+    medicacion_actual: '' // Nuevo campo
   };
   confirmarClave = ''; // Campo para confirmar la contraseña
   editingPaciente: any = null;  // Paciente que se está editando

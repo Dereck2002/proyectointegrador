@@ -86,10 +86,9 @@ if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'login') {
     $stmt->close();
 }
 
-
 // LISTAR PACIENTES
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] == 'listPacientes') {
-    $query = "SELECT cod_usuario, cedula, nom_usuario, ape_usuario, telefono_usuario, email_usuario FROM usuario";
+if ($method === 'GET' && isset($_GET['action']) && $_GET['action'] == 'listPacientes') {
+    $query = "SELECT cod_usuario, cedula, nom_usuario, ape_usuario, telefono_usuario, email_usuario, fecha_nacimiento, direccion, sexo, grupo_sanguineo, alergias, enfermedades_cronicas, medicacion_actual FROM usuario";
     $result = $mysqli->query($query);
     $patients = [];
 
@@ -101,53 +100,81 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['act
 }
 
 // AGREGAR PACIENTE
-if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'addPatient') {
-    $cedula = $input['cedula'];
-    $nombre = $input['nom_usuario'];
-    $apellido = $input['ape_usuario'];
-    $telefono = $input['telefono_usuario'];
-    $email = $input['email_usuario'];
-    $clave = password_hash($input['clave_usuario'], PASSWORD_DEFAULT); // Encriptar la contraseña
+if ($method === 'POST' && isset($_GET['action']) && $_GET['action'] == 'addPatient') {
+    if (isset($input['cedula'], $input['nom_usuario'], $input['ape_usuario'], $input['telefono_usuario'], $input['email_usuario'], $input['clave_usuario'], $input['fecha_nacimiento'], $input['direccion'], $input['sexo'], $input['grupo_sanguineo'], $input['alergias'], $input['enfermedades_cronicas'], $input['medicacion_actual'])) {
 
-    $stmt = $mysqli->prepare("INSERT INTO usuario (cedula, nom_usuario, ape_usuario, telefono_usuario, email_usuario, clave_usuario) VALUES (?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssssss", $cedula, $nombre, $apellido, $telefono, $email, $clave);
-    
-    if ($stmt->execute()) {
-        echo json_encode(["message" => "Paciente agregado exitosamente."]);
+        // Recoger los datos enviados en la solicitud
+        $cedula = $input['cedula'];
+        $nombre = $input['nom_usuario'];
+        $apellido = $input['ape_usuario'];
+        $telefono = $input['telefono_usuario'];
+        $email = $input['email_usuario'];
+        $clave = password_hash($input['clave_usuario'], PASSWORD_DEFAULT); // Encriptar la contraseña
+        $fecha_nacimiento = $input['fecha_nacimiento'];
+        $direccion = $input['direccion'];
+        $sexo = $input['sexo'];
+        $grupo_sanguineo = $input['grupo_sanguineo'];
+        $alergias = $input['alergias'];
+        $enfermedades_cronicas = $input['enfermedades_cronicas'];
+        $medicacion_actual = $input['medicacion_actual'];
+
+        // Preparar la consulta para insertar el paciente en la base de datos
+        $stmt = $mysqli->prepare("INSERT INTO usuario (cedula, nom_usuario, ape_usuario, telefono_usuario, email_usuario, clave_usuario, fecha_nacimiento, direccion, sexo, grupo_sanguineo, alergias, enfermedades_cronicas, medicacion_actual) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssssssssssss", $cedula, $nombre, $apellido, $telefono, $email, $clave, $fecha_nacimiento, $direccion, $sexo, $grupo_sanguineo, $alergias, $enfermedades_cronicas, $medicacion_actual);
+        
+        // Ejecutar la consulta y verificar si se ejecutó correctamente
+        if ($stmt->execute()) {
+            echo json_encode(["message" => "Paciente agregado exitosamente."]);
+        } else {
+            echo json_encode(["message" => "Error al agregar el paciente."]);
+        }
+
+        $stmt->close();
     } else {
-        echo json_encode(["message" => "Error al agregar el paciente."]);
+        echo json_encode(["message" => "Datos incompletos para agregar el paciente."]);
     }
-
-    $stmt->close();
 }
-
 
 // ACTUALIZAR PACIENTE
-if ($method == 'PUT' && isset($_GET['action']) && $_GET['action'] == 'editPatient') {
-    $id = $input['cod_usuario'];
-    $cedula = $input['cedula'];
-    $nombre = $input['nom_usuario'];
-    $apellido = $input['ape_usuario'];
-    $telefono = $input['telefono_usuario'];
-    $email = $input['email_usuario'];
-    $clave = password_hash($input['clave_usuario'], PASSWORD_DEFAULT); // Encriptar la nueva contraseña
+if ($method === 'PUT' && isset($_GET['action']) && $_GET['action'] == 'editPatient') {
+    if (isset($input['cod_usuario'], $input['cedula'], $input['nom_usuario'], $input['ape_usuario'], $input['telefono_usuario'], $input['email_usuario'], $input['clave_usuario'], $input['fecha_nacimiento'], $input['direccion'], $input['sexo'], $input['grupo_sanguineo'], $input['alergias'], $input['enfermedades_cronicas'], $input['medicacion_actual'])) {
 
-    $stmt = $mysqli->prepare("UPDATE usuario SET cedula = ?, nom_usuario = ?, ape_usuario = ?, telefono_usuario = ?, email_usuario = ?, clave_usuario = ? WHERE cod_usuario = ?");
-    $stmt->bind_param("ssssssi", $cedula, $nombre, $apellido, $telefono, $email, $clave, $id);
-    
-    if ($stmt->execute()) {
-        echo json_encode(["message" => "Paciente actualizado exitosamente."]);
+        // Recoger los datos del paciente
+        $id = $input['cod_usuario'];
+        $cedula = $input['cedula'];
+        $nombre = $input['nom_usuario'];
+        $apellido = $input['ape_usuario'];
+        $telefono = $input['telefono_usuario'];
+        $email = $input['email_usuario'];
+        $clave = password_hash($input['clave_usuario'], PASSWORD_DEFAULT); // Encriptar la contraseña
+        $fecha_nacimiento = $input['fecha_nacimiento'];
+        $direccion = $input['direccion'];
+        $sexo = $input['sexo'];
+        $grupo_sanguineo = $input['grupo_sanguineo'];
+        $alergias = $input['alergias'];
+        $enfermedades_cronicas = $input['enfermedades_cronicas'];
+        $medicacion_actual = $input['medicacion_actual'];
+
+        // Preparar la consulta para actualizar el paciente en la base de datos
+        $stmt = $mysqli->prepare("UPDATE usuario SET cedula = ?, nom_usuario = ?, ape_usuario = ?, telefono_usuario = ?, email_usuario = ?, clave_usuario = ?, fecha_nacimiento = ?, direccion = ?, sexo = ?, grupo_sanguineo = ?, alergias = ?, enfermedades_cronicas = ?, medicacion_actual = ? WHERE cod_usuario = ?");
+        $stmt->bind_param("ssssssssssssi", $cedula, $nombre, $apellido, $telefono, $email, $clave, $fecha_nacimiento, $direccion, $sexo, $grupo_sanguineo, $alergias, $enfermedades_cronicas, $medicacion_actual, $id);
+        
+        // Ejecutar la consulta y verificar si se ejecutó correctamente
+        if ($stmt->execute()) {
+            echo json_encode(["message" => "Paciente actualizado exitosamente."]);
+        } else {
+            echo json_encode(["message" => "Error al actualizar el paciente."]);
+        }
+
+        $stmt->close();
     } else {
-        echo json_encode(["message" => "Error al actualizar el paciente."]);
+        echo json_encode(["message" => "Datos incompletos para actualizar el paciente."]);
     }
-
-    $stmt->close();
 }
 
-
-// ELIMINAR PACIENTE: Eliminar un paciente por su ID
-if ($method == 'DELETE' && isset($_GET['action']) && $_GET['action'] == 'deletePatient') {
-    $id = $input['id'];
+// ELIMINAR PACIENTE
+if ($method === 'DELETE' && isset($_GET['action']) && $_GET['action'] == 'deletePatient') {
+    $id = $input['cod_usuario'];
 
     $stmt = $mysqli->prepare("DELETE FROM usuario WHERE cod_usuario = ?");
     $stmt->bind_param("i", $id);

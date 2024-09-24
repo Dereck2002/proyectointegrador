@@ -18,7 +18,7 @@
               [ngClass]="{ 'sent-message': mensaje.isSentByUser, 'received-message': !mensaje.isSentByUser }">
       <ion-label class="message-content">
         <!-- Mostrar el nombre del emisor del mensaje -->
-        <h3>{{ mensaje.user }}:</h3>  <!-- Nombre real del remitente -->
+        <h3>{{ mensaje.isSentByUser ? userName : chatPartnerName }}:</h3>
         <p>{{ mensaje.mensaje }}</p>
         <span class="timestamp">{{ mensaje.timestamp | date: 'shortTime' }}</span>
       </ion-label>

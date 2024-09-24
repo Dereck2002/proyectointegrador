@@ -24,6 +24,16 @@ export class ChatPage implements OnInit {
   ) {}
 
   ngOnInit() {
+  this.route.queryParams.subscribe(params => {
+    // Al cambiar la conversación, se actualizan los parámetros y se recargan los mensajes
+    this.chatPartnerId = params['userId'];  // El ID del usuario de la conversación (receptor)
+    this.chatPartnerName = params['userName'];  // Nombre del usuario de la conversación (receptor)
+    
+    // Resetear la lista de mensajes y cargar la nueva conversación
+    this.mensajes = [];
+    this.nuevoMensaje = '';
+
+    // Obtener los datos del usuario logueado
     this.rol = this.servisioService.getUserRole();
     const loggedUserData = this.servisioService.getLoggedUserData();
 
@@ -36,18 +46,22 @@ export class ChatPage implements OnInit {
       this.userName = loggedUserData.nom_usuario;  // Nombre del paciente
     }
 
-    // Obtener el ID del usuario con el que se está chateando (el doctor o el paciente)
-    this.route.queryParams.subscribe(params => {
-      this.chatPartnerId = params['userId'];  // El ID del usuario de la conversación
-      this.chatPartnerName = params['userName'];  // Nombre del usuario de la conversación
-      this.cargarMensajes();
-    });
-  }
+    // Cargar los mensajes para la nueva conversación
+    this.cargarMensajes();
+  });
+}
 
-  // Cargar los mensajes de la conversación
+  
+  // Cargar los mensajes de la conversación entre el usuario logueado y el chat partner
   cargarMensajes() {
+    // Filtrar los mensajes por el usuario logueado y el receptor (chat partner)
     this.servisioService.listMensajes(this.chatPartnerId, this.rol).subscribe(response => {
-      this.mensajes = response.map((mensaje: any) => {
+      this.mensajes = response.filter((mensaje: any) => {
+        return (
+          (mensaje.cod_medico === this.userId && mensaje.cod_usuario === this.chatPartnerId) || 
+          (mensaje.cod_medico === this.chatPartnerId && mensaje.cod_usuario === this.userId)
+        );
+      }).map((mensaje: any) => {
         // Determinar si el mensaje fue enviado por el usuario logueado
         mensaje.isSentByUser = this.esMensajeEnviadoPorUsuario(mensaje);
         
@@ -57,15 +71,13 @@ export class ChatPage implements OnInit {
           mensaje.user = this.userName;
         } else {
           // Si el chat partner (doctor o paciente) envió el mensaje
-          mensaje.user = mensaje.nom_medico || mensaje.nom_usuario;  // Nombre real del remitente (médico o paciente)
+          mensaje.user = this.chatPartnerName;  // Nombre real del remitente (médico o paciente)
         }
-  
+    
         return mensaje;
       });
     });
   }
-  
-
 
   // Determinar si el mensaje fue enviado por el usuario logueado
   esMensajeEnviadoPorUsuario(mensaje: any): boolean {

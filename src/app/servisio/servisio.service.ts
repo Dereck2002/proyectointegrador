@@ -195,8 +195,6 @@ deleteMensaje(id: number): Observable<any> {
   return this.http.get(`${this.API_URL}?action=listMessages&user_id=${userId}&role=${role}`);
 }
 
-
-
   // Obtener los mensajes para un usuario específico
   getMensajes(userId: number): Observable<any> {
     return this.http.get(`${this.API_URL}?action=listMessages&user_id=${userId}`);

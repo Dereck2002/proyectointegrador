@@ -64,13 +64,21 @@ export class HistorialPage implements OnInit {
   }
   
   
-  
   // Redirigir a la página de chat con el mensaje seleccionado
-  goToChat(mensaje: any) {
-    this.navCtrl.navigateForward(`/chat`, {
-      queryParams: { userId: this.userId, mensajeId: mensaje.id }
-    });
-  }
+goToChat(mensaje: any) {
+  const chatPartnerId = mensaje.cod_medico || mensaje.cod_usuario;  // Obtener el ID del médico o del paciente
+  const chatPartnerName = mensaje.nom_medico || mensaje.nom_usuario;  // Obtener el nombre del médico o paciente
+
+  // Redirigir a la página de chat con los parámetros correctos
+  this.navCtrl.navigateForward('/chat', {
+    queryParams: { 
+      userId: chatPartnerId, 
+      userName: chatPartnerName,
+      reloadPage: true  // Aseguramos que la página se recargue
+    }
+  });
+}
+
 
   // Editar mensaje
   async editMensaje(mensaje: any) {

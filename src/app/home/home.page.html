@@ -18,9 +18,12 @@
           <ion-input [(ngModel)]="username" type="text" required></ion-input>
         </ion-item>
 
-        <ion-item class="custom-input">
+        <ion-item>
           <ion-label position="floating">Contraseña</ion-label>
-          <ion-input [(ngModel)]="password" type="password" required></ion-input>
+          <ion-input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password"></ion-input>
+          <ion-button fill="clear" slot="end" (click)="togglePasswordVisibility()">
+            <ion-icon [name]="showPassword ? 'eye-off' : 'eye'"></ion-icon>
+          </ion-button>
         </ion-item>
 
         <ion-button expand="full" color="primary" (click)="login()" class="login-button">Iniciar Sesión</ion-button>

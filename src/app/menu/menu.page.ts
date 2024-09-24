@@ -63,4 +63,20 @@ export class MenuPage implements OnInit {
   openHistorial() {
     this.navCtrl.navigateForward('/perfil');
   }
+  backupDatabase() {
+    this.servisioService.backupDatabase().subscribe(
+      (response: any) => {
+        if (response.success) {
+          // Redirect to download the backup file
+          window.open(response.fileUrl, '_blank');
+        } else {
+          console.error('Error al generar el respaldo de la base de datos.');
+        }
+      },
+      (error) => {
+        console.error('Error en la solicitud de respaldo', error);
+      }
+    );
+  }
+  
 }

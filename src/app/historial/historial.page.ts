@@ -45,15 +45,12 @@ export class HistorialPage implements OnInit {
     this.servisioService.listMensajes(this.userId, this.rol).subscribe(response => {
       this.mensajes = response.map((mensaje: any) => {
         // Si el mensaje fue enviado por el médico
-        if (mensaje.cod_medico && mensaje.nom_medico && mensaje.ape_medico) {
+        if (mensaje.cod_medico) {
           mensaje.user = `${mensaje.nom_medico} ${mensaje.ape_medico}`;  // Nombre completo del médico
         } 
         // Si el mensaje fue enviado por el paciente
-        else if (mensaje.cod_usuario && mensaje.nom_usuario && mensaje.ape_usuario) {
+        else if (mensaje.cod_usuario) {
           mensaje.user = `${mensaje.nom_usuario} ${mensaje.ape_usuario}`;  // Nombre completo del paciente
-        } else {
-          // Si no se encuentra el nombre, asignar 'Desconocido' como fallback
-          mensaje.user = 'Desconocido';
         }
         // Retornar el mensaje con el nombre asignado
         return mensaje;
@@ -63,22 +60,12 @@ export class HistorialPage implements OnInit {
     });
   }
   
-  
   // Redirigir a la página de chat con el mensaje seleccionado
-goToChat(mensaje: any) {
-  const chatPartnerId = mensaje.cod_medico || mensaje.cod_usuario;  // Obtener el ID del médico o del paciente
-  const chatPartnerName = mensaje.nom_medico || mensaje.nom_usuario;  // Obtener el nombre del médico o paciente
-
-  // Redirigir a la página de chat con los parámetros correctos
-  this.navCtrl.navigateForward('/chat', {
-    queryParams: { 
-      userId: chatPartnerId, 
-      userName: chatPartnerName,
-      reloadPage: true  // Aseguramos que la página se recargue
-    }
-  });
-}
-
+  goToChat(mensaje: any) {
+    this.navCtrl.navigateForward(`/chat`, {
+      queryParams: { userId: this.userId, mensajeId: mensaje.id }
+    });
+  }
 
   // Editar mensaje
   async editMensaje(mensaje: any) {

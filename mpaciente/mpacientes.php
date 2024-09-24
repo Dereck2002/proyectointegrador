@@ -137,16 +137,16 @@ if ($method === 'POST' && isset($_GET['action']) && $_GET['action'] == 'addPatie
 
 // ACTUALIZAR PACIENTE
 if ($method === 'PUT' && isset($_GET['action']) && $_GET['action'] == 'editPatient') {
-    if (isset($input['cod_usuario'], $input['cedula'], $input['nom_usuario'], $input['ape_usuario'], $input['telefono_usuario'], $input['email_usuario'], $input['clave_usuario'], $input['fecha_nacimiento'], $input['direccion'], $input['sexo'], $input['grupo_sanguineo'], $input['alergias'], $input['enfermedades_cronicas'], $input['medicacion_actual'])) {
+    // Asegúrate de que todos los campos requeridos estén presentes
+    if (isset($input['cod_usuario'], $input['cedula'], $input['nom_usuario'], $input['ape_usuario'], $input['telefono_usuario'], $input['email_usuario'], $input['fecha_nacimiento'], $input['direccion'], $input['sexo'], $input['grupo_sanguineo'], $input['alergias'], $input['enfermedades_cronicas'], $input['medicacion_actual'])) {
 
-        // Recoger los datos del paciente
+        // Recoger los datos enviados en la solicitud
         $id = $input['cod_usuario'];
         $cedula = $input['cedula'];
         $nombre = $input['nom_usuario'];
         $apellido = $input['ape_usuario'];
         $telefono = $input['telefono_usuario'];
         $email = $input['email_usuario'];
-        $clave = password_hash($input['clave_usuario'], PASSWORD_DEFAULT); // Encriptar la contraseña
         $fecha_nacimiento = $input['fecha_nacimiento'];
         $direccion = $input['direccion'];
         $sexo = $input['sexo'];
@@ -156,8 +156,8 @@ if ($method === 'PUT' && isset($_GET['action']) && $_GET['action'] == 'editPatie
         $medicacion_actual = $input['medicacion_actual'];
 
         // Preparar la consulta para actualizar el paciente en la base de datos
-        $stmt = $mysqli->prepare("UPDATE usuario SET cedula = ?, nom_usuario = ?, ape_usuario = ?, telefono_usuario = ?, email_usuario = ?, clave_usuario = ?, fecha_nacimiento = ?, direccion = ?, sexo = ?, grupo_sanguineo = ?, alergias = ?, enfermedades_cronicas = ?, medicacion_actual = ? WHERE cod_usuario = ?");
-        $stmt->bind_param("ssssssssssssi", $cedula, $nombre, $apellido, $telefono, $email, $clave, $fecha_nacimiento, $direccion, $sexo, $grupo_sanguineo, $alergias, $enfermedades_cronicas, $medicacion_actual, $id);
+        $stmt = $mysqli->prepare("UPDATE usuario SET cedula = ?, nom_usuario = ?, ape_usuario = ?, telefono_usuario = ?, email_usuario = ?, fecha_nacimiento = ?, direccion = ?, sexo = ?, grupo_sanguineo = ?, alergias = ?, enfermedades_cronicas = ?, medicacion_actual = ? WHERE cod_usuario = ?");
+        $stmt->bind_param("ssssssssssssi", $cedula, $nombre, $apellido, $telefono, $email, $fecha_nacimiento, $direccion, $sexo, $grupo_sanguineo, $alergias, $enfermedades_cronicas, $medicacion_actual, $id);
         
         // Ejecutar la consulta y verificar si se ejecutó correctamente
         if ($stmt->execute()) {
@@ -171,6 +171,7 @@ if ($method === 'PUT' && isset($_GET['action']) && $_GET['action'] == 'editPatie
         echo json_encode(["message" => "Datos incompletos para actualizar el paciente."]);
     }
 }
+
 
 // ELIMINAR PACIENTE
 if ($method === 'DELETE' && isset($_GET['action']) && $_GET['action'] == 'deletePatient') {
@@ -576,26 +577,23 @@ if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'resetPass
     $stmt->close();
 
 // AGREGAR MÉDICO
-if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'addMedico') {
-    // Asegúrate de que los datos se están recibiendo
-    if (isset($input['cedula'], $input['nom_medico'], $input['ape_medico'], $input['telefono_medico'], $input['email_medico'], $input['clave_medico'], $input['espe_medico'])) {
-        
+if ($method === 'POST' && isset($_GET['action']) && $_GET['action'] == 'addMedico') {
+    if (isset($input['cedula'], $input['nom_medico'], $input['ape_medico'], $input['telefono_medico'], $input['email_medico'], $input['clave_medico'], $input['especialidad'], $input['años_experiencia'])) {
+
         // Recoger los datos enviados en la solicitud
         $cedula = $input['cedula'];
         $nombre = $input['nom_medico'];
         $apellido = $input['ape_medico'];
         $telefono = $input['telefono_medico'];
         $email = $input['email_medico'];
-        $clave = $input['clave_medico'];
-        $especialidad = $input['espe_medico'];
-
-        // Encriptar la contraseña usando password_hash()
-        $clave_encriptada = password_hash($clave, PASSWORD_BCRYPT);
+        $clave = password_hash($input['clave_medico'], PASSWORD_DEFAULT); // Encriptar la contraseña
+        $especialidad = $input['especialidad'];
+        $años_experiencia = $input['años_experiencia'];
 
         // Preparar la consulta para insertar el médico en la base de datos
-        $stmt = $mysqli->prepare("INSERT INTO medico (cedula, nom_medico, ape_medico, telefono_medico, email_medico, clave_medico, espe_medico) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssssss", $cedula, $nombre, $apellido, $telefono, $email, $clave_encriptada, $especialidad);
-
+        $stmt = $mysqli->prepare("INSERT INTO medico (cedula, nom_medico, ape_medico, telefono_medico, email_medico, clave_medico, especialidad, años_experiencia) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssssssi", $cedula, $nombre, $apellido, $telefono, $email, $clave, $especialidad, $años_experiencia);
+        
         // Ejecutar la consulta y verificar si se ejecutó correctamente
         if ($stmt->execute()) {
             echo json_encode(["message" => "Médico agregado exitosamente."]);
@@ -603,10 +601,8 @@ if ($method == 'POST' && isset($_GET['action']) && $_GET['action'] == 'addMedico
             echo json_encode(["message" => "Error al agregar el médico."]);
         }
 
-        // Cerrar la consulta
         $stmt->close();
     } else {
-        // Si faltan datos, devolver un mensaje de error
         echo json_encode(["message" => "Datos incompletos para agregar el médico."]);
     }
 }
@@ -733,6 +729,83 @@ if ($method == 'GET' && isset($_GET['action']) && $_GET['action'] == 'getPerfilA
     echo json_encode($admin);
     $stmt->close();
 }
+
+if ($method == 'GET' && isset($_GET['action']) && $_GET['action'] == 'backupDatabase') {
+    // Define database credentials
+    $host = 'your_host';
+    $user = 'your_db_user';
+    $password = 'your_db_password';
+    $database = 'your_database';
+
+    // Create a new backup file
+    $backupFile = 'backup_' . date('YmdHis') . '.sql';
+    $backupPath = __DIR__ . '/' . $backupFile;
+
+    // Open the backup file for writing
+    $handle = fopen($backupPath, 'w+');
+
+    if ($handle) {
+        // Connect to the database
+        $mysqli = new mysqli($host, $user, $password, $database);
+
+        if ($mysqli->connect_error) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Error al conectar a la base de datos: ' . $mysqli->connect_error
+            ]);
+            exit();
+        }
+
+        // Get the list of all tables
+        $tables = $mysqli->query("SHOW TABLES");
+        while ($table = $tables->fetch_array()) {
+            $tableName = $table[0];
+
+            // Get the table creation statement
+            $createTableResult = $mysqli->query("SHOW CREATE TABLE `$tableName`");
+            $createTable = $createTableResult->fetch_array();
+            fwrite($handle, "\n\n" . $createTable[1] . ";\n\n");
+
+            // Get the table data
+            $rows = $mysqli->query("SELECT * FROM `$tableName`");
+            $columnCount = $rows->field_count;
+
+            // Loop through table rows and write them to the backup file
+            while ($row = $rows->fetch_array(MYSQLI_NUM)) {
+                $rowData = "INSERT INTO `$tableName` VALUES(";
+                for ($i = 0; $i < $columnCount; $i++) {
+                    if (isset($row[$i])) {
+                        $row[$i] = addslashes($row[$i]);
+                        $row[$i] = str_replace("\n", "\\n", $row[$i]);
+                        $rowData .= '"' . $row[$i] . '"';
+                    } else {
+                        $rowData .= 'NULL';
+                    }
+
+                    if ($i < ($columnCount - 1)) {
+                        $rowData .= ', ';
+                    }
+                }
+                $rowData .= ");\n";
+                fwrite($handle, $rowData);
+            }
+        }
+
+        fclose($handle);
+
+        // Send response with backup download link
+        echo json_encode([
+            'success' => true,
+            'fileUrl' => 'http://yourdomain.com/' . $backupFile
+        ]);
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'No se pudo crear el archivo de respaldo.'
+        ]);
+    }
+}
+
 
 }
 

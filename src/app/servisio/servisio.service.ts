@@ -199,6 +199,10 @@ deleteMensaje(id: number): Observable<any> {
   getMensajes(userId: number): Observable<any> {
     return this.http.get(`${this.API_URL}?action=listMessages&user_id=${userId}`);
   }
+// Method to trigger database backup
+backupDatabase(): Observable<any> {
+  return this.http.get(`${this.API_URL}?action=backupDatabase`);
+}
 
   //medicamento
   // Obtener medicamentos para un paciente específico

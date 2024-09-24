@@ -35,21 +35,4 @@
     --color: #000000; /* Color del texto del campo de búsqueda */
     --placeholder-color: #009999; /* Color del texto de placeholder */
   }
-  .no-messages {
-    text-align: center;
-    color: #888;
-    font-size: 1.2em;
-    margin-top: 20px;
-  }
-  .sent {
-    background-color: #DCF8C6;  // Mensajes enviados por el usuario logueado (verde claro)
-    text-align: right;
-  }
-  
-  .received {
-    background-color: #FFFFFF;  // Mensajes recibidos (blanco)
-    text-align: left;
-  }
-  
-  
   

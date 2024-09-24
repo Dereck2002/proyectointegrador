@@ -46,7 +46,7 @@ export class ListPacientesPage implements OnInit {
 
   // Función para editar un paciente
   editPatient(patient: any) {
-    this.router.navigate(['/pacientes'], { state: { patient } });  // Redirige con los datos del paciente
+    this.router.navigate(['/ac-pacientes'], { state: { patient } });  // Redirige con los datos del paciente
   }
 
   // Función para eliminar un paciente con confirmación

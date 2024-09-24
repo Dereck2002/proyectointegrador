@@ -12,6 +12,7 @@ export class HomePage {
   username: string = '';
   password: string = '';
   errorMessage: string = '';
+  showPassword: boolean = false;  // Inicializamos la variable correctamente
 
   constructor(
     private servisioService: ServisioService,
@@ -71,5 +72,10 @@ export class HomePage {
   // Función para redirigir a la página de recuperación de contraseña
   recoverPassword() {
     this.router.navigate(['/reset-password']);
+  }
+
+  // Función para alternar la visibilidad de la contraseña
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;  // Alterna correctamente el valor de showPassword
   }
 }

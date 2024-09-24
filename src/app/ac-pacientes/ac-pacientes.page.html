@@ -1,0 +1,114 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button color="light" defaultHref="/list-pacientes"></ion-back-button>
+    </ion-buttons>
+    <!-- Logo en la esquina derecha -->
+    <ion-buttons slot="end">
+      <img src="assets/img/clinudb.png" alt="Logo Empresa" class="logo-menu">
+    </ion-buttons>
+
+    <!-- Título centrado con color blanco -->
+    <ion-title color="light" class="ion-text-center">{{ editingPaciente ? 'Editar Paciente' : 'Agregar Paciente' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form (ngSubmit)="submitPaciente()" [ngClass]="{'invalid-form': !formValido()}">
+    
+    <!-- Cédula -->
+    <ion-item>
+      <ion-label position="floating" color="primary">Cédula</ion-label>
+      <ion-input [(ngModel)]="paciente.cedula" name="cedula" type="number" required></ion-input>
+    </ion-item>
+
+    <!-- Nombre -->
+    <ion-item>
+      <ion-label position="floating" color="primary">Nombre</ion-label>
+      <ion-input [(ngModel)]="paciente.nom_usuario" name="nombre" required></ion-input>
+    </ion-item>
+
+    <!-- Apellido -->
+    <ion-item>
+      <ion-label position="floating" color="primary">Apellido</ion-label>
+      <ion-input [(ngModel)]="paciente.ape_usuario" name="apellido" required></ion-input>
+    </ion-item>
+
+    <!-- Teléfono -->
+    <ion-item>
+      <ion-label position="floating" color="primary">Teléfono</ion-label>
+      <ion-input [(ngModel)]="paciente.telefono_usuario" name="telefono" type="tel" required minlength="10" maxlength="10"></ion-input>
+      <ion-note color="danger" *ngIf="paciente.telefono_usuario.length !== 10 && paciente.telefono_usuario">
+        El teléfono debe tener 10 dígitos.
+      </ion-note>
+    </ion-item>
+
+    <!-- Email -->
+    <ion-item>
+      <ion-label position="floating" color="primary">Email</ion-label>
+      <ion-input [(ngModel)]="paciente.email_usuario" name="email" type="email" required></ion-input>
+      <ion-note color="danger" *ngIf="!emailValido() && paciente.email_usuario">
+        Introduzca un correo válido.
+      </ion-note>
+    </ion-item>
+
+    <!-- Fecha de Nacimiento -->
+    <ion-item>
+      <ion-label position="floating" color="primary">Fecha de Nacimiento</ion-label>
+      <ion-input [(ngModel)]="paciente.fecha_nacimiento" name="fecha_nacimiento" type="date" required></ion-input>
+    </ion-item>
+
+    <!-- Dirección -->
+    <ion-item>
+      <ion-label position="floating" color="primary">Dirección</ion-label>
+      <ion-input [(ngModel)]="paciente.direccion" name="direccion" required></ion-input>
+    </ion-item>
+
+    <!-- Sexo -->
+    <ion-item>
+      <ion-label position="floating" color="primary">Sexo</ion-label>
+      <ion-select [(ngModel)]="paciente.sexo" name="sexo" interface="popover" required>
+        <ion-select-option value="Masculino">Masculino</ion-select-option>
+        <ion-select-option value="Femenino">Femenino</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <!-- Grupo Sanguíneo -->
+    <ion-item>
+      <ion-label position="floating" color="primary">Grupo Sanguíneo</ion-label>
+      <ion-select [(ngModel)]="paciente.grupo_sanguineo" name="grupo_sanguineo" interface="popover" required>
+        <ion-select-option value="A+">A+</ion-select-option>
+        <ion-select-option value="A-">A-</ion-select-option>
+        <ion-select-option value="B+">B+</ion-select-option>
+        <ion-select-option value="B-">B-</ion-select-option>
+        <ion-select-option value="AB+">AB+</ion-select-option>
+        <ion-select-option value="AB-">AB-</ion-select-option>
+        <ion-select-option value="O+">O+</ion-select-option>
+        <ion-select-option value="O-">O-</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <!-- Alergias -->
+    <ion-item>
+      <ion-label position="floating" color="primary">Alergias</ion-label>
+      <ion-input [(ngModel)]="paciente.alergias" name="alergias"></ion-input>
+    </ion-item>
+
+    <!-- Enfermedades Crónicas -->
+    <ion-item>
+      <ion-label position="floating" color="primary">Enfermedades Crónicas</ion-label>
+      <ion-input [(ngModel)]="paciente.enfermedades_cronicas" name="enfermedades_cronicas"></ion-input>
+    </ion-item>
+
+    <!-- Medicación Actual -->
+    <ion-item>
+      <ion-label position="floating" color="primary">Medicación Actual</ion-label>
+      <ion-input [(ngModel)]="paciente.medicacion_actual" name="medicacion_actual"></ion-input>
+    </ion-item>
+
+    <!-- Botón de Enviar -->
+    <ion-button expand="full" type="submit" color="success">
+      {{ editingPaciente ? 'Actualizar Paciente' : 'Agregar Paciente' }}
+    </ion-button>
+  </form>
+</ion-content>

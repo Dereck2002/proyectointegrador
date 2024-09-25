@@ -8,9 +8,9 @@ import { ToastController } from '@ionic/angular';
   styleUrls: ['./medicamentosp.page.scss'],
 })
 export class MedicamentospPage implements OnInit {
-  medicamentos: any[] = [];  // Lista completa de medicamentos
-  filteredMedicamentos: any[] = [];  // Lista filtrada de medicamentos
-  searchTerm: string = '';  // Término de búsqueda
+  medicamentos: any[] = [];  
+  filteredMedicamentos: any[] = [];  
+  searchTerm: string = ''; 
 
   constructor(
     private servisioService: ServisioService,
@@ -52,7 +52,6 @@ export class MedicamentospPage implements OnInit {
     );
   }
 
-  // Mostrar mensajes (toasts)
   async showToast(message: string, color: string = 'success') {
     const toast = await this.toastController.create({
       message: message,

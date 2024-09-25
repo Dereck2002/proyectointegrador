@@ -42,8 +42,16 @@
 
     <ion-item>
       <ion-label position="stacked">Contraseña</ion-label>
-      <ion-input [(ngModel)]="medico['clave_medico']" name="clave_medico" type="password" required></ion-input>
+      <ion-input [(ngModel)]="medico['clave_medico']" 
+                 [type]="mostrarContrasena ? 'text' : 'password'" 
+                 name="clave_medico" 
+                 required>
+      </ion-input>
+      <ion-button fill="clear" slot="end" (click)="toggleMostrarContrasena()" color="dark">
+        <ion-icon [name]="mostrarContrasena ? 'eye-off' : 'eye'"></ion-icon>
+      </ion-button>
     </ion-item>
+    
 
     <ion-item>
       <ion-label position="stacked">Especialidad</ion-label>

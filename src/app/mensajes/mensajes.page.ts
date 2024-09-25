@@ -10,7 +10,7 @@ import { NavController } from '@ionic/angular';
 })
 export class MensajesPage implements OnInit {
   mensaje = {
-    mensaje: '',  // Cambiado a 'mensaje' para consistencia
+    mensaje: '',  
     cod_usuario: null as number | null,  // ID del paciente
     cod_medico: null as number | null    // ID del médico
   };
@@ -23,7 +23,7 @@ export class MensajesPage implements OnInit {
   constructor(private servisioService: ServisioService, private toastController: ToastController, private navCtrl: NavController) {}
 
   ngOnInit() {
-    // Obtener el rol del usuario desde el localStorage
+    // Obtener el rol del usuario desde el almacenamiento
     this.rol = this.servisioService.getUserRole();
 
     // Cargar lista de destinatarios según el rol del usuario logueado
@@ -79,7 +79,7 @@ export class MensajesPage implements OnInit {
         }));
 
         this.recipients = [...pacientes, ...medicos];
-        this.filteredRecipients = this.recipients;  // Inicializar la lista filtrada
+        this.filteredRecipients = this.recipients; 
       });
     });
   }
@@ -133,7 +133,6 @@ export class MensajesPage implements OnInit {
     );
   }
 
-  // Mostrar mensajes de éxito/error
   async showToast(message: string) {
     const toast = await this.toastController.create({
       message: message,

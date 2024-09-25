@@ -9,39 +9,37 @@ import { AlertController, ToastController } from '@ionic/angular';
 })
 export class SignosPage implements OnInit {
   pacientes: any[] = [];
-  filteredPacientes: any[] = [];  // Pacientes filtrados por la búsqueda
+  filteredPacientes: any[] = []; 
   signos: any[] = [];
   selectedPaciente: number | null = null;
-  editingSigno: any = null;  // Signo vital que se está editando
-  rol: string | null = '';  // Rol del usuario logueado
-  searchTerm: string = '';  // Término de búsqueda
+  editingSigno: any = null;  
+  rol: string | null = ''; 
+  searchTerm: string = '';  
 
   constructor(
     private servisioService: ServisioService,
     private alertController: AlertController,
-    private toastController: ToastController  // Para mostrar notificaciones
+    private toastController: ToastController  
   ) {}
 
   ngOnInit() {
-    this.rol = localStorage.getItem('role');  // Obtener el rol desde el localStorage
+    this.rol = localStorage.getItem('role');  
     if (this.rol === 'paciente') {
-      this.loadSignosPaciente();  // Cargar los signos solo del paciente logueado
+      this.loadSignosPaciente();  
     } else if (this.rol === 'medico') {
-      this.loadPacientes();  // Cargar la lista de pacientes para el médico
+      this.loadPacientes();  
     }
   }
 
-  // Cargar la lista de pacientes (solo para el médico)
   loadPacientes() {
     this.servisioService.listPacientes().subscribe(response => {
       this.pacientes = response;
-      this.filteredPacientes = [...this.pacientes];  // Inicialmente, mostrar todos los pacientes
+      this.filteredPacientes = [...this.pacientes];  
     }, error => {
       console.error('Error al cargar la lista de pacientes:', error);
     });
   }
 
-  // Filtrar los pacientes según el término de búsqueda
   filterPacientes() {
     const searchTermLower = this.searchTerm.toLowerCase();
     this.filteredPacientes = this.pacientes.filter(paciente =>
@@ -50,7 +48,6 @@ export class SignosPage implements OnInit {
     );
   }
 
-  // Cargar los signos vitales del paciente seleccionado
   loadSignos() {
     if (this.selectedPaciente) {
       this.servisioService.listSignosByPaciente(this.selectedPaciente).subscribe(response => {
@@ -61,7 +58,6 @@ export class SignosPage implements OnInit {
     }
   }
 
-  // Cargar los signos del paciente logueado (cuando el usuario es un paciente)
   loadSignosPaciente() {
     const loggedUserData = this.servisioService.getLoggedUserData();
     const cod_usuario = loggedUserData?.cod_usuario;
@@ -91,10 +87,10 @@ export class SignosPage implements OnInit {
           this.loadSignos();  // Recargar los signos vitales del paciente seleccionado (para el médico)
         }
         this.editingSigno = null;  // Limpiar el formulario
-        await this.showToast('Signo vital actualizado exitosamente.');  // Mostrar éxito
+        await this.showToast('Signo vital actualizado exitosamente.');  
       }, async error => {
         console.error('Error al actualizar el signo vital:', error);
-        await this.showToast('Error al actualizar el signo vital.', 'danger');  // Mostrar error
+        await this.showToast('Error al actualizar el signo vital.', 'danger');  
       });
     }
   }
@@ -125,7 +121,7 @@ export class SignosPage implements OnInit {
               await this.showToast('Signo vital eliminado exitosamente.');  // Mostrar éxito
             }, async error => {
               console.error('Error al eliminar el signo vital:', error);
-              await this.showToast('Error al eliminar el signo vital.', 'danger');  // Mostrar error
+              await this.showToast('Error al eliminar el signo vital.', 'danger'); 
             });
           }
         }
@@ -135,13 +131,12 @@ export class SignosPage implements OnInit {
     await alert.present();
   }
 
-  // Función para mostrar un mensaje toast
   async showToast(message: string, color: string = 'success') {
     const toast = await this.toastController.create({
       message: message,
-      duration: 2000,  // Mostrar por 2 segundos
+      duration: 2000,  
       position: 'bottom',
-      color: color  // 'success' para éxito, 'danger' para error
+      color: color 
     });
     toast.present();
   }

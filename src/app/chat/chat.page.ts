@@ -46,7 +46,6 @@ export class ChatPage implements OnInit {
       this.userName = loggedUserData.nom_usuario;  // Nombre del paciente
     }
 
-    // Cargar los mensajes para la nueva conversación
     this.cargarMensajes();
   });
 }
@@ -126,7 +125,6 @@ export class ChatPage implements OnInit {
     }
   }
 
-  // Mostrar mensajes (toast)
   async showToast(message: string, color: string = 'success') {
     const toast = await this.toastController.create({
       message: message,

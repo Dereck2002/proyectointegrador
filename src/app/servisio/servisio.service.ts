@@ -9,7 +9,7 @@ export class ServisioService {
 
   private API_URL = 'http://localhost/proyectointegrador/mpaciente/mpacientes.php';
   private currentRole: string | null = null;
-  private loggedInUserData: any = null;  // Almacenar datos del usuario logueado
+  private loggedInUserData: any = null; 
 
   constructor(private http: HttpClient) {}
 
@@ -69,7 +69,7 @@ addMedico(medico: any): Observable<any> {
 
 updateMedico(medico: any): Observable<any> {
   return this.http.put(`${this.API_URL}?action=updateMedico`, medico, {
-    headers: new HttpHeaders({ 'Content-Type': 'application/json' })  // Asegúrate de que sea JSON
+    headers: new HttpHeaders({ 'Content-Type': 'application/json' }) 
   });
 }
 
@@ -199,11 +199,10 @@ deleteMensaje(id: number): Observable<any> {
   getMensajes(userId: number): Observable<any> {
     return this.http.get(`${this.API_URL}?action=listMessages&user_id=${userId}`);
   }
-// Method to trigger database backup
-backupDatabase(): Observable<any> {
+ // Método para generar respaldo de la base de datos
+ backupDatabase(): Observable<any> {
   return this.http.get(`${this.API_URL}?action=backupDatabase`);
 }
-
   //medicamento
   // Obtener medicamentos para un paciente específico
   listMedicamentosByPaciente(cod_usuario: number): Observable<any> {

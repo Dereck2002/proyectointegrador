@@ -12,7 +12,7 @@ export class HomePage {
   username: string = '';
   password: string = '';
   errorMessage: string = '';
-  showPassword: boolean = false;  // Inicializamos la variable correctamente
+  showPassword: boolean = false;  
 
   constructor(
     private servisioService: ServisioService,
@@ -40,7 +40,7 @@ export class HomePage {
               }
             }
   
-            // Guardar los datos del rol y el ID en localStorage
+            // Guardar los datos del rol y el ID en el almacenamiento
             if (userData) {
               this.servisioService.storeUserRoleAndData(response.role, userData);
               await this.showToast('Inicio de sesión exitoso.');
@@ -58,12 +58,11 @@ export class HomePage {
       this.errorMessage = 'Por favor, ingrese su usuario y contraseña.';
     }
   }  
-  
-  // Función para mostrar un mensaje toast
+ 
   async showToast(message: string) {
     const toast = await this.toastController.create({
       message: message,
-      duration: 2000,  // El mensaje se mostrará por 2 segundos
+      duration: 2000,  
       position: 'bottom'
     });
     toast.present();

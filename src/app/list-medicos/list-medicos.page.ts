@@ -88,11 +88,10 @@ export class ListMedicosPage implements OnInit {
     });
   }
 
-  // Función para mostrar notificación (toast)
   async showToast(message: string, color: string = 'success') {
     const toast = await this.toastController.create({
       message: message,
-      duration: 2000, // Mostrar por 2 segundos
+      duration: 2000, 
       position: 'bottom',
       color: color
     });

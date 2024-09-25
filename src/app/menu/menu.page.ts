@@ -9,8 +9,8 @@ import { ServisioService } from '../servisio/servisio.service';
 })
 export class MenuPage implements OnInit {
   role: string | null = null;
-  unreadMessages: number = 0; // Contador de mensajes no leídos
-  loggedInUser: any = null;   // Datos del usuario logueado
+  unreadMessages: number = 0; 
+  loggedInUser: any = null;   
 
   constructor(private navCtrl: NavController, private servisioService: ServisioService) { }
 
@@ -65,18 +65,18 @@ export class MenuPage implements OnInit {
   }
   backupDatabase() {
     this.servisioService.backupDatabase().subscribe(
-      (response: any) => {
-        if (response.success) {
-          // Redirect to download the backup file
-          window.open(response.fileUrl, '_blank');
-        } else {
-          console.error('Error al generar el respaldo de la base de datos.');
+        (response: any) => {
+            if (response && response.success) {
+                // Abre el archivo de respaldo en una nueva pestaña
+                window.open(response.fileUrl, '_blank');
+            } else {
+                console.error('Error al generar el respaldo de la base de datos:', response ? response.message : 'Respuesta vacía');
+            }
+        },
+        (error) => {
+            console.error('Error en la solicitud de respaldo:', error);
         }
-      },
-      (error) => {
-        console.error('Error en la solicitud de respaldo', error);
-      }
     );
-  }
-  
+}
+
 }

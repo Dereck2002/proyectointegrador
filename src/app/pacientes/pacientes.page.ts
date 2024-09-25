@@ -9,6 +9,7 @@ import { ToastController } from '@ionic/angular';
   styleUrls: ['./pacientes.page.scss'],
 })
 export class PacientesPage implements OnInit {
+  mostrarContrasena = false;
   paciente = {
     cedula: '',
     nom_usuario: '',
@@ -16,17 +17,17 @@ export class PacientesPage implements OnInit {
     telefono_usuario: '',
     email_usuario: '',
     clave_usuario: '',
-    fecha_nacimiento: '', // Nuevo campo
-    direccion: '', // Nuevo campo
-    sexo: '', // Nuevo campo
-    grupo_sanguineo: '', // Nuevo campo
-    alergias: '', // Nuevo campo
-    enfermedades_cronicas: '', // Nuevo campo
-    medicacion_actual: '' // Nuevo campo
+    fecha_nacimiento: '', 
+    direccion: '', 
+    sexo: '',
+    grupo_sanguineo: '', 
+    alergias: '', 
+    enfermedades_cronicas: '', 
+    medicacion_actual: '' 
   };
-  confirmarClave = ''; // Campo para confirmar la contraseña
-  editingPaciente: any = null;  // Paciente que se está editando
-  claveNoCoincide: boolean = false;  // Indicador si las contraseñas no coinciden
+  confirmarClave = ''; 
+  editingPaciente: any = null;  
+  claveNoCoincide: boolean = false; 
   claveInvalida: boolean | undefined;
 
   constructor(
@@ -90,14 +91,16 @@ export class PacientesPage implements OnInit {
       return emailRegex.test(this.paciente.email_usuario);
     }
 
-  // Función para mostrar notificación (toast)
   async showToast(message: string, color: string = 'success') {
     const toast = await this.toastController.create({
       message: message,
-      duration: 2000,  // Mostrar por 2 segundos
+      duration: 2000, 
       position: 'bottom',
       color: color
     });
     toast.present();
+  }
+  toggleMostrarContrasena() {
+    this.mostrarContrasena = !this.mostrarContrasena;
   }
 }

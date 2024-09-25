@@ -20,7 +20,7 @@ export class HistorialPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Obtener el rol y el ID del usuario logueado desde el localStorage
+    // Obtener el rol y el ID del usuario logueado desde el almacenamiento
     this.rol = this.servisioService.getUserRole();
     const loggedUserData = this.servisioService.getLoggedUserData();
   

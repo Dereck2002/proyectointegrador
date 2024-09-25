@@ -9,6 +9,7 @@ import { NavController } from '@ionic/angular';
   styleUrls: ['./reset-password.page.scss'],
 })
 export class ResetPasswordPage {
+  mostrarContrasena = false;
   cedula: string = '';
   email: string = '';
   newPassword: string = '';
@@ -55,7 +56,6 @@ export class ResetPasswordPage {
     );
   }
 
-  // Función para mostrar mensajes de Toast
   async showToast(message: string) {
     const toast = await this.toastController.create({
       message: message,
@@ -63,5 +63,8 @@ export class ResetPasswordPage {
       position: 'bottom',
     });
     toast.present();
+  }
+  toggleMostrarContrasena() {
+    this.mostrarContrasena = !this.mostrarContrasena;
   }
 }

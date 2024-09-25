@@ -85,7 +85,7 @@ export class PerfilPage implements OnInit {
         ? this.usuario.cod_admin
         : this.usuario.cod_usuario;
 
-      // Actualizar datos del usuario en el backend (aquí se pueden agregar validaciones)
+      // Actualizar datos del usuario en el backend 
       this.servisioService.updatePerfil(this.usuario).subscribe(
         async (response) => {
           await this.showToast('Perfil actualizado correctamente.');

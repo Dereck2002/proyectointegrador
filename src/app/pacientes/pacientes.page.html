@@ -97,23 +97,37 @@
       <ion-textarea [(ngModel)]="paciente.medicacion_actual" name="medicacionActual"></ion-textarea>
     </ion-item>
 
-    <!-- Contraseña -->
-    <ion-item>
-      <ion-label position="floating" color="primary">Contraseña</ion-label>
-      <ion-input [(ngModel)]="paciente.clave_usuario" name="clave" type="password" minlength="8" required></ion-input>
-      <ion-note color="danger" *ngIf="claveInvalida">
-        La contraseña debe tener al menos 8 caracteres y un carácter especial.
-      </ion-note>
-    </ion-item>
+   <!-- Contraseña -->
+<ion-item>
+  <ion-label position="floating" color="primary">Contraseña</ion-label>
+  <ion-input [(ngModel)]="paciente.clave_usuario" 
+             [type]="mostrarContrasena ? 'text' : 'password'" 
+             minlength="8" 
+             required>
+  </ion-input>
+  <ion-button fill="clear" slot="end" (click)="toggleMostrarContrasena()" color="dark">
+    <ion-icon [name]="mostrarContrasena ? 'eye-off' : 'eye'"></ion-icon>
+  </ion-button>
+  <ion-note color="danger" *ngIf="claveInvalida">
+    La contraseña debe tener al menos 8 caracteres y un carácter especial.
+  </ion-note>
+</ion-item>
 
-    <!-- Confirmar Contraseña -->
-    <ion-item>
-      <ion-label position="floating" color="primary">Confirmar Contraseña</ion-label>
-      <ion-input [(ngModel)]="confirmarClave" name="confirmarClave" type="password" required></ion-input>
-      <ion-note color="danger" *ngIf="claveNoCoincide">
-        Las contraseñas no coinciden.
-      </ion-note>
-    </ion-item>
+<!-- Confirmar Contraseña -->
+<ion-item>
+  <ion-label position="floating" color="primary">Confirmar Contraseña</ion-label>
+  <ion-input [(ngModel)]="confirmarClave" 
+             [type]="mostrarContrasena ? 'text' : 'password'" 
+             required>
+  </ion-input>
+  <ion-button fill="clear" slot="end" (click)="toggleMostrarContrasena()" color="dark">
+    <ion-icon [name]="mostrarContrasena ? 'eye-off' : 'eye'"></ion-icon>
+  </ion-button>
+  <ion-note color="danger" *ngIf="claveNoCoincide">
+    Las contraseñas no coinciden.
+  </ion-note>
+</ion-item>
+
 
     <!-- Botón de Enviar -->
     <ion-button expand="full" type="submit" [disabled]="!formValido()" color="success">

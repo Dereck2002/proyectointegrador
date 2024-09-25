@@ -47,14 +47,14 @@ export class AddSignosPage implements OnInit {
       peso: parseInt(this.signos.peso, 10),
       glicemia: parseInt(this.signos.glicemia, 10),
       pulso: parseInt(this.signos.pulso, 10),
-      temperatura: parseFloat(this.signos.temperatura), // Puede ser decimal
+      temperatura: parseFloat(this.signos.temperatura), 
       cod_usuario: this.signos.cod_usuario  // Paciente seleccionado o logueado
     };
 
     // Enviar los signos vitales al servicio
     this.servisioService.addSignos(signosData).subscribe(response => {
       console.log('Signos vitales añadidos', response);
-      this.router.navigate(['/signos']);  // Redirigir a otra página después de agregar los signos
+      this.router.navigate(['/signos']);  
     });
   }
 }

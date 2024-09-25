@@ -730,22 +730,27 @@ if ($method == 'GET' && isset($_GET['action']) && $_GET['action'] == 'getPerfilA
     $stmt->close();
 }
 
-if ($method == 'GET' && isset($_GET['action']) && $_GET['action'] == 'backupDatabase') {
-    // Define database credentials
-    $host = 'your_host';
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action']) && $_GET['action'] === 'backupDatabase') {
+    // Definir las credenciales de la base de datos
+    $host = 'your_host';  // Cambia estos valores por los de tu servidor
     $user = 'your_db_user';
     $password = 'your_db_password';
     $database = 'your_database';
 
-    // Create a new backup file
+    // Crear un archivo de respaldo
     $backupFile = 'backup_' . date('YmdHis') . '.sql';
-    $backupPath = __DIR__ . '/' . $backupFile;
+    $backupPath = __DIR__ . '/backups/' . $backupFile;
 
-    // Open the backup file for writing
+    // Asegurarse de que el directorio backups exista
+    if (!is_dir(__DIR__ . '/backups')) {
+        mkdir(__DIR__ . '/backups', 0777, true);
+    }
+
+    // Abrir el archivo de respaldo para escribir
     $handle = fopen($backupPath, 'w+');
 
     if ($handle) {
-        // Connect to the database
+        // Conectar a la base de datos
         $mysqli = new mysqli($host, $user, $password, $database);
 
         if ($mysqli->connect_error) {
@@ -753,50 +758,70 @@ if ($method == 'GET' && isset($_GET['action']) && $_GET['action'] == 'backupData
                 'success' => false,
                 'message' => 'Error al conectar a la base de datos: ' . $mysqli->connect_error
             ]);
+            fclose($handle);
             exit();
         }
 
-        // Get the list of all tables
+        // Obtener las tablas de la base de datos
         $tables = $mysqli->query("SHOW TABLES");
-        while ($table = $tables->fetch_array()) {
-            $tableName = $table[0];
+        if ($tables) {
+            $hasData = false;
 
-            // Get the table creation statement
-            $createTableResult = $mysqli->query("SHOW CREATE TABLE `$tableName`");
-            $createTable = $createTableResult->fetch_array();
-            fwrite($handle, "\n\n" . $createTable[1] . ";\n\n");
+            while ($table = $tables->fetch_array()) {
+                $tableName = $table[0];
 
-            // Get the table data
-            $rows = $mysqli->query("SELECT * FROM `$tableName`");
-            $columnCount = $rows->field_count;
+                // Obtener la estructura de la tabla
+                $createTableResult = $mysqli->query("SHOW CREATE TABLE `$tableName`");
+                if ($createTableResult) {
+                    $createTable = $createTableResult->fetch_array();
+                    fwrite($handle, "\n\n" . $createTable[1] . ";\n\n");
+                    
+                    // Obtener los datos de la tabla
+                    $rows = $mysqli->query("SELECT * FROM `$tableName`");
+                    $columnCount = $rows->field_count;
 
-            // Loop through table rows and write them to the backup file
-            while ($row = $rows->fetch_array(MYSQLI_NUM)) {
-                $rowData = "INSERT INTO `$tableName` VALUES(";
-                for ($i = 0; $i < $columnCount; $i++) {
-                    if (isset($row[$i])) {
-                        $row[$i] = addslashes($row[$i]);
-                        $row[$i] = str_replace("\n", "\\n", $row[$i]);
-                        $rowData .= '"' . $row[$i] . '"';
-                    } else {
-                        $rowData .= 'NULL';
+                    while ($row = $rows->fetch_array(MYSQLI_NUM)) {
+                        $rowData = "INSERT INTO `$tableName` VALUES(";
+                        for ($i = 0; $i < $columnCount; $i++) {
+                            if (isset($row[$i])) {
+                                $row[$i] = addslashes($row[$i]);
+                                $row[$i] = str_replace("\n", "\\n", $row[$i]);
+                                $rowData .= '"' . $row[$i] . '"';
+                            } else {
+                                $rowData .= 'NULL';
+                            }
+
+                            if ($i < ($columnCount - 1)) {
+                                $rowData .= ', ';
+                            }
+                        }
+                        $rowData .= ");\n";
+                        fwrite($handle, $rowData);
+                        $hasData = true;
                     }
-
-                    if ($i < ($columnCount - 1)) {
-                        $rowData .= ', ';
-                    }
+                } else {
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Error al obtener la estructura de la tabla: ' . $mysqli->error
+                    ]);
+                    fclose($handle);
+                    exit();
                 }
-                $rowData .= ");\n";
-                fwrite($handle, $rowData);
             }
+
+            if (!$hasData) {
+                fwrite($handle, "-- No se encontraron datos en la base de datos.\n");
+            }
+        } else {
+            fwrite($handle, "-- No se pudieron obtener las tablas de la base de datos.\n");
         }
 
         fclose($handle);
 
-        // Send response with backup download link
+        // Devolver la URL del archivo generado
         echo json_encode([
             'success' => true,
-            'fileUrl' => 'http://yourdomain.com/' . $backupFile
+            'fileUrl' => 'http://localhost/proyectointegrador/backups/' . $backupFile
         ]);
     } else {
         echo json_encode([
@@ -804,12 +829,14 @@ if ($method == 'GET' && isset($_GET['action']) && $_GET['action'] == 'backupData
             'message' => 'No se pudo crear el archivo de respaldo.'
         ]);
     }
+} else {
+    echo json_encode([
+        'success' => false,
+        'message' => 'Acción no permitida.'
+    ]);
+}
 }
 
 
-}
-
-
-// Cerrar la conexión a la base de datos
 $mysqli->close();
 ?>

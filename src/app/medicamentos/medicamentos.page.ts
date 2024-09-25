@@ -8,12 +8,12 @@ import { ToastController } from '@ionic/angular';
   styleUrls: ['./medicamentos.page.scss'],
 })
 export class MedicamentosPage implements OnInit {
-  pacientes: any[] = [];  // Lista completa de pacientes
-  filteredPacientes: any[] = [];  // Pacientes filtrados por el buscador
+  pacientes: any[] = []; 
+  filteredPacientes: any[] = [];  
   medicamentos: any[] = [];
   selectedPaciente: number | null = null;
-  editingMedicamento: any = null;  // Medicamento que se está editando
-  searchTerm: string = '';  // Término de búsqueda para filtrar pacientes
+  editingMedicamento: any = null; 
+  searchTerm: string = '';  
 
   constructor(private servisioService: ServisioService, private toastController: ToastController) {}
 
@@ -79,13 +79,12 @@ export class MedicamentosPage implements OnInit {
     });
   }
 
-  // Función para mostrar un mensaje toast
   async showToast(message: string, color: string = 'success') {
     const toast = await this.toastController.create({
       message: message,
       duration: 2000,
       position: 'bottom',
-      color: color  // 'success' para éxito, 'danger' para error
+      color: color 
     });
     toast.present();
   }

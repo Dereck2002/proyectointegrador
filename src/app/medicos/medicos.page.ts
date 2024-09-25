@@ -9,6 +9,7 @@ import { ToastController } from '@ionic/angular';
   styleUrls: ['./medicos.page.scss'],
 })
 export class MedicosPage implements OnInit {
+  mostrarContrasena = false;
   medico = {
     cedula: '',
     nom_medico: '',
@@ -56,7 +57,6 @@ export class MedicosPage implements OnInit {
     }
   }
 
-  // Función para mostrar notificación (toast)
   async showToast(message: string, color: string = 'success') {
     const toast = await this.toastController.create({
       message: message,
@@ -65,5 +65,8 @@ export class MedicosPage implements OnInit {
       color: color
     });
     toast.present();
+  }
+  toggleMostrarContrasena() {
+    this.mostrarContrasena = !this.mostrarContrasena;
   }
 }
